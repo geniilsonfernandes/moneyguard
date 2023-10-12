@@ -15,11 +15,11 @@ const Layout = () => {
   );
 };
 
-const Dash = () => {
-  throw new Error('Something went wrong');
+const Settings = () => {
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1>Settings</h1>
+      <Outlet />
     </div>
   );
 };
@@ -33,26 +33,25 @@ export function PrivateRoutes(): {
     children: [
       {
         path: '/',
-        element: <Dash />,
+        element: <div>Home</div>,
         errorElement: <div>Not found</div>
       },
-      { path: '/settings', element: <div>settings</div> },
+      {
+        path: '/settings',
+        element: <Settings />,
+        children: [
+          { path: '/settings/1', element: <div>settings 1</div> },
+          { path: '/settings/2', element: <div>settings 2</div> }
+        ]
+      },
       { path: '*', element: <Navigate to="/" replace /> }
     ]
   };
 }
 
-const Login = () => {
-  return (
-    <div>
-      <h1>Login</h1>
-    </div>
-  );
-};
-
-function PublicRoute() {
+function PublicRoute(): RouteObject[] {
   return [
-    { path: '/login', element: <Login /> },
+    { path: '/login', element: <div>login</div> },
     { path: '*', element: <Navigate to="/login" replace /> }
   ];
 }
