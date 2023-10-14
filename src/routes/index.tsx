@@ -1,3 +1,4 @@
+import Dashboard from '@/pages/Dashboard';
 import {
   Outlet,
   Navigate,
@@ -7,12 +8,7 @@ import {
 } from 'react-router-dom';
 
 const Layout = () => {
-  return (
-    <div>
-      <h1>Layout privado</h1>
-      <Outlet />
-    </div>
-  );
+  return <Outlet />;
 };
 
 const Settings = () => {
@@ -33,7 +29,7 @@ export function PrivateRoutes(): {
     children: [
       {
         path: '/',
-        element: <div>Home</div>,
+        element: <Dashboard />,
         errorElement: <div>Not found</div>
       },
       {
