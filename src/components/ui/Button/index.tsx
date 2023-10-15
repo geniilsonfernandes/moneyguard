@@ -16,9 +16,9 @@ const SizeVariants = cva(' ', {
 const FillVariant = cva('transition duration-300', {
   variants: {
     theme: {
-      slate: 'bg-slate-900 text-slate-100 hover:bg-slate-800',
-      red: 'bg-red-500 text-slate-100 hover:bg-red-400',
-      yellow: 'bg-yellow-500 text-slate-100 hover:bg-yellow-400'
+      slate: 'bg-slate-900 text-zinc-100 hover:bg-slate-800',
+      red: 'bg-red-500 text-zinc-100 hover:bg-red-400',
+      yellow: 'bg-yellow-500 text-zinc-100 hover:bg-yellow-400'
     }
   },
   defaultVariants: {
@@ -69,10 +69,13 @@ export type ButtonSmallProps = {
   children: React.ReactNode;
 } & React.HTMLAttributes<HTMLButtonElement>;
 
-export const ButtonSmall = ({ ...props }: ButtonSmallProps) => {
+export const ButtonSmall = ({ className, ...props }: ButtonSmallProps) => {
   return (
     <button
-      className="h-[32px] w-[32px] bg-slate-800 flex items-center justify-center rounded-lg hover:bg-slate-700 transition-all"
+      className={cn(
+        'h-[32px] w-[32px] bg-slate-800 flex items-center justify-center rounded-lg hover:bg-slate-700 transition-all',
+        className
+      )}
       {...props}
     />
   );
