@@ -21,7 +21,7 @@ const MonthControl = () => {
         <ButtonSmall onClick={prev}>
           <ChevronLeft />
         </ButtonSmall>
-        <span className="min-w-[200px] text-center">{monthFormatted}</span>
+        <span className="min-w-[200px] text-center text-zinc-50">{monthFormatted}</span>
         <ButtonSmall onClick={next}>
           <ChevronRight />
         </ButtonSmall>

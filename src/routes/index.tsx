@@ -8,7 +8,11 @@ import {
 } from 'react-router-dom';
 
 const Layout = () => {
-  return <Outlet />;
+  return (
+    <div className="bg-background-100">
+      <Outlet />
+    </div>
+  );
 };
 
 const Settings = () => {

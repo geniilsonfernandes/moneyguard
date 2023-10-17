@@ -16,9 +16,9 @@ const SizeVariants = cva(' ', {
 const FillVariant = cva('transition duration-300', {
   variants: {
     theme: {
-      slate: 'bg-slate-900 text-zinc-100 hover:bg-slate-800',
-      red: 'bg-red-500 text-zinc-100 hover:bg-red-400',
-      yellow: 'bg-yellow-500 text-zinc-100 hover:bg-yellow-400'
+      slate: 'bg-slate-950 text-zinc-100 hover:bg-slate-800',
+      red: 'bg-red-550 text-zinc-100 hover:bg-red-400',
+      yellow: 'bg-yellow-550 text-zinc-100 hover:bg-yellow-400'
     }
   },
   defaultVariants: {
