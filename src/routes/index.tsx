@@ -16,12 +16,7 @@ const Layout = () => {
 };
 
 const Settings = () => {
-  return (
-    <div>
-      <h1>Settings</h1>
-      <Outlet />
-    </div>
-  );
+  return <Outlet />;
 };
 
 export function PrivateRoutes(): {

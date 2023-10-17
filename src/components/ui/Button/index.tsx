@@ -1,5 +1,5 @@
 import { cn } from '@/utils';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
 
 const SizeVariants = cva(' ', {
   variants: {
