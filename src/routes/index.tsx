@@ -1,3 +1,4 @@
+import Dashboard from '@/pages/Dashboard';
 import {
   Outlet,
   Navigate,
@@ -8,8 +9,7 @@ import {
 
 const Layout = () => {
   return (
-    <div>
-      <h1>Layout privado</h1>
+    <div className="bg-background-100">
       <Outlet />
     </div>
   );
@@ -33,7 +33,7 @@ export function PrivateRoutes(): {
     children: [
       {
         path: '/',
-        element: <div>Home</div>,
+        element: <Dashboard />,
         errorElement: <div>Not found</div>
       },
       {

@@ -6,6 +6,9 @@ import { AppRouter } from '@/routes';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <AppRouter />
+    <div className="custom-bg-color">
+      dsd
+      <AppRouter />
+    </div>
   </React.StrictMode>
 );
