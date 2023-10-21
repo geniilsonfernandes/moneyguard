@@ -1,4 +1,6 @@
+import Header from '@/components/Header';
 import Dashboard from '@/pages/Dashboard';
+import Expense from '@/pages/Expense';
 import {
   Outlet,
   Navigate,
@@ -7,16 +9,26 @@ import {
   RouteObject
 } from 'react-router-dom';
 
+const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
+  return <div className="bg-slate-100">{children}</div>;
+};
+
 const Layout = () => {
   return (
-    <div className="bg-background-100">
+    <WrapperLayout>
+      <Header />
       <Outlet />
-    </div>
+    </WrapperLayout>
   );
 };
 
 const Settings = () => {
-  return <Outlet />;
+  return (
+    <WrapperLayout>
+      <Header />
+      <Outlet />
+    </WrapperLayout>
+  );
 };
 
 export function PrivateRoutes(): {
@@ -31,6 +43,8 @@ export function PrivateRoutes(): {
         element: <Dashboard />,
         errorElement: <div>Not found</div>
       },
+      { path: '/expense/new', element: <Expense /> },
+      { path: '/expense/:id', element: <Expense /> },
       {
         path: '/settings',
         element: <Settings />,

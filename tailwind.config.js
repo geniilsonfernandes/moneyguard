@@ -9,8 +9,8 @@ export default {
         padding: '1rem'
       },
       colors: {
-        background: {
-          100: '#FFF'
+        base: {
+          100: 'var(--color-base-100)'
         }
       }
     }
