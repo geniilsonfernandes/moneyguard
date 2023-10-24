@@ -7,7 +7,7 @@ type SubHeaderProps = {
 };
 const SubHeader = ({ children, className }: SubHeaderProps) => {
   return (
-    <div className={cn('bg-slate-100 w-full  min-h-[200px]')}>
+    <div className={cn('bg-slate-100 w-full  h-[200px]')}>
       <div className={cn('container', className)}>{children}</div>
     </div>
   );

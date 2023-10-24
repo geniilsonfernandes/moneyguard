@@ -31,7 +31,7 @@ const Input = ({
   ...props
 }: InputProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       <label
         htmlFor={name}
         className={cn(TextColorVariants({ state: state }), 'font-medium text-base ')}
@@ -90,7 +90,7 @@ export const Textarea = ({
   ...props
 }: TextareaProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       <Label name={name} label={label} />
 
       <textarea
@@ -120,11 +120,11 @@ export const ValueInput = ({ error, helperText, state, onChange }: ValueInputPro
   return (
     <div className="flex flex-col gap-2">
       <Label label="Valor" />
-      <div>
+      <div className="flex items-center gap-2">
         <span className="text-zinc-400 text-7xl font-medium">R$</span>
         <NumericFormat
           className={cn(
-            'text-zinc-750 text-7xl font-medium outline-none border-none ml-8',
+            'text-zinc-750 text-7xl font-medium outline-none border-none ml-2 w-full',
             TextColorVariants({ state: state })
           )}
           placeholder="0,00"

@@ -1,125 +1,136 @@
-import ExpenseToggle from '@/components/ExpenseToggle';
-import Input, { Textarea, ValueInput } from '@/components/Input';
 import SubHeader from '@/components/Layouts/SubHeader';
 import Button from '@/components/ui/Button';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import { Home, Plus, Wallet } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
-const bugets = [
-  {
-    name: 'Casa',
-    value: 100
+import CircleSVG from '@/components/CircleSVG';
+import Budget from './components/Budget';
+import Frequency from './components/Frequency';
+import Info from './components/Info';
+import { CreateBudgetSteps } from './components/shared';
+import View from './components/View';
+
+const steps = {
+  INFO: {
+    order: 1,
+    porcentage: 0.75,
+    title: 'Informações da nova entrada',
+    subtitle: 'Nome, valor e nota'
   },
-  {
-    name: 'Lazer',
-    value: 200
+  BUDGET: {
+    order: 2,
+    porcentage: 0.5,
+    title: 'Orcamento',
+    subtitle: 'Nome, valor e nota'
   },
-  {
-    name: 'Transporte',
-    value: 300
+  FREQUENCY: {
+    order: 3,
+    porcentage: 0.25,
+    title: 'Frequência',
+    subtitle: 'Nome, valor e nota'
+  },
+  FINISH: {
+    order: 4,
+    porcentage: 0,
+    title: 'Finalizar',
+    subtitle: 'Nome, valor e nota'
   }
-];
-
-type StepProps = {
-  children: React.ReactNode;
-  name?: string;
-};
-
-const Step = ({ children, name }: StepProps) => {
-  return (
-    <div className="py-12 space-y-2" aria-label={name}>
-      {children}
-    </div>
-  );
 };
 
 const Expense = () => {
+  const navigate = useNavigate();
   const { id } = useParams() as { id: string };
-  const [values, setValues] = useState({
-    nome: '',
-    valor: undefined as number | undefined
-  });
 
-  useEffect(() => {
-    const getRadios = async () => {
-      const data = await fetch(`https://radio-world-connect.onrender.com/radio/all`);
+  const [step, setSteps] = useState<CreateBudgetSteps>('INFO');
 
-      const radios = await data.json();
+  const goBack = () => {
+    // validar se posso voltar
+    navigate(`/`);
+  };
 
-      console.log(radios);
-    };
-    getRadios();
-  }, []);
+  const changeStep = () => {
+    if (step === 'INFO') {
+      //  VALIDAR SE PODE AVANÇAR
+      setSteps('BUDGET');
+    } else if (step === 'BUDGET') {
+      // VALIDAR SE PODE AVANÇAR
+      setSteps('FREQUENCY');
+    } else if (step === 'FREQUENCY') {
+      // VALIDAR SE PODE AVANÇAR
+      setSteps('FINISH');
+    } else if (step === 'FINISH') {
+      /// tentar salvar
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  const previousStep = () => {
+    if (step === 'BUDGET') {
+      setSteps('INFO');
+      return;
+    } else if (step === 'FREQUENCY') {
+      setSteps('BUDGET');
+      return;
+    } else if (step === 'FINISH') {
+      setSteps('FREQUENCY');
+      return;
+    }
+
+    goBack();
+  };
 
   return (
     <div className="bg-white h-screen">
-      <SubHeader>
-        <div className="container">...{id}</div>
+      <SubHeader className="h-full flex justify-between items-end py-8">
+        <div className="h-full flex flex-col items-start justify-between ">
+          <Button variant="outline" size="medium" onClick={goBack}>
+            <div className="flex items-center text-base justify-between">
+              <ArrowLeft size={18} />
+            </div>
+          </Button>
+          <h1 className="font-bold text-zinc-950 text-2xl">Adicionar nova entrada {id}</h1>
+        </div>
+        <div className="flex items-center gap-6  sm:min-w-[350px]">
+          <div className="w-[70px] h-[70px] bg-zinc-950 rounded-full text-zinc-50 text-2xl flex items-center justify-center relative">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ">
+              <CircleSVG percentage={steps[step].porcentage} />
+            </div>
+            {steps[step].order}
+            <span className="text-zinc-500 relative top-[3px] text-base">/4</span>
+          </div>
+          <div>
+            <h1 className="font-bold text-zinc-950 text-2xl">{steps[step].title}</h1>
+            <span className="text-zinc-400 text-base">{steps[step].subtitle}</span>
+          </div>
+        </div>
       </SubHeader>
-      <div className="container">
-        <Step name="Informações da entrada">
-          <Input
-            label="Nome"
-            placeholder="Nome"
-            state="default"
-            name="nome"
-            onChange={({ target }) => {
-              setValues((prev) => ({ ...prev, nome: target.value }));
-            }}
-          />
-          <div className="py-8 space-y-8">
-            <ValueInput
-              helperText="coloque o valor"
-              onChange={(value) => {
-                setValues((prev) => ({ ...prev, valor: value }));
-              }}
-            />
-            <ExpenseToggle />
-          </div>
-          <Textarea label="Nota" placeholder="nota" state="default" />
-        </Step>
-
-        <Step name="Escolha o orçamento">
-          <h3 className="text-zinc-950 font-normal">Escolha o orçamento:</h3>
-
-          <div className="py-8 grid grid-cols-2 gap-4 ">
-            {bugets.map((buget) => (
-              <Button
-                variant="outline"
-                size="xlarge"
-                key={buget.name}
-                active={buget.name === 'Casa'}>
-                <div className="flex items-center text-base justify-between">
-                  {buget.name}
-                  <Wallet size={18} />
-                </div>
-              </Button>
-            ))}
-
-            <Button variant="outline" size="xlarge">
-              <div className="flex items-center text-base justify-between">
-                <div className="flex flex-col justify-start items-start">
-                  Criar Novo orçamento
-                  <span className="text-zinc-400 text-xs">5 disponíveis</span>
-                </div>
-                <Plus size={18} />
-              </div>
-            </Button>
-          </div>
-        </Step>
+      <div className="container py-8">
+        <div className="min-h-[200px]">
+          {step === 'INFO' && <Info />}
+          {step === 'BUDGET' && <Budget />}
+          {step === 'FREQUENCY' && <Frequency />}
+          {step === 'FINISH' && <View />}
+        </div>
 
         <div className="flex justify-between items-center pt-24">
           <div>
             <span className="uppercase text-zinc-950 font-normal">Resumo:</span>
-            <span className="uppercase text-zinc-950 text-lg font-bold ml-4">
-              R$ {values.valor || 0}
-            </span>
+            <span className="uppercase text-zinc-950 text-lg font-bold ml-4">R$ {0}</span>
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost">Cancelar</Button>
-            <Button variant="fill">Avançar</Button>
+            <Button variant="ghost" onClick={previousStep}>
+              {step === 'INFO' ? 'Cancelar' : 'Voltar'}
+            </Button>
+
+            <Button variant="fill" onClick={changeStep}>
+              {step === 'FINISH' ? 'Salvar' : 'Avançar'}
+            </Button>
           </div>
         </div>
       </div>

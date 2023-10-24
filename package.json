@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.0.5",
+        "@radix-ui/react-switch": "^1.0.3",
         "class-variance-authority": "^0.7.0",
         "dayjs": "^1.11.10",
         "localforage": "^1.10.0",

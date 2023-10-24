@@ -15,15 +15,22 @@ const ButtonVariants = cva('', {
     },
 
     size: {
-      small: 'px-6 text-sm rounded-lg h-[32px]',
-      medium: 'px-6 text-sm rounded-lg h-[48px]',
-      large: 'px-6 text-base rounded-lg h-[64px]',
-      xlarge: 'px-6 text-base rounded-lg h-[80px]'
+      small: 'text-base rounded-lg h-[32px]',
+      medium: 'text-base rounded-lg h-[48px]',
+      large: 'text-base rounded-lg h-[64px]',
+      xlarge: 'text-base rounded-lg h-[80px]'
+    },
+
+    width: {
+      default: 'px-6',
+      full: 'w-full',
+      auto: 'w-auto'
     }
   },
   defaultVariants: {
     variant: 'fill',
-    size: 'medium'
+    size: 'medium',
+    width: 'default'
   }
 });
 
@@ -31,14 +38,22 @@ export type ButtonProps = {
   children: React.ReactNode;
   size?: 'small' | 'medium' | 'large' | 'xlarge';
   variant?: 'outline' | 'fill' | 'ghost';
+  width?: 'default' | 'full' | 'auto';
   active?: boolean;
 } & React.HTMLAttributes<HTMLButtonElement>;
 
 // vou te que receber a variante e cada variante ter seu estados
 
-const Button = ({ variant = 'fill', size = 'medium', active, ...props }: ButtonProps) => {
+const Button = ({
+  variant = 'fill',
+  size = 'medium',
+  active,
+  width = 'default',
+  className,
+  ...props
+}: ButtonProps) => {
   return (
-    <button className={cn(ButtonVariants({ variant, size, active }))} {...props}>
+    <button className={cn(ButtonVariants({ variant, size, active, width }), className)} {...props}>
       {props.children}
     </button>
   );

@@ -9,7 +9,7 @@ const ButtonToggleVariants = cva(
   {
     variants: {
       active: {
-        true: 'bg-white shadow-sm',
+        true: 'bg-slate-100',
         false: 'transparent'
       },
       type: {
@@ -52,7 +52,7 @@ const ExpenseToggle = ({ onChange }: ExpenseToggleProps) => {
   };
 
   return (
-    <div className="p-2 bg-slate-100 rounded-lg flex gap-2">
+    <div className="p-2 border broder-slate-100 rounded-lg flex gap-2">
       <ButtonToggle
         active={select === 'income'}
         type="income"
