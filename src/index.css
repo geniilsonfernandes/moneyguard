@@ -3,7 +3,59 @@
 @tailwind utilities;
 
 @layer base {
-  html {
+  body {
     font-family: 'Roboto Flex', sans-serif;
+    --color-base-100: #fafafa;
+    --color-primary-saturation: 0;
+    --color-secondary: #34a853;
+    --color-buttons: #fbbc05;
+    --color-typography: #ea4335;
+  }
+
+  body[data-theme='theme1'] {
+    --color-base-100: hsl(14, 92%, 69%);
+
+    --color-secondary: #80bd9e;
+    --color-buttons: #89da59;
+    --color-typography: #ff320e;
+  }
+
+  body[data-theme='theme2'] {
+    --color-base-100: #4285f4;
+    --color-secondary: #34a853;
+    --color-buttons: #fbbc05;
+    --color-typography: #ea4335;
+  }
+}
+
+.fadeIn {
+  animation: 400ms fadeIn forwards;
+}
+
+.fadeOut {
+  animation: 0.5s fadeOut forwards;
+}
+
+.log {
+  border: 1px solid red;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(0px, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }

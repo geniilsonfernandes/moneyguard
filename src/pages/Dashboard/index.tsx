@@ -7,7 +7,13 @@ import ExpenseGroup from '@/components/ExpenseGroup';
 import { Info } from 'lucide-react';
 import Button from '@/components/ui/Button';
 
+import { useNavigate } from 'react-router-dom';
+import { changeTheme } from '@/utils/changeTheme';
+import SubHeader from '@/components/Layouts/SubHeader';
+
 const Dashboard = () => {
+  const navigate = useNavigate();
+
   const monthExpense = formatNumber(1032, {
     style: 'currency',
     currency: 'BRL',
@@ -15,18 +21,21 @@ const Dashboard = () => {
   });
 
   return (
-    <div>
-      <div className="bg-slate-100 w-full pt-4 pb-14">
-        <div className="container">
-          <nav className="flex bg-white rounded-lg  h-[48px]"> </nav>
-          <div className="flex justify-between items-end">
-            <SalaryAmount className="pt-7" />
-            <Button variant="fill">Nova Despesa</Button>
-          </div>
-        </div>
-      </div>
-      <div className="container space-y-6 pb-6">
-        <div className="bg-slate-950 p-8 rounded-2xl shadow-lg mt-[-32px] text-white flex justify-between items-center">
+    <div className="bg-white">
+      <SubHeader className="flex justify-between items-end py-12">
+        <SalaryAmount />
+        <Button
+          variant="fill"
+          onClick={() => {
+            navigate('/expense/new');
+            changeTheme('theme1');
+          }}>
+          Nova entrada
+        </Button>
+      </SubHeader>
+
+      <div className="container space-y-6 pb-6 -mt-6">
+        <div className="bg-slate-950 p-8 rounded-2xl shadow-lg text-white flex justify-between items-center">
           <MonthControl />
           <div className="space-x-2 text-zinc-50">
             <span className="uppercase">Total de despesas:</span>

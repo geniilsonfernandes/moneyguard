@@ -1,65 +1,59 @@
 import { cn } from '@/utils';
 import { cva } from 'class-variance-authority';
 
-const SizeVariants = cva(' ', {
+const ButtonVariants = cva('', {
   variants: {
+    variant: {
+      outline: 'border border-slate-200 hover:bg-slate-100',
+      fill: 'bg-slate-950 hover:bg-slate-800 text-white',
+      ghost: 'bg-transparent text-slate-950 hover:bg-slate-100'
+    },
+
+    active: {
+      true: 'bg-slate-950 text-white hover:bg-slate-800',
+      false: ''
+    },
+
     size: {
-      small: 'px-4 text-sm rounded-lg h-[32px] flex items-center justify-center',
-      medium: 'px-4 text-sm rounded-lg h-[48px] flex items-center justify-center',
-      large: 'px-6 text-base rounded-lg h-[64px] flex items-center justify-center',
-      xlarge: 'px-8 text-base rounded-lg h-[80px] flex items-center justify-center'
-    }
-  },
-  defaultVariants: {}
-});
+      small: 'text-base rounded-lg h-[32px]',
+      medium: 'text-base rounded-lg h-[48px]',
+      large: 'text-base rounded-lg h-[64px]',
+      xlarge: 'text-base rounded-lg h-[80px]'
+    },
 
-const FillVariant = cva('transition duration-300', {
-  variants: {
-    theme: {
-      slate: 'bg-slate-950 text-zinc-100 hover:bg-slate-800',
-      red: 'bg-red-550 text-zinc-100 hover:bg-red-400',
-      yellow: 'bg-yellow-550 text-zinc-100 hover:bg-yellow-400'
+    width: {
+      default: 'px-6',
+      full: 'w-full',
+      auto: 'w-auto'
     }
   },
   defaultVariants: {
-    theme: 'slate'
-  }
-});
-
-const OutlineVariant = cva('', {
-  variants: {
-    theme: {
-      slate: 'border border-slate-300 text-slate-900 hover:bg-slate-100 bg-slate-100',
-      red: 'border border-red-300 text-red-500 hover:bg-red-100 bg-red-100',
-      yellow: 'border border-yellow-300 text-yellow-500 hover:bg-yellow-100 bg-yellow-100'
-    }
-  },
-  defaultVariants: {
-    theme: 'slate'
+    variant: 'fill',
+    size: 'medium',
+    width: 'default'
   }
 });
 
 export type ButtonProps = {
   children: React.ReactNode;
-  theme?: 'slate' | 'red' | 'yellow';
   size?: 'small' | 'medium' | 'large' | 'xlarge';
-  variant?: 'outline' | 'fill';
+  variant?: 'outline' | 'fill' | 'ghost';
+  width?: 'default' | 'full' | 'auto';
+  active?: boolean;
 } & React.HTMLAttributes<HTMLButtonElement>;
 
-const Button = ({ theme, variant, size = 'medium', ...props }: ButtonProps) => {
+// vou te que receber a variante e cada variante ter seu estados
+
+const Button = ({
+  variant = 'fill',
+  size = 'medium',
+  active,
+  width = 'default',
+  className,
+  ...props
+}: ButtonProps) => {
   return (
-    <button
-      className={cn(
-        SizeVariants({ size }),
-        variant === 'fill'
-          ? FillVariant({
-              theme
-            })
-          : OutlineVariant({
-              theme
-            })
-      )}
-      {...props}>
+    <button className={cn(ButtonVariants({ variant, size, active, width }), className)} {...props}>
       {props.children}
     </button>
   );
