@@ -64,10 +64,10 @@ const Expense = () => {
       /// tentar salvar
     }
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    // window.scrollTo({
+    //   top: 0,
+    //   behavior: 'smooth'
+    // });
   };
 
   const previousStep = () => {
@@ -89,10 +89,15 @@ const Expense = () => {
     <div className="bg-white h-screen">
       <SubHeader className="h-full flex justify-between items-end py-8">
         <div className="h-full flex flex-col items-start justify-between ">
-          <Button variant="outline" size="medium" onClick={goBack}>
-            <div className="flex items-center text-base justify-between">
-              <ArrowLeft size={18} />
-            </div>
+          <Button
+            variant="outline"
+            size="md"
+            onClick={goBack}
+            display="flex"
+            align="center"
+            padding="none"
+          >
+            <ArrowLeft size={18} />
           </Button>
           <h1 className="font-bold text-zinc-950 text-2xl">Adicionar nova entrada {id}</h1>
         </div>

@@ -17,7 +17,14 @@ const Modal = ({ children, title, footer, isOpen, onClose }: ModalProps) => {
         <Dialog.Content className="fixed top-1/2 left-1/2 w-full max-w-md bg-slate-50 -translate-x-1/2 -translate-y-1/2 rounded-md p-4 sm:p-8">
           <Dialog.Title className="flex justify-between text-zinc-950 text-lg font-medium items-center">
             {title}
-            <Button variant="outline" width="default" onClick={onClose}>
+            <Button
+              variant="outline"
+              width="auto"
+              size="md"
+              padding="none"
+              display="flex"
+              onClick={onClose}
+            >
               <X size={16} />
             </Button>
           </Dialog.Title>

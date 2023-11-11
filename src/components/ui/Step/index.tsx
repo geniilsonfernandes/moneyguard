@@ -10,7 +10,7 @@ const Step = ({ children, name, show = true }: StepProps) => {
   }
 
   return (
-    <div className="py-12 space-y-2 fadeIn" aria-label={name}>
+    <div className="py-12 space-y-2 " aria-label={name}>
       <h3 className="text-zinc-950 font-normal">{name}</h3>
       <div className="py-8">{children}</div>
     </div>

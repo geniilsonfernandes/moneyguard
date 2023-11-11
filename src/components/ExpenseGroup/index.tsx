@@ -28,7 +28,8 @@ const ExpenseGroup = () => {
           <ButtonSmall
             className="bg-transparent hover:bg-slate-100"
             onClick={toggleVisibility}
-            aria-label="show/hide">
+            aria-label="show/hide"
+          >
             {visible ? <ChevronsDownUpIcon size={20} /> : <ChevronsUpDown size={20} />}
           </ButtonSmall>
           <ButtonSmall className="bg-transparent hover:bg-slate-100" aria-label="edit">

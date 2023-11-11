@@ -22,7 +22,8 @@ const ExpenseItem = ({ type = 'income' }: ExpenseItemProps) => {
     <button
       className=" border-b border-slate-100 h-[48px] flex items-center justify-between px-4 last:border-b-0 focus:bg-slate-100 hover:bg-slate-100 cursor-pointer transition-all"
       tabIndex={0}
-      onClick={handleToView}>
+      onClick={handleToView}
+    >
       <h4 className="text-zinc-950 font-bold flex gap-3">
         {type === 'income' ? (
           <ChevronUpCircle className="text-green-500" />

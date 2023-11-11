@@ -29,7 +29,8 @@ const Dashboard = () => {
           onClick={() => {
             navigate('/expense/new');
             changeTheme('theme1');
-          }}>
+          }}
+        >
           Nova entrada
         </Button>
       </SubHeader>

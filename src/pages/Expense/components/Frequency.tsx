@@ -80,7 +80,8 @@ const Frequency = () => {
             onCheckedChange={(e) => {
               e ? changeMode('onlyMode') : changeMode('monthMode');
             }}
-            checked={form.onlyMode}>
+            checked={form.onlyMode}
+          >
             <Switch.Thumb className="block w-[21px] h-[21px] bg-white rounded-full  transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
           </Switch.Root>
           <label htmlFor="only-mode">Unico</label>
@@ -95,7 +96,8 @@ const Frequency = () => {
                 e ? configFrequency.onShow() : configFrequency.onHidden();
                 e ? changeMode('monthMode') : changeMode('onlyMode');
               }}
-              checked={form.monthMode}>
+              checked={form.monthMode}
+            >
               <Switch.Thumb className="block w-[21px] h-[21px] bg-white rounded-full  transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
             </Switch.Root>
             <label htmlFor="month-mode">Mensal</label>
@@ -119,14 +121,16 @@ const Frequency = () => {
                     variant="outline"
                     key={btn.value}
                     onClick={() => changeDuration(btn.value, 'fixed')}
-                    active={btn.value === form.durationFixed}>
+                    active={btn.value === form.durationFixed}
+                  >
                     {btn.label}
                   </Button>
                 ))}
                 <Button
                   variant="outline"
                   onClick={() => changeDuration(1, 'custom')}
-                  active={form.config.dutarionType === 'custom'}>
+                  active={form.config.dutarionType === 'custom'}
+                >
                   Persalizado
                 </Button>
               </div>
