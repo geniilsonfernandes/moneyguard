@@ -27,7 +27,7 @@ const Budget = () => {
     <Step name="Orçamento:">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {bugets.map((buget) => (
-          <Button variant="outline" size="xlarge" key={buget.name} active={buget.name === 'Casa'}>
+          <Button variant="outline" size="xl" key={buget.name} active={buget.name === 'Casa'}>
             <div className="flex items-center text-base justify-between">
               {buget.name}
               <Wallet size={18} />
@@ -35,7 +35,7 @@ const Budget = () => {
           </Button>
         ))}
 
-        <Button variant="outline" size="xlarge" onClick={() => createBugetModal.onShow()}>
+        <Button variant="outline" size="xl" onClick={() => createBugetModal.onShow()}>
           <div className="flex items-center text-base justify-between">
             <div className="flex flex-col justify-start items-start">
               Criar Novo orçamento
@@ -50,7 +50,8 @@ const Budget = () => {
         isOpen={createBugetModal.visible}
         onClose={createBugetModal.onHidden}
         title="Criar novo orçamento"
-        footer={<Button width="full">Criar novo orçamento</Button>}>
+        footer={<Button width="full">Criar novo orçamento</Button>}
+      >
         <Input label="Orçamento" placeholder="compras do mes" state="default" name="bugte" />
       </Modal>
     </Step>

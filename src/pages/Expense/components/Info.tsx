@@ -4,13 +4,13 @@ import Step from '@/components/ui/Step';
 
 const Info = () => {
   return (
-    <Step name="Informações da nova entrada:">
-      <Input label="Nome" placeholder="Nome" state="default" name="nome" />
-      <div className="py-8 space-y-8">
-        <ValueInput helperText="coloque o valor" />
+    <Step>
+      <div className="pb-8 space-y-8">
         <ExpenseToggle />
+        <ValueInput helperText="coloque o valor" />
+        <Input label="Nome" placeholder="Nome" state="default" name="nome" />
+        <Textarea label="Nota" placeholder="nota" state="default" />
       </div>
-      <Textarea label="Nota" placeholder="nota" state="default" />
     </Step>
   );
 };

@@ -35,7 +35,8 @@ const Input = ({
       <label
         htmlFor={name}
         className={cn(TextColorVariants({ state: state }), 'font-medium text-base ')}
-        aria-label={label}>
+        aria-label={label}
+      >
         {label}
       </label>
       <input
@@ -74,7 +75,8 @@ const Label = ({ label, name, state }: labelProps) => {
     <label
       htmlFor={name}
       className={cn(TextColorVariants({ state: state }), 'font-medium text-base ')}
-      aria-label={label}>
+      aria-label={label}
+    >
       {label}
     </label>
   );

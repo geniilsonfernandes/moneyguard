@@ -1,25 +1,20 @@
 import { useState } from 'react';
 
-import { ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { cva } from 'class-variance-authority';
 import { cn } from '@/utils';
 
 const ButtonToggleVariants = cva(
-  'rounded-lg h-[48px] w-full flex justify-center items-center gap-2 font-medium text-base',
+  'rounded-md h-[68px] w-full flex justify-center items-center gap-2 font-medium text-base',
   {
     variants: {
       active: {
-        true: 'bg-slate-100',
-        false: 'transparent'
-      },
-      type: {
-        income: 'text-green-500',
-        expense: 'text-red-500'
+        true: 'bg-white text-slate-950',
+        false: 'transparent text-slate-300'
       }
     },
     defaultVariants: {
-      active: false,
-      type: 'expense'
+      active: false
     }
   }
 );
@@ -33,8 +28,8 @@ const ButtonToggle = ({ active, type, ...props }: ButtonToggleProps) => {
   const text = type === 'income' ? 'Entrada' : 'Saida';
 
   return (
-    <button className={cn(ButtonToggleVariants({ active, type }))} {...props}>
-      {type === 'income' ? <ArrowDownCircle /> : <ArrowUpCircle />} {text}
+    <button className={cn(ButtonToggleVariants({ active }))} {...props}>
+      {type === 'income' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />} {text}
     </button>
   );
 };
@@ -52,7 +47,7 @@ const ExpenseToggle = ({ onChange }: ExpenseToggleProps) => {
   };
 
   return (
-    <div className="p-2 border broder-slate-100 rounded-lg flex gap-2">
+    <div className="p-1 bg-slate-100 rounded-md flex gap-2">
       <ButtonToggle
         active={select === 'income'}
         type="income"
