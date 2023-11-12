@@ -1,16 +1,19 @@
+import CircleSVG from '@/components/CircleSVG';
 import SubHeader from '@/components/Layouts/SubHeader';
 import Button from '@/components/ui/Button';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { ArrowLeft } from 'lucide-react';
-
-import CircleSVG from '@/components/CircleSVG';
 import Budget from './components/Budget';
 import Frequency from './components/Frequency';
 import Info from './components/Info';
-import { CreateBudgetSteps } from './components/shared';
 import View from './components/View';
+import { CreateBudgetSteps } from './components/shared';
+import { ExpenseFields, createSchema, defaultValues } from './shared/schema';
+import generateHashId from '@/utils/generateHashId';
 
 const steps = {
   INFO: {
@@ -39,11 +42,43 @@ const steps = {
   }
 };
 
+const defaultBudgets = [
+  {
+    name: 'Casa',
+    id: '1',
+    value: 100
+  },
+  {
+    name: 'Lazer',
+    id: '2',
+    value: 200
+  },
+  {
+    name: 'Transporte',
+    id: '3',
+    value: 300
+  }
+];
+
 const Expense = () => {
   const navigate = useNavigate();
   const { id } = useParams() as { id: string };
-
+  const [budgets, setBudgets] = useState(defaultBudgets);
   const [step, setSteps] = useState<CreateBudgetSteps>('INFO');
+
+  const bugetQuantityLimit = 10 - budgets.length;
+
+  const {
+    control,
+    formState: { errors },
+    setValue,
+    trigger,
+    getValues
+  } = useForm<ExpenseFields>({
+    defaultValues: defaultValues,
+    mode: 'onChange',
+    resolver: zodResolver(createSchema)
+  });
 
   const goBack = () => {
     // validar se posso voltar
@@ -53,12 +88,20 @@ const Expense = () => {
   const changeStep = () => {
     if (step === 'INFO') {
       //  VALIDAR SE PODE AVANÇAR
-      setSteps('BUDGET');
+      trigger(['name', 'value']).then((isValid) => {
+        if (isValid) {
+          console.log('go to budget', getValues());
+
+          setSteps('BUDGET');
+          return;
+        }
+      });
+      console.log(getValues(), errors);
     } else if (step === 'BUDGET') {
-      // VALIDAR SE PODE AVANÇAR
+      console.log('go to budget', getValues());
       setSteps('FREQUENCY');
     } else if (step === 'FREQUENCY') {
-      // VALIDAR SE PODE AVANÇAR
+      console.log(getValues(), errors);
       setSteps('FINISH');
     } else if (step === 'FINISH') {
       /// tentar salvar
@@ -83,6 +126,22 @@ const Expense = () => {
     }
 
     goBack();
+  };
+
+  const handleCreateBudget = (newBudget: string) => {
+    if (!newBudget) {
+      return;
+    }
+
+    const createNewBudget = {
+      name: newBudget,
+      id: `new-${generateHashId()}`,
+      value: 0
+    };
+
+    setValue('budget', createNewBudget);
+    setBudgets([...budgets, createNewBudget]);
+    console.log(getValues(), errors);
   };
 
   return (
@@ -117,9 +176,19 @@ const Expense = () => {
       </SubHeader>
       <div className="container py-8">
         <div className="min-h-[200px]">
-          {step === 'INFO' && <Info />}
-          {step === 'BUDGET' && <Budget />}
-          {step === 'FREQUENCY' && <Frequency />}
+          {step === 'INFO' && <Info erros={errors} control={control} />}
+          {step === 'BUDGET' && (
+            <Budget
+              erros={errors}
+              control={control}
+              budgets={budgets}
+              onCreateBuget={handleCreateBudget}
+              bugetQuantityLimit={bugetQuantityLimit}
+            />
+          )}
+          {step === 'FREQUENCY' && (
+            <Frequency erros={errors} control={control} setValue={setValue} />
+          )}
           {step === 'FINISH' && <View />}
         </div>
 

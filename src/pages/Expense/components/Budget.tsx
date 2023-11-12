@@ -4,42 +4,91 @@ import Modal from '@/components/ui/Modal';
 import Step from '@/components/ui/Step';
 import useVisibility from '@/hooks/useVisibility';
 import { Plus, Wallet } from 'lucide-react';
+import { Control, Controller, FieldErrors, useForm } from 'react-hook-form';
+import { ExpenseFields, ExpenseInfoFields } from '../shared/schema';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-const bugets = [
-  {
-    name: 'Casa',
-    value: 100
-  },
-  {
-    name: 'Lazer',
-    value: 200
-  },
-  {
-    name: 'Transporte',
-    value: 300
-  }
-];
+type BudgetProps = {
+  erros?: FieldErrors<Partial<ExpenseInfoFields>>;
+  control?: Control<ExpenseFields>;
+  budgets: { name: string; id: string; value: number }[];
+  onCreateBuget: (newName: string) => void;
+  bugetQuantityLimit: number;
+};
 
-const Budget = () => {
+type budgetFields = {
+  budget_name: string;
+};
+const createBudgetSchema = z.object({
+  budget_name: z
+    .string({
+      required_error: 'O nome do orcamento deve ser informado'
+    })
+    .refine((value) => value.length > 0, {
+      message: 'O nome do orcamento deve ser informado'
+    })
+});
+
+const Budget = ({ control, budgets, onCreateBuget, bugetQuantityLimit }: BudgetProps) => {
+  const {
+    control: budgetControl,
+    trigger,
+    getValues,
+    reset,
+    formState: { errors }
+  } = useForm<budgetFields>({
+    resolver: zodResolver(createBudgetSchema)
+  });
   const createBugetModal = useVisibility({});
+
+  const createBuget = () => {
+    trigger(['budget_name']).then((isValid) => {
+      if (isValid) {
+        onCreateBuget(getValues().budget_name);
+        createBugetModal.onHidden();
+        reset();
+      }
+    });
+  };
 
   return (
     <Step name="Orçamento:">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {bugets.map((buget) => (
-          <Button variant="outline" size="xl" key={buget.name} active={buget.name === 'Casa'}>
-            <div className="flex items-center text-base justify-between">
-              {buget.name}
-              <Wallet size={18} />
-            </div>
-          </Button>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {budgets.map((buget) => (
+          <Controller
+            control={control}
+            name="budget"
+            key={buget.id}
+            render={({ field: { onChange, value } }) => (
+              <Button
+                variant="outline"
+                size="xl"
+                key={buget.name}
+                active={buget.id === value?.id}
+                onClick={() => onChange(buget)}
+              >
+                <div className="flex items-center text-base justify-between">
+                  {buget.name}
+                  <Wallet size={18} />
+                </div>
+              </Button>
+            )}
+          />
         ))}
 
-        <Button variant="outline" size="xl" onClick={() => createBugetModal.onShow()}>
+        <Button
+          variant="outline"
+          size="xl"
+          onClick={() => createBugetModal.onShow()}
+          disabled={bugetQuantityLimit <= 0}
+        >
           <div className="flex items-center text-base justify-between">
             <div className="flex flex-col justify-start items-start">
-              Criar Novo orçamento
-              <span className="text-zinc-400 text-xs">5 disponíveis</span>
+              {bugetQuantityLimit <= 0 ? 'Limite de orçamentos atingido' : ` Criar Novo orçamento`}
+              <span className="text-zinc-400 text-xs">
+                {bugetQuantityLimit} espaços disponíveis
+              </span>
             </div>
             <Plus size={18} />
           </div>
@@ -50,9 +99,28 @@ const Budget = () => {
         isOpen={createBugetModal.visible}
         onClose={createBugetModal.onHidden}
         title="Criar novo orçamento"
-        footer={<Button width="full">Criar novo orçamento</Button>}
+        footer={
+          <Button width="full" onClick={() => createBuget()}>
+            Criar novo orçamento
+          </Button>
+        }
       >
-        <Input label="Orçamento" placeholder="compras do mes" state="default" name="bugte" />
+        <Controller
+          control={budgetControl}
+          name="budget_name"
+          render={({ field: { onChange, value } }) => (
+            <Input
+              label="Orçamento"
+              placeholder="Ex: Compras do mes"
+              state="default"
+              name="bugte"
+              onChange={onChange}
+              value={value}
+              error={!!errors.budget_name}
+              helperText={errors.budget_name?.message}
+            />
+          )}
+        />
       </Modal>
     </Step>
   );

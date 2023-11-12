@@ -24,6 +24,10 @@ const ButtonVariants = cva('', {
       flex: 'flex',
       block: 'block'
     },
+    disabled: {
+      true: 'opacity-50 cursor-not-allowed pointer-events-none',
+      false: ''
+    },
     align: {
       left: 'text-left justify-start items-center',
       center: 'text-center justify-center items-center',
@@ -73,6 +77,7 @@ export type ButtonProps = {
   children: React.ReactNode;
   variant?: 'outline' | 'fill' | 'ghost';
   active?: boolean;
+  disabled?: boolean;
   size?: VariantProps<typeof ButtonVariants>['size'];
   width?: VariantProps<typeof ButtonVariants>['width'];
   padding?: VariantProps<typeof ButtonVariants>['padding'];
@@ -91,6 +96,7 @@ const Button = ({
   padding,
   display,
   align,
+  disabled,
   ...props
 }: ButtonProps) => {
   const variants = {
@@ -103,7 +109,7 @@ const Button = ({
     <button
       className={cn(
         variants[variant]({ active }),
-        ButtonVariants({ size, width, display, padding, align }),
+        ButtonVariants({ size, width, display, padding, align, disabled }),
         className
       )}
       {...props}

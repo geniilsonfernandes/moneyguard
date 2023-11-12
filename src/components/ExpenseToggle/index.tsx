@@ -36,10 +36,11 @@ const ButtonToggle = ({ active, type, ...props }: ButtonToggleProps) => {
 
 type ExpenseToggleProps = {
   onChange?: (value: 'income' | 'expense') => void;
+  value?: 'income' | 'expense';
 };
 
-const ExpenseToggle = ({ onChange }: ExpenseToggleProps) => {
-  const [select, setSelect] = useState<'income' | 'expense'>('income');
+const ExpenseToggle = ({ onChange, value = 'income' }: ExpenseToggleProps) => {
+  const [select, setSelect] = useState<'income' | 'expense'>(value);
 
   const toggleType = (type: 'income' | 'expense') => {
     setSelect(type);

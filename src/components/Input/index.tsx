@@ -34,7 +34,10 @@ const Input = ({
     <div className="flex flex-col gap-4">
       <label
         htmlFor={name}
-        className={cn(TextColorVariants({ state: state }), 'font-medium text-base ')}
+        className={cn(
+          TextColorVariants({ state: error ? 'error' : state }),
+          'font-medium text-base '
+        )}
         aria-label={label}
       >
         {label}
@@ -45,12 +48,12 @@ const Input = ({
         placeholder={placeholder}
         className={cn(
           InputVariants({
-            state: state
+            state: error ? 'error' : state
           })
         )}
         {...props}
       />
-      {error && <ErrorMessage helperText={helperText} state={state} />}
+      {error && <ErrorMessage helperText={helperText} state={error ? 'error' : state} />}
     </div>
   );
 };
@@ -93,20 +96,20 @@ export const Textarea = ({
 }: TextareaProps) => {
   return (
     <div className="flex flex-col gap-4">
-      <Label name={name} label={label} />
+      <Label name={name} label={label} state={error ? 'error' : state} />
 
       <textarea
         id={name}
         placeholder={placeholder}
         className={cn(
           InputVariants({
-            state: state
+            state: error ? 'error' : state
           }),
           'resize-none h-[150px] w-full border rounded-lg p-4 focus:outline-none'
         )}
         {...props}
       />
-      {error && <ErrorMessage helperText={helperText} state={state} />}
+      {error && <ErrorMessage helperText={helperText} state={error ? 'error' : state} />}
     </div>
   );
 };
@@ -116,19 +119,36 @@ type ValueInputProps = {
   error?: boolean;
   state?: 'default' | 'error' | 'success';
   onChange?: (value: number | undefined) => void;
+  value?: number;
+  label?: string;
 };
 
-export const ValueInput = ({ error, helperText, state, onChange }: ValueInputProps) => {
+export const ValueInput = ({
+  error,
+  helperText,
+  state,
+  onChange,
+  value,
+  label
+}: ValueInputProps) => {
   return (
     <div className="flex flex-col gap-2">
-      <Label label="Valor" />
+      {label && <Label label={label} state={error ? 'error' : state} />}
       <div className="flex items-center gap-2">
-        <span className="text-zinc-400 text-7xl font-medium">R$</span>
+        <span
+          className={cn(
+            TextColorVariants({ state: error ? 'error' : state }),
+            ' text-7xl font-medium'
+          )}
+        >
+          R$
+        </span>
         <NumericFormat
           className={cn(
             'text-zinc-750 text-7xl font-medium outline-none border-none ml-2 w-full',
-            TextColorVariants({ state: state })
+            TextColorVariants({ state: error ? 'error' : state })
           )}
+          value={value}
           placeholder="0,00"
           thousandSeparator=","
           onValueChange={(value) => {
@@ -136,7 +156,7 @@ export const ValueInput = ({ error, helperText, state, onChange }: ValueInputPro
           }}
         />
       </div>
-      {error && <ErrorMessage helperText={helperText} state={state} />}
+      {error && <ErrorMessage helperText={helperText} state={error ? 'error' : state} />}
     </div>
   );
 };
