@@ -1,3 +1,4 @@
+import Loader from '@/components/Loader';
 import { cn } from '@/utils';
 import { cva, VariantProps } from 'class-variance-authority';
 
@@ -15,14 +16,18 @@ const ButtonVariants = cva('', {
     },
     padding: {
       none: '',
-      sm: 'p-2',
-      md: 'p-4',
-      lg: 'p-6',
-      xl: 'p-8'
+      sm: 'p-2 px-4',
+      md: 'p-4 px-8',
+      lg: 'p-6 px-12',
+      xl: 'p-8 px-16'
     },
     display: {
       flex: 'flex',
       block: 'block'
+    },
+    disabled: {
+      true: 'opacity-50 cursor-not-allowed pointer-events-none',
+      false: ''
     },
     align: {
       left: 'text-left justify-start items-center',
@@ -49,10 +54,10 @@ const FillVariants = cva('bg-slate-950 text-white hover:bg-slate-800', {
   defaultVariants: {}
 });
 
-const OutlineVariants = cva('border border-slate-200 hover:bg-slate-100', {
+const OutlineVariants = cva('bg-slate-100 hover:bg-slate-200', {
   variants: {
     active: {
-      true: 'bg-slate-950 text-white hover:bg-slate-800',
+      true: 'bg-slate-950 text-white hover:bg-slate-900',
       false: ''
     }
   },
@@ -73,11 +78,14 @@ export type ButtonProps = {
   children: React.ReactNode;
   variant?: 'outline' | 'fill' | 'ghost';
   active?: boolean;
+  disabled?: boolean;
   size?: VariantProps<typeof ButtonVariants>['size'];
   width?: VariantProps<typeof ButtonVariants>['width'];
   padding?: VariantProps<typeof ButtonVariants>['padding'];
   display?: VariantProps<typeof ButtonVariants>['display'];
   align?: VariantProps<typeof ButtonVariants>['align'];
+  type?: 'button' | 'submit' | 'reset';
+  isLoading?: boolean;
 } & React.HTMLAttributes<HTMLButtonElement>;
 
 // vou te que receber a variante e cada variante ter seu estados
@@ -91,6 +99,9 @@ const Button = ({
   padding,
   display,
   align,
+  disabled,
+  type = 'button',
+  isLoading,
   ...props
 }: ButtonProps) => {
   const variants = {
@@ -103,12 +114,13 @@ const Button = ({
     <button
       className={cn(
         variants[variant]({ active }),
-        ButtonVariants({ size, width, display, padding, align }),
+        ButtonVariants({ size, width, display, padding, align, disabled }),
         className
       )}
+      type={type}
       {...props}
     >
-      {props.children}
+      {isLoading ? <Loader /> : props.children}
     </button>
   );
 };

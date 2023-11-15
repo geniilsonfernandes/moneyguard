@@ -1,6 +1,39 @@
 import { cn } from '@/utils';
 import { NumericFormat } from 'react-number-format';
-import { InputVariants, TextColorVariants } from './styles';
+
+import { cva } from 'class-variance-authority';
+
+export const InputVariants = cva(
+  'h-[56px] w-full border-0 rounded-lg p-4 focus:outline-none bg-transparent',
+  {
+    variants: {
+      state: {
+        default:
+          'bg-slate-100 text-zinc-900 hover:bg-slate-200 focus:border-slate-400 focus:bg-slate-100 placeholder:text-zinc-500 ',
+        error:
+          'bg-red-100 text-red-500 hover:bg-red-200 focus:border-red-400 focus:bg-red-100 placeholder:text-red-500',
+        success:
+          'bg-green-100 text-green-500 hover:bg-green-200 focus:border-green-400 focus:bg-green-100 placeholder:text-green-500'
+      }
+    },
+    defaultVariants: {
+      state: 'default'
+    }
+  }
+);
+
+export const TextColorVariants = cva('', {
+  variants: {
+    state: {
+      default: 'text-zinc-950 ',
+      error: 'text-red-500',
+      success: 'text-green-500'
+    }
+  },
+  defaultVariants: {
+    state: 'default'
+  }
+});
 
 type InputProps = {
   state?: 'default' | 'error' | 'success';
@@ -28,13 +61,17 @@ const Input = ({
   name,
   error,
   helperText,
+  className,
   ...props
 }: InputProps) => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <label
         htmlFor={name}
-        className={cn(TextColorVariants({ state: state }), 'font-medium text-base ')}
+        className={cn(
+          TextColorVariants({ state: error ? 'error' : state }),
+          'font-medium text-base'
+        )}
         aria-label={label}
       >
         {label}
@@ -45,12 +82,13 @@ const Input = ({
         placeholder={placeholder}
         className={cn(
           InputVariants({
-            state: state
-          })
+            state: error ? 'error' : state
+          }),
+          className
         )}
         {...props}
       />
-      {error && <ErrorMessage helperText={helperText} state={state} />}
+      {error && <ErrorMessage helperText={helperText} state={error ? 'error' : state} />}
     </div>
   );
 };
@@ -93,20 +131,20 @@ export const Textarea = ({
 }: TextareaProps) => {
   return (
     <div className="flex flex-col gap-4">
-      <Label name={name} label={label} />
+      <Label name={name} label={label} state={error ? 'error' : state} />
 
       <textarea
         id={name}
         placeholder={placeholder}
         className={cn(
           InputVariants({
-            state: state
+            state: error ? 'error' : state
           }),
-          'resize-none h-[150px] w-full border rounded-lg p-4 focus:outline-none'
+          'resize-none h-[150px] w-full border-0 rounded-lg p-4 focus:outline-none'
         )}
         {...props}
       />
-      {error && <ErrorMessage helperText={helperText} state={state} />}
+      {error && <ErrorMessage helperText={helperText} state={error ? 'error' : state} />}
     </div>
   );
 };
@@ -116,19 +154,36 @@ type ValueInputProps = {
   error?: boolean;
   state?: 'default' | 'error' | 'success';
   onChange?: (value: number | undefined) => void;
+  value?: number;
+  label?: string;
 };
 
-export const ValueInput = ({ error, helperText, state, onChange }: ValueInputProps) => {
+export const ValueInput = ({
+  error,
+  helperText,
+  state,
+  onChange,
+  value,
+  label
+}: ValueInputProps) => {
   return (
     <div className="flex flex-col gap-2">
-      <Label label="Valor" />
+      {label && <Label label={label} state={error ? 'error' : state} />}
       <div className="flex items-center gap-2">
-        <span className="text-zinc-400 text-7xl font-medium">R$</span>
+        <span
+          className={cn(
+            TextColorVariants({ state: error ? 'error' : state }),
+            ' text-7xl font-medium'
+          )}
+        >
+          R$
+        </span>
         <NumericFormat
           className={cn(
             'text-zinc-750 text-7xl font-medium outline-none border-none ml-2 w-full',
-            TextColorVariants({ state: state })
+            TextColorVariants({ state: error ? 'error' : state })
           )}
+          value={value}
           placeholder="0,00"
           thousandSeparator=","
           onValueChange={(value) => {
@@ -136,7 +191,7 @@ export const ValueInput = ({ error, helperText, state, onChange }: ValueInputPro
           }}
         />
       </div>
-      {error && <ErrorMessage helperText={helperText} state={state} />}
+      {error && <ErrorMessage helperText={helperText} state={error ? 'error' : state} />}
     </div>
   );
 };

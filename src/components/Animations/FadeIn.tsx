@@ -17,34 +17,23 @@ const animations = {
   [key: string]: HTMLMotionProps<'div'>;
 };
 
-type RenderIfProps = {
+type FadeInProps = {
   children: React.ReactNode;
-  condition: boolean;
-  className?: string;
-  animation?: 'bounce' | 'fadeIn' | 'none';
-};
+  animation?: keyof typeof animations;
+} & HTMLMotionProps<'div'>;
 
-const RenderIf = ({ children, condition, className, animation = 'fadeIn' }: RenderIfProps) => {
-  if (!condition) {
-    return null;
-  }
-
-  if (animation === 'none') {
-    return <>{children}</>;
-  }
-
+const FadeIn = ({ children, animation = 'fadeIn', ...props }: FadeInProps) => {
   return (
     <AnimatePresence>
       <motion.div
         initial={animations[animation].initial}
         animate={animations[animation].animate}
         exit={animations[animation].exit}
-        className={className}
+        {...props}
       >
-        <div>{children}</div>
+        {children}
       </motion.div>
     </AnimatePresence>
   );
 };
-
-export default RenderIf;
+export default FadeIn;
