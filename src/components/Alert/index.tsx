@@ -30,14 +30,14 @@ const AlertBorderVariants = cva('rounded-lg', {
   }
 });
 
-const AlertVariants = cva('rounded-lg', {
+const AlertVariants = cva('rounded-lg ', {
   variants: {
     variant: {
       danger: 'text-red-500 border border-red-200 bg-red-50',
       success: 'text-green-500 border border-green-200 bg-green-50',
       warning: 'text-yellow-500 border border-yellow-200 bg-yellow-50',
       info: 'text-blue-500 border border-blue-200 bg-blue-50',
-      neutral: 'text-neutral-500 border border-salte-200 bg-salte-50'
+      neutral: 'text-neutral-500 border border-salte-200 bg-white'
     }
   },
   defaultVariants: {
@@ -80,8 +80,7 @@ const Alert = ({ variant, title, body, description, helpButton, onClose }: Alert
           className={cn(
             AlertBorderVariants({ variant }),
             'bg-white rounded-b-lg rounded-t-none p-4 border-x-0 border-b-0 text-neutral-600 text-sm'
-          )}
-        >
+          )}>
           {body}
         </div>
       )}

@@ -257,8 +257,7 @@ const Expense = () => {
               onClick={handleSubmit(onSubmit, onInvalid)}
               disabled={isSubmitting}
               isLoading={isSubmitting}
-              type="submit"
-            >
+              type="submit">
               {isSubmitting ? '...' : 'Confirmar nova entrada'}
             </Button>
             <Confetti width={width} height={height} recycle={false} />

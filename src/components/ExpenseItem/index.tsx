@@ -1,13 +1,14 @@
-import { ChevronDownCircle, ChevronUpCircle } from 'lucide-react';
+import { ChevronDownCircle, ChevronRight, ChevronUpCircle } from 'lucide-react';
 
-import AmountBadge from '../AmounBadge';
 import formatNumber from '@/utils/formatNumber';
+import AmountBadge from '../AmounBadge';
 
 type ExpenseItemProps = {
   type?: 'income' | 'expense';
+  group?: boolean;
 };
 
-const ExpenseItem = ({ type = 'income' }: ExpenseItemProps) => {
+const ExpenseItem = ({ type = 'income', group = true }: ExpenseItemProps) => {
   const expense = formatNumber(100, {
     style: 'currency',
     currency: 'BRL',
@@ -20,11 +21,13 @@ const ExpenseItem = ({ type = 'income' }: ExpenseItemProps) => {
 
   return (
     <button
-      className=" border-b border-slate-100 h-[48px] flex items-center justify-between px-4 last:border-b-0 focus:bg-slate-100 hover:bg-slate-100 cursor-pointer transition-all"
-      tabIndex={0}
-      onClick={handleToView}
-    >
-      <h4 className="text-zinc-950 font-bold flex gap-3">
+      className={[
+        'bg-white py-3 flex items-center justify-between px-4  border-b-[1px]  focus:bg-slate-100 hover:bg-slate-100 cursor-pointer transition-all',
+        !group && 'border-slate-200 last:border-0',
+        group && 'rounded-lg border hover:border-slate-950'
+      ].join(' ')}
+      tabIndex={0}>
+      <h4 className="text-zinc-950 font-normal text-base flex gap-3">
         {type === 'income' ? (
           <ChevronUpCircle className="text-green-500" />
         ) : (
@@ -32,7 +35,14 @@ const ExpenseItem = ({ type = 'income' }: ExpenseItemProps) => {
         )}
         Energia (1/12)
       </h4>
-      <AmountBadge amount={expense} type={type} />
+      <div className="flex items-center  gap-4">
+        <AmountBadge amount={expense} type={type} />
+        <button
+          onClick={handleToView}
+          className="text-zinc-400  hover:bg-slate-200 h-[32px] w-[32px] flex-center rounded-lg">
+          <ChevronRight />
+        </button>
+      </div>
     </button>
   );
 };

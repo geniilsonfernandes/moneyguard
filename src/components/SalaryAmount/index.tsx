@@ -19,7 +19,7 @@ const SalaryAmount = ({ className }: AmoutProps) => {
   return (
     <div className={cn(className, 'flex items-end gap-4')}>
       <div className="flex flex-col">
-        <span className="text-base text-zinc-400">Meu Salário</span>
+        <span className="text-base text-zinc-400">Conta</span>
         <h1 className="text-5xl font-bold mt-2 text-zinc-950">{amount}</h1>
       </div>
       {amountPlus && <AmountBadge amount={amount} type="expense" />}

@@ -1,10 +1,10 @@
-import { Wallet2 as Wallet, PenSquare, ChevronsDownUpIcon, ChevronsUpDown } from 'lucide-react';
+import { Wallet2 as Wallet } from 'lucide-react';
 
 import AmountBadge from '@/components/AmounBadge';
-import formatNumber from '@/utils/formatNumber';
 import useVisibility from '@/hooks/useVisibility';
-import { ButtonSmall } from '../ui/Button';
+import formatNumber from '@/utils/formatNumber';
 import ExpenseItem from '../ExpenseItem';
+import RenderIf from '../ui/RenderIf';
 
 const ExpenseGroup = () => {
   const { visible, toggleVisibility } = useVisibility({
@@ -18,32 +18,27 @@ const ExpenseGroup = () => {
   });
 
   return (
-    <div className="" aria-label="expense card">
-      <div className="bg-slate-50 h-[48px] flex items-center justify-between px-4 rounded-t-lg cursor-pointer hover:bg-slate-100 transition-all ">
+    <div className="shadow-md rounded-lg group" aria-label="expense card">
+      <div
+        className=" bg-white p-2 flex items-center justify-between border border-transparent hover:border-slate-950   rounded-t-lg cursor-pointer transition-all"
+        onClick={toggleVisibility}>
         <h3 className="font-bold text-zinc-950 flex items-center justify-between gap-2">
-          <Wallet size={20} />
+          <span className="w-[38px] h-[38px] bg-slate-100 rounded-lg flex-center">
+            <Wallet size={20} />
+          </span>
           Casa
         </h3>
         <div className="flex items-center">
-          <ButtonSmall
-            className="bg-transparent hover:bg-slate-100"
-            onClick={toggleVisibility}
-            aria-label="show/hide"
-          >
-            {visible ? <ChevronsDownUpIcon size={20} /> : <ChevronsUpDown size={20} />}
-          </ButtonSmall>
-          <ButtonSmall className="bg-transparent hover:bg-slate-100" aria-label="edit">
-            <PenSquare size={20} />
-          </ButtonSmall>
+          <span className="text-zinc-400 text-sm">10 despesas</span>
         </div>
       </div>
-      {visible && (
-        <div className="grid grid-cols-1 border border-slate-100">
-          <ExpenseItem type="expense" />
-          <ExpenseItem type="income" />
+      <RenderIf condition={visible}>
+        <div className="grid grid-cols-1 border-b-[1px] border-t-[1px]  border-t-slate-200">
+          <ExpenseItem type="expense" group={false} />
+          <ExpenseItem type="income" group={false} />
         </div>
-      )}
-      <div className="bg-slate-50 h-[48px] flex items-center justify-between px-4 rounded-b-lg ">
+      </RenderIf>
+      <div className="bg-white h-[48px] flex items-center justify-between px-4 rounded-b-lg text-zinc-400 text-sm transition-all">
         <span>Resumo:</span>
         <AmountBadge amount={totalExpense} />
       </div>

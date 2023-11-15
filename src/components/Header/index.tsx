@@ -106,7 +106,11 @@ const Header = () => {
             <ButtonMenu>
               <Search size={22} />
             </ButtonMenu>
-            <input type="text" className="w-full h-full bg-transparent outline-none" />
+            <input
+              type="text"
+              className="w-full h-full bg-transparent outline-none"
+              placeholder="Pesquisar por nome ou orçamento"
+            />
           </div>
           <div className="col-span-4 flex justify-end gap-4 relative">
             <ButtonMenu>
