@@ -5,7 +5,7 @@ import { cva } from 'class-variance-authority';
 import { cn } from '@/utils';
 
 const ButtonToggleVariants = cva(
-  'rounded-md h-[68px] w-full flex justify-center items-center gap-2 font-medium text-base',
+  'rounded-md h-[56px] w-full flex justify-center items-center gap-2 font-medium text-base',
   {
     variants: {
       active: {

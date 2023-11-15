@@ -1,44 +1,45 @@
-import CircleSVG from '@/components/CircleSVG';
 import SubHeader from '@/components/Layouts/SubHeader';
 import Button from '@/components/ui/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { FieldErrors, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
+import Alert from '@/components/Alert';
+import RenderIf from '@/components/ui/RenderIf';
+import generateHashId from '@/utils/generateHashId';
+import Confetti from 'react-confetti';
 import Budget from './components/Budget';
 import Frequency from './components/Frequency';
 import Info from './components/Info';
 import View from './components/View';
 import { CreateBudgetSteps } from './components/shared';
 import { ExpenseFields, createSchema, defaultValues } from './shared/schema';
-import generateHashId from '@/utils/generateHashId';
 
 const steps = {
   INFO: {
     order: 1,
-    porcentage: 0.75,
-    title: 'Informações da nova entrada',
-    subtitle: 'Nome, valor e nota'
+    percentage: 0.25,
+    title: 'Adicionar informações iniciais',
+    subtitle: 'Forneça o nome, valor e uma nota para a entrada inicial.'
   },
   BUDGET: {
     order: 2,
-    porcentage: 0.5,
-    title: 'Orcamento',
-    subtitle: 'Nome, valor e nota'
+    percentage: 0.5,
+    title: 'Inserir detalhes de orçamento',
+    subtitle: 'Insira o nome, valor e adicione uma nota para o orçamento.'
   },
   FREQUENCY: {
     order: 3,
-    porcentage: 0.25,
-    title: 'Frequência',
-    subtitle: 'Nome, valor e nota'
+    percentage: 0.75,
+    title: 'Estabelecer frequência e data',
+    subtitle: 'Configure a frequência desejada.'
   },
   FINISH: {
     order: 4,
-    porcentage: 0,
-    title: 'Finalizar',
-    subtitle: 'Nome, valor e nota'
+    percentage: 0,
+    title: 'Finalizar processo',
+    subtitle: 'Conclua o processo de entrada de dados.'
   }
 };
 
@@ -62,16 +63,22 @@ const defaultBudgets = [
 
 const Expense = () => {
   const navigate = useNavigate();
-  const { id } = useParams() as { id: string };
+
   const [budgets, setBudgets] = useState(defaultBudgets);
+  const { width, height } = {
+    width: window.innerWidth - 20,
+    height: window.innerHeight
+  };
   const [step, setSteps] = useState<CreateBudgetSteps>('INFO');
 
   const bugetQuantityLimit = 10 - budgets.length;
 
   const {
     control,
-    formState: { errors },
+    handleSubmit,
+    formState: { errors, isSubmitting },
     setValue,
+    clearErrors,
     trigger,
     getValues
   } = useForm<ExpenseFields>({
@@ -80,6 +87,7 @@ const Expense = () => {
     resolver: zodResolver(createSchema)
   });
 
+  const onInvalid = (errors: FieldErrors<ExpenseFields>) => console.error(errors);
   const goBack = () => {
     // validar se posso voltar
     navigate(`/`);
@@ -87,30 +95,23 @@ const Expense = () => {
 
   const changeStep = () => {
     if (step === 'INFO') {
-      //  VALIDAR SE PODE AVANÇAR
       trigger(['name', 'value']).then((isValid) => {
         if (isValid) {
-          console.log('go to budget', getValues());
-
           setSteps('BUDGET');
           return;
         }
       });
-      console.log(getValues(), errors);
     } else if (step === 'BUDGET') {
-      console.log('go to budget', getValues());
-      setSteps('FREQUENCY');
+      trigger(['budget.name']).then((isValid) => {
+        if (isValid) {
+          setSteps('FREQUENCY');
+        }
+      });
     } else if (step === 'FREQUENCY') {
-      console.log(getValues(), errors);
       setSteps('FINISH');
     } else if (step === 'FINISH') {
       /// tentar salvar
     }
-
-    // window.scrollTo({
-    //   top: 0,
-    //   behavior: 'smooth'
-    // });
   };
 
   const previousStep = () => {
@@ -140,73 +141,129 @@ const Expense = () => {
     };
 
     setValue('budget', createNewBudget);
+    clearErrors('budget');
     setBudgets([...budgets, createNewBudget]);
-    console.log(getValues(), errors);
+  };
+
+  const onSubmit = (data: ExpenseFields) => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(data);
+        resolve(true);
+      }, 2000);
+    });
   };
 
   return (
-    <div className="bg-white h-screen">
-      <SubHeader className="h-full flex justify-between items-end py-8">
-        <div className="h-full flex flex-col items-start justify-between ">
-          <Button
-            variant="outline"
-            size="md"
-            onClick={goBack}
-            display="flex"
-            align="center"
-            padding="none"
-          >
-            <ArrowLeft size={18} />
-          </Button>
-          <h1 className="font-bold text-zinc-950 text-2xl">Adicionar nova entrada {id}</h1>
-        </div>
-        <div className="flex items-center gap-6  sm:min-w-[350px]">
-          <div className="w-[70px] h-[70px] bg-zinc-950 rounded-full text-zinc-50 text-2xl flex items-center justify-center relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ">
-              <CircleSVG percentage={steps[step].porcentage} />
+    <div className="bg-white">
+      <SubHeader
+        goBack={goBack}
+        title="Adicionar nova entrada"
+        subTitle="Cadastre uma nova entrada para organizar seus gastos"
+        className="grid grid-cols-6 gap-8"
+      />
+      <div className="grid sm:grid grid-cols-6 gap-8 container py-8">
+        <RenderIf condition={step !== 'FINISH'} animation="none">
+          <div className="col-span-6 sm:col-span-4 flex flex-col justify-between min-h-[475px]">
+            <div className="flex flex-col my-4 mb-8">
+              <h2 className="font-semibold text-zinc-950 text-1xl">{steps[step].title}</h2>
+              <p className="text-zinc-500 text-sm mt-1">{steps[step].subtitle}</p>
+
+              <div className="w-full h-[4px] bg-slate-100 mt-4">
+                <div
+                  className="h-full bg-slate-500 transition-all"
+                  style={{
+                    width: `${steps[step].percentage * 100}%`
+                  }}
+                />
+              </div>
             </div>
-            {steps[step].order}
-            <span className="text-zinc-500 relative top-[3px] text-base">/4</span>
+            {step === 'INFO' && <Info errors={errors} control={control} />}
+            {step === 'BUDGET' && (
+              <Budget
+                errors={errors}
+                control={control}
+                budgets={budgets}
+                onCreateBuget={handleCreateBudget}
+                bugetQuantityLimit={bugetQuantityLimit}
+              />
+            )}
+            {step === 'FREQUENCY' && (
+              <Frequency errors={errors} control={control} setValue={setValue} />
+            )}
+
+            <div className="flex justify-end items-center pt-8 ">
+              <div className="flex gap-2">
+                <Button variant="ghost" onClick={previousStep}>
+                  {step === 'INFO' ? 'Cancelar' : 'Etapa anterior'}
+                </Button>
+                <Button variant="fill" onClick={changeStep}>
+                  Avançar
+                </Button>
+              </div>
+            </div>
           </div>
-          <div>
-            <h1 className="font-bold text-zinc-950 text-2xl">{steps[step].title}</h1>
-            <span className="text-zinc-400 text-base">{steps[step].subtitle}</span>
-          </div>
-        </div>
-      </SubHeader>
-      <div className="container py-8">
-        <div className="min-h-[200px]">
-          {step === 'INFO' && <Info erros={errors} control={control} />}
-          {step === 'BUDGET' && (
-            <Budget
-              erros={errors}
-              control={control}
-              budgets={budgets}
-              onCreateBuget={handleCreateBudget}
-              bugetQuantityLimit={bugetQuantityLimit}
+          <div className="col-span-6 sm:col-span-2">
+            <Alert
+              variant="info"
+              title="Precisando de ajuda?"
+              helpButton="Saber mais"
+              onHelpClick={() => {}}
             />
-          )}
-          {step === 'FREQUENCY' && (
-            <Frequency erros={errors} control={control} setValue={setValue} />
-          )}
-          {step === 'FINISH' && <View />}
-        </div>
-
-        <div className="flex justify-between items-center pt-24">
-          <div>
-            <span className="uppercase text-zinc-950 font-normal">Resumo:</span>
-            <span className="uppercase text-zinc-950 text-lg font-bold ml-4">R$ {0}</span>
           </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={previousStep}>
-              {step === 'INFO' ? 'Cancelar' : 'Voltar'}
-            </Button>
+        </RenderIf>
+        <RenderIf condition={step === 'FINISH'} animation="none">
+          <div className="col-span-6 sm:col-start-2 sm:col-end-6 pt-8 ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pb-8">
+              <div className="py-8 sm:py-32">
+                <div className="sm:max-w-[440px] text-center sm:text-left">
+                  <h1 className="text-3xl font-bold text-zinc-950">Tudo pronto!</h1>
+                  <h1 className="text-3xl font-bold mb-4 text-zinc-950">
+                    Veja ao lado os detalhes da sua entrada antes de confirmar
+                  </h1>
+                  <p className="text-zinc-500 mb-8">
+                    Você pode clicar no botão abaixo para salvar ou se esqueceu algo e só voltar ao
+                    passo anterior
+                  </p>
+                </div>
+                <div className="flex gap-2 justify-center sm:justify-start">
+                  <Button variant="outline" onClick={previousStep}>
+                    Editar entrada
+                  </Button>
+                </div>
+              </div>
+              <View expense={getValues()} />
+            </div>
+            <RenderIf condition={Object.keys(errors).length > 0} className="my-4">
+              <Alert
+                variant="danger"
+                title="Atenção!"
+                description="alguns campos precisam ser preenchidos corretamente"
+                body={
+                  <div>
+                    {Object.values(errors).map((error) => (
+                      <p key={error.message}>
+                        {error.root?.type} {error.message}
+                      </p>
+                    ))}
+                  </div>
+                }
+              />
+            </RenderIf>
 
-            <Button variant="fill" onClick={changeStep}>
-              {step === 'FINISH' ? 'Salvar' : 'Avançar'}
+            <Button
+              variant="fill"
+              width="full"
+              onClick={handleSubmit(onSubmit, onInvalid)}
+              disabled={isSubmitting}
+              isLoading={isSubmitting}
+              type="submit"
+            >
+              {isSubmitting ? '...' : 'Confirmar nova entrada'}
             </Button>
+            <Confetti width={width} height={height} recycle={false} />
           </div>
-        </div>
+        </RenderIf>
       </div>
     </div>
   );

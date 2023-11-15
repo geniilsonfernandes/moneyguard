@@ -1,3 +1,4 @@
+import Loader from '@/components/Loader';
 import { cn } from '@/utils';
 import { cva, VariantProps } from 'class-variance-authority';
 
@@ -15,10 +16,10 @@ const ButtonVariants = cva('', {
     },
     padding: {
       none: '',
-      sm: 'p-2',
-      md: 'p-4',
-      lg: 'p-6',
-      xl: 'p-8'
+      sm: 'p-2 px-4',
+      md: 'p-4 px-8',
+      lg: 'p-6 px-12',
+      xl: 'p-8 px-16'
     },
     display: {
       flex: 'flex',
@@ -53,10 +54,10 @@ const FillVariants = cva('bg-slate-950 text-white hover:bg-slate-800', {
   defaultVariants: {}
 });
 
-const OutlineVariants = cva('border border-slate-200 hover:bg-slate-100', {
+const OutlineVariants = cva('bg-slate-100 hover:bg-slate-200', {
   variants: {
     active: {
-      true: 'bg-slate-950 text-white hover:bg-slate-800',
+      true: 'bg-slate-950 text-white hover:bg-slate-900',
       false: ''
     }
   },
@@ -83,6 +84,8 @@ export type ButtonProps = {
   padding?: VariantProps<typeof ButtonVariants>['padding'];
   display?: VariantProps<typeof ButtonVariants>['display'];
   align?: VariantProps<typeof ButtonVariants>['align'];
+  type?: 'button' | 'submit' | 'reset';
+  isLoading?: boolean;
 } & React.HTMLAttributes<HTMLButtonElement>;
 
 // vou te que receber a variante e cada variante ter seu estados
@@ -97,6 +100,8 @@ const Button = ({
   display,
   align,
   disabled,
+  type = 'button',
+  isLoading,
   ...props
 }: ButtonProps) => {
   const variants = {
@@ -112,9 +117,10 @@ const Button = ({
         ButtonVariants({ size, width, display, padding, align, disabled }),
         className
       )}
+      type={type}
       {...props}
     >
-      {props.children}
+      {isLoading ? <Loader /> : props.children}
     </button>
   );
 };

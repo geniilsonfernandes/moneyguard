@@ -1,6 +1,39 @@
 import { cn } from '@/utils';
 import { NumericFormat } from 'react-number-format';
-import { InputVariants, TextColorVariants } from './styles';
+
+import { cva } from 'class-variance-authority';
+
+export const InputVariants = cva(
+  'h-[56px] w-full border-0 rounded-lg p-4 focus:outline-none bg-transparent',
+  {
+    variants: {
+      state: {
+        default:
+          'bg-slate-100 text-zinc-900 hover:bg-slate-200 focus:border-slate-400 focus:bg-slate-100 placeholder:text-zinc-500 ',
+        error:
+          'bg-red-100 text-red-500 hover:bg-red-200 focus:border-red-400 focus:bg-red-100 placeholder:text-red-500',
+        success:
+          'bg-green-100 text-green-500 hover:bg-green-200 focus:border-green-400 focus:bg-green-100 placeholder:text-green-500'
+      }
+    },
+    defaultVariants: {
+      state: 'default'
+    }
+  }
+);
+
+export const TextColorVariants = cva('', {
+  variants: {
+    state: {
+      default: 'text-zinc-950 ',
+      error: 'text-red-500',
+      success: 'text-green-500'
+    }
+  },
+  defaultVariants: {
+    state: 'default'
+  }
+});
 
 type InputProps = {
   state?: 'default' | 'error' | 'success';
@@ -28,15 +61,16 @@ const Input = ({
   name,
   error,
   helperText,
+  className,
   ...props
 }: InputProps) => {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <label
         htmlFor={name}
         className={cn(
           TextColorVariants({ state: error ? 'error' : state }),
-          'font-medium text-base '
+          'font-medium text-base'
         )}
         aria-label={label}
       >
@@ -49,7 +83,8 @@ const Input = ({
         className={cn(
           InputVariants({
             state: error ? 'error' : state
-          })
+          }),
+          className
         )}
         {...props}
       />
@@ -105,7 +140,7 @@ export const Textarea = ({
           InputVariants({
             state: error ? 'error' : state
           }),
-          'resize-none h-[150px] w-full border rounded-lg p-4 focus:outline-none'
+          'resize-none h-[150px] w-full border-0 rounded-lg p-4 focus:outline-none'
         )}
         {...props}
       />

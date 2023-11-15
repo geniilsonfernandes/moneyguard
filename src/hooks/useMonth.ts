@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br'; // Importe o idioma pt-BR
+import { useState } from 'react';
 
 dayjs.locale('pt-br'); // Configure o idioma para pt-BR
 
@@ -22,12 +22,6 @@ function useMonth() {
     setChanged(false);
     setCurrentMonth(dayjs());
   };
-
-  useEffect(() => {
-    // This effect will run when the component using the hook mounts
-    // and when the currentMonth value changes.
-    console.log('Current Month:', currentMonth.format('MMMM YYYY'));
-  }, [currentMonth]);
 
   return {
     currentMonth: currentMonth,

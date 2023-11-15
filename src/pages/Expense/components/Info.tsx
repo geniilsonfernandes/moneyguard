@@ -2,18 +2,20 @@ import ExpenseToggle from '@/components/ExpenseToggle';
 import Input, { Textarea, ValueInput } from '@/components/Input';
 import Step from '@/components/ui/Step';
 
+import Alert from '@/components/Alert';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { ExpenseFields, ExpenseInfoFields } from '../shared/schema';
+import { ExpenseFields } from '../shared/schema';
+import RenderIf from '@/components/ui/RenderIf';
 
 type ExpenseToggleProps = {
-  erros?: FieldErrors<Partial<ExpenseInfoFields>>;
+  errors?: FieldErrors<ExpenseFields>;
   control?: Control<ExpenseFields>;
 };
 
-const Info = ({ erros, control }: ExpenseToggleProps) => {
+const Info = ({ errors, control }: ExpenseToggleProps) => {
   return (
     <Step>
-      <div className="pb-8 space-y-8">
+      <div className="space-y-8">
         <Controller
           control={control}
           name="type"
@@ -28,8 +30,8 @@ const Info = ({ erros, control }: ExpenseToggleProps) => {
           render={({ field: { onChange, value } }) => (
             <ValueInput
               onChange={(changedValue = 0) => onChange(changedValue)}
-              error={!!erros?.value}
-              helperText={erros?.value?.message}
+              error={!!errors?.value}
+              helperText={errors?.value?.message}
               value={value}
             />
           )}
@@ -48,8 +50,8 @@ const Info = ({ erros, control }: ExpenseToggleProps) => {
               onChange={({ target }) => {
                 onChange(target.value);
               }}
-              error={!!erros?.name}
-              helperText={erros?.name?.message}
+              error={!!errors?.name}
+              helperText={errors?.name?.message}
             />
           )}
         />
@@ -64,11 +66,36 @@ const Info = ({ erros, control }: ExpenseToggleProps) => {
               state="default"
               value={value}
               onChange={({ target }) => onChange(target.value)}
-              error={!!erros?.note}
+              error={!!errors?.note}
               helperText={value}
             />
           )}
         />
+        <Alert
+          variant="info"
+          title="Precisando de ajuda?"
+          description="Selecione entre entrada ou saída e adicione os detalhes da sua entrada"
+          helpButton="Saber mais"
+          onHelpClick={() => {}}
+        />
+        <RenderIf condition={!!errors?.name || !!errors?.value}>
+          <Alert
+            variant="danger"
+            title="Atenção!"
+            description="Preencha todos os dados para prosseguir"
+            body={
+              <div>
+                <h5>Campos obrigatórios</h5>
+                <RenderIf condition={!!errors?.name}>
+                  <p>- {errors?.name?.message}</p>
+                </RenderIf>
+                <RenderIf condition={!!errors?.value}>
+                  <p>- {errors?.value?.message}</p>
+                </RenderIf>
+              </div>
+            }
+          />
+        </RenderIf>
       </div>
     </Step>
   );
