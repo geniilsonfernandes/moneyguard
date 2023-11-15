@@ -2,17 +2,18 @@ type StepProps = {
   children: React.ReactNode;
   name?: string;
   show?: boolean;
+  className?: string;
 };
 
-const Step = ({ children, name, show = true }: StepProps) => {
+const Step = ({ children, name, show = true, className }: StepProps) => {
   if (!show) {
     return null;
   }
 
   return (
-    <div className="py-12 space-y-2 fadeIn" aria-label={name}>
-      <h3 className="text-zinc-950 font-normal">{name}</h3>
-      <div className="py-8">{children}</div>
+    <div className={['space-y-2', className].join(' ')} aria-label={name}>
+      {name && <h3 className="text-zinc-950 font-normal mb-1">{name}</h3>}
+      <div className="relative">{children}</div>
     </div>
   );
 };

@@ -11,7 +11,7 @@ type useVisibilityProps = {
   defaultVisibility?: boolean;
 };
 
-const useVisibility = ({ defaultVisibility = false }: useVisibilityProps): useVisibility => {
+const useVisibility = ({ defaultVisibility = false }: useVisibilityProps = {}): useVisibility => {
   const [visible, setVisible] = useState(defaultVisibility);
 
   const toggleVisibility = () => {

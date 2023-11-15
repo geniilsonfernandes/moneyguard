@@ -16,12 +16,12 @@ const MonthControl = () => {
   };
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 items-center">
       <div className="flex justify-between items-center ">
         <ButtonSmall onClick={prev}>
           <ChevronLeft />
         </ButtonSmall>
-        <span className="min-w-[200px] text-center text-zinc-50">{monthFormatted}</span>
+        <span className="min-w-[200px] text-center text-zinc-50 capitalize">{monthFormatted}</span>
         <ButtonSmall onClick={next}>
           <ChevronRight />
         </ButtonSmall>

@@ -6,7 +6,7 @@ const AmountBadge = ({ amount, type = 'view' }: AmounBadgeProps) => {
   return (
     <div
       className={[
-        'text-base text-green-400 font-semibold',
+        'text-sm text-green-400 font-semibold',
         type === 'view' ? 'text-zinc-500' : type === 'income' ? 'text-green-400' : 'text-red-400'
       ].join(' ')}>
       {type === 'view' ? '' : type === 'income' ? '+ ' : '- '}
