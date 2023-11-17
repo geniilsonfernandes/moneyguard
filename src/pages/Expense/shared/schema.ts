@@ -16,12 +16,25 @@ export type BudgetFields = {
   };
 };
 
+export enum PeriodicityEnum {
+  onlyMode = 'onlyMode',
+  monthMode = 'monthMode',
+  fixedMode = 'fixedMode',
+  fixed = 'fixed',
+  repeat = 'repeat',
+  only = 'only'
+}
+
+export enum PaymentEnum {
+  all = 'all',
+  parcel = 'parcel'
+}
+
 export type FrequencyFields = {
-  mode: 'onlyMode' | 'monthMode';
+  periodicityMode: keyof typeof PeriodicityEnum;
+  paymentMode: keyof typeof PaymentEnum;
   date?: Date;
   duration?: number;
-  customDuration?: number;
-  durationMode?: 'fixed' | 'custom';
 };
 
 export type ExpenseFields = ExpenseInfoFields & BudgetFields & FrequencyFields;
@@ -29,14 +42,13 @@ export type ExpenseFields = ExpenseInfoFields & BudgetFields & FrequencyFields;
 export const defaultValues: ExpenseFields = {
   type: 'expense',
   value: 0,
+  paymentMode: PaymentEnum.parcel,
+  periodicityMode: PeriodicityEnum.only,
   name: '',
   note: '',
-  budget: {} as BudgetFields['budget'],
-  mode: 'onlyMode',
   date: dayjs().toDate(),
-  duration: 3,
-  customDuration: 1,
-  durationMode: 'fixed'
+  budget: {} as BudgetFields['budget'],
+  duration: 3
 };
 
 export const createSchema = z.object({
@@ -48,7 +60,8 @@ export const createSchema = z.object({
     .refine((value) => value > 0, {
       message: 'O valor deve ser maior que 0'
     }),
-  mode: z.string(),
+  paymentMode: z.string(),
+  periodicityMode: z.string(),
   name: z
     .string({
       required_error: 'Nome obrigatório',
@@ -58,17 +71,6 @@ export const createSchema = z.object({
       message: 'O nome não pode ser vazio'
     }),
   note: z.string().trim(),
-  budget: z.nullable(
-    z.object({
-      name: z
-        .string({
-          required_error: 'O orçamento deve ser informado'
-        })
-        .refine((value) => value.trim().length > 0, {
-          message: 'O orçamento não pode ser vazio'
-        })
-    })
-  ),
   date: z
     .date({
       required_error: 'Data de inicio deve ser informada',
@@ -80,7 +82,16 @@ export const createSchema = z.object({
     .transform((value) => {
       return dayjs(value).toDate();
     }),
-  duration: z.optional(z.number()),
-  durationMode: z.optional(z.string()),
-  customDuration: z.optional(z.number())
+  budget: z.nullable(
+    z.object({
+      name: z
+        .string({
+          required_error: 'O orçamento deve ser informado'
+        })
+        .refine((value) => value.trim().length > 0, {
+          message: 'O orçamento não pode ser vazio'
+        })
+    })
+  ),
+  duration: z.optional(z.number())
 });

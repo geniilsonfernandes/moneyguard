@@ -25,12 +25,11 @@ const Modal = ({ children, title, footer, isOpen, onClose, mode = 'full' }: Moda
                 size="md"
                 padding="none"
                 display="flex"
-                onClick={onClose}
-              >
+                onClick={onClose}>
                 <X size={16} />
               </Button>
             </Dialog.Title>
-            <Dialog.Description className="py-14 container">{children}</Dialog.Description>
+            <Dialog.Description className="py-8 container">{children}</Dialog.Description>
             <div className="container">{footer}</div>
           </Dialog.Content>
         </Dialog.Portal>
@@ -51,8 +50,7 @@ const Modal = ({ children, title, footer, isOpen, onClose, mode = 'full' }: Moda
               size="md"
               padding="none"
               display="flex"
-              onClick={onClose}
-            >
+              onClick={onClose}>
               <X size={16} />
             </Button>
           </Dialog.Title>

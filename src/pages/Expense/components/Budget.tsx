@@ -89,8 +89,7 @@ const Budget = ({
                   size="xl"
                   key={buget.name}
                   active={buget.id === value?.id}
-                  onClick={() => onChange(buget)}
-                >
+                  onClick={() => onChange(buget)}>
                   <div className="flex items-center text-base justify-between">
                     <div className="flex flex-col justify-start items-start">
                       {buget.name}
@@ -107,8 +106,7 @@ const Budget = ({
             variant="outline"
             size="xl"
             onClick={() => createBugetModal.onShow()}
-            disabled={bugetQuantityLimit <= 0}
-          >
+            disabled={bugetQuantityLimit <= 0}>
             <div className="flex items-center text-base justify-between">
               <div className="flex flex-col justify-start items-start">
                 {bugetQuantityLimit <= 0
@@ -153,8 +151,7 @@ const Budget = ({
           <Button width="full" onClick={() => createBuget()} disabled={!isValid}>
             Criar novo orçamento
           </Button>
-        }
-      >
+        }>
         <div>
           <Controller
             control={budgetControl}

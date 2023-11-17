@@ -3,6 +3,7 @@ import formatNumber from '@/utils/formatNumber';
 import dayjs from 'dayjs';
 import { ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import { ExpenseFields } from '../shared/schema';
+import calculateValue from '@/utils/calculateValue';
 
 type ViewProps = {
   expense: ExpenseFields;
@@ -53,17 +54,14 @@ const View = ({ expense }: ViewProps) => {
             </div>
             <div>
               <span className="text-zinc-500">Recorrência:</span>
-              {expense.mode === 'monthMode' ? (
-                <>
-                  <h1 className="text-zinc-950 text-base">
-                    {`Mensal ${
-                      expense.durationMode === 'custom' ? expense.customDuration : expense.duration
-                    } mêses`}
-                  </h1>
-                </>
-              ) : (
-                <h1 className="text-zinc-950 text-base">Entrada Única</h1>
-              )}
+              <h1>
+                {calculateValue(
+                  expense.duration || 0,
+                  expense.paymentMode,
+                  expense.periodicityMode,
+                  expense.value
+                )}
+              </h1>
             </div>
             <hr className="my-4 border-slate-200 border-dashed" />
             <div>

@@ -72,8 +72,7 @@ const Input = ({
           TextColorVariants({ state: error ? 'error' : state }),
           'font-medium text-base'
         )}
-        aria-label={label}
-      >
+        aria-label={label}>
         {label}
       </label>
       <input
@@ -113,8 +112,7 @@ const Label = ({ label, name, state }: labelProps) => {
     <label
       htmlFor={name}
       className={cn(TextColorVariants({ state: state }), 'font-medium text-base ')}
-      aria-label={label}
-    >
+      aria-label={label}>
       {label}
     </label>
   );
@@ -174,8 +172,7 @@ export const ValueInput = ({
           className={cn(
             TextColorVariants({ state: error ? 'error' : state }),
             ' text-7xl font-medium'
-          )}
-        >
+          )}>
           R$
         </span>
         <NumericFormat

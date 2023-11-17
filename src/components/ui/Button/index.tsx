@@ -118,8 +118,7 @@ const Button = ({
         className
       )}
       type={type}
-      {...props}
-    >
+      {...props}>
       {isLoading ? <Loader /> : props.children}
     </button>
   );
