@@ -198,7 +198,9 @@ const Expense = () => {
                   {step === 'INFO' ? 'Cancelar' : 'Etapa anterior'}
                 </Button>
                 <Button variant="fill" onClick={changeStep}>
-                  Avançar
+                  {
+                    step === 'FREQUENCY' ? 'Confirmar e salvar' : 'Proxima etapa'
+                  }
                 </Button>
               </div>
             </div>
@@ -208,7 +210,7 @@ const Expense = () => {
               variant="info"
               title="Precisando de ajuda?"
               helpButton="Saber mais"
-              onHelpClick={() => {}}
+              onHelpClick={() => { }}
             />
           </div>
         </RenderIf>
@@ -219,11 +221,10 @@ const Expense = () => {
                 <div className="sm:max-w-[440px] text-center sm:text-left">
                   <h1 className="text-3xl font-bold text-zinc-950">Tudo pronto!</h1>
                   <h1 className="text-3xl font-bold mb-4 text-zinc-950">
-                    Veja ao lado os detalhes da sua entrada antes de confirmar
+                    Veja ao lado os detalhes da sua nova entrada.
                   </h1>
                   <p className="text-zinc-500 mb-8">
-                    Você pode clicar no botão abaixo para salvar ou se esqueceu algo e só voltar ao
-                    passo anterior
+                    Use o botão abaixo para voltar a página inicial
                   </p>
                 </div>
                 <div className="flex gap-2 justify-center sm:justify-start">

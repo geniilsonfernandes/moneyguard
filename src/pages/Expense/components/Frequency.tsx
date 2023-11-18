@@ -7,8 +7,6 @@ import Step from '@/components/ui/Step';
 import useVisibility from '@/hooks/useVisibility';
 import calculateValue from '@/utils/calculateValue';
 import dayjs from 'dayjs';
-import { Banknote, ChevronDown, ChevronUp, Diff, Repeat } from 'lucide-react';
-import { useState } from 'react';
 import {
   Control,
   Controller,
@@ -17,111 +15,13 @@ import {
   useController,
   useWatch
 } from 'react-hook-form';
-import { ExpenseFields, PaymentEnum, PeriodicityEnum } from '../shared/schema';
+import { ExpenseFields, PeriodicityEnum } from '../shared/schema';
+import CounterPeriocity from './CounterPeriocity';
+import PayMethod from './PayMethod';
+import Periodicity from './Periodicity';
 
-type PayMethodProps = {
-  onChange?: (value: keyof typeof PaymentEnum) => void;
-  value?: keyof typeof PaymentEnum;
-};
 
-const PayMethod = ({ onChange, value = 'all' }: PayMethodProps) => {
-  const [payment, setPayment] = useState<keyof typeof PaymentEnum>(value);
 
-  const handleChange = (value: keyof typeof PaymentEnum) => {
-    if (onChange) {
-      onChange(value);
-    }
-    setPayment(value);
-  };
-
-  return (
-    <div className="flex justify-between ">
-      <div className="flex items-center gap-2">
-        <Banknote /> Forma de Pagamento
-      </div>
-      <div className="flex bg-slate-100 rounded-lg text-zinc-950 p-1">
-        <button
-          className={[
-            'px-4 h-12 flex items-center gap-2  rounded-lg',
-            payment === 'all' && 'bg-white'
-          ].join(' ')}
-          onClick={() => handleChange('all')}>
-          Valor Total
-        </button>
-        <button
-          className={[
-            'px-4 h-12 flex items-center gap-2  rounded-lg',
-            payment === 'parcel' && 'bg-white'
-          ].join(' ')}
-          onClick={() => handleChange('parcel')}>
-          Valor Parcela
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Periodicity = () => {
-  return (
-    <div className="flex justify-between pointer-events-none opacity-20">
-      <div className="flex items-center gap-2">
-        <Repeat /> Periodicidade
-      </div>
-      <div className="flex bg-slate-100 rounded-lg text-zinc-950">
-        <button className="px-4 h-12 flex items-center gap-2  rounded-lg">
-          Mensal
-          <ChevronDown />
-        </button>
-      </div>
-    </div>
-  );
-};
-
-type CounterPeriocityProps = {
-  onChange?: (value: number) => void;
-  value?: number;
-};
-
-const CounterPeriocity = ({ onChange, value }: CounterPeriocityProps) => {
-  const [counter, setCounter] = useState(value || 1);
-
-  const changeCounter = (value: number) => {
-    if (onChange) {
-      onChange(value);
-    }
-    setCounter(value);
-  };
-
-  const increment = () => {
-    changeCounter(counter + 1);
-  };
-
-  const decrement = () => {
-    if (counter === 1) {
-      changeCounter(1);
-    }
-    if (counter > 1) {
-      changeCounter(counter - 1);
-    }
-  };
-
-  return (
-    <div className="flex justify-between">
-      <div className="flex items-center gap-2">
-        <Diff /> Quantidade
-      </div>
-      <div className="flex bg-slate-100 rounded-lg text-zinc-950">
-        <button className="w-12 h-12 flex-center  rounded-lg" onClick={decrement}>
-          <ChevronDown />
-        </button>
-        <div className="px-4 h-12 flex-center  bg-slate-50">{counter}</div>
-        <button className="w-12 h-12 flex-center  rounded-lg" onClick={increment}>
-          <ChevronUp />
-        </button>
-      </div>
-    </div>
-  );
-};
 
 type FrequencyProps = {
   errors?: FieldErrors<ExpenseFields>;
@@ -207,7 +107,7 @@ const Frequency = ({ control }: FrequencyProps) => {
           helpertext="escolha o modo de parcelamento"
           name="month-mode"
           condition={periodicityControl.value === PeriodicityEnum.repeat}>
-          <div className="space-y-8">
+          <div className="space-y-4">
             <Controller
               control={control}
               name="duration"
@@ -248,7 +148,7 @@ const Frequency = ({ control }: FrequencyProps) => {
         title="ficou com duvidas?"
         description="Selecione o tipo de frequência da sua entrada, mensal ou uma entrada unica."
         helpButton="Como funciona"
-        onHelpClick={() => {}}
+        onHelpClick={() => { }}
       />
     </div>
   );

@@ -3,7 +3,7 @@ import Input, { Textarea, ValueInput } from '@/components/Input';
 import Step from '@/components/ui/Step';
 
 import Alert from '@/components/Alert';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { Control, Controller, FieldErrors, useController } from 'react-hook-form';
 import { ExpenseFields } from '../shared/schema';
 import RenderIf from '@/components/ui/RenderIf';
 import { Calculator as CalculatorIcon } from 'lucide-react';
@@ -18,6 +18,10 @@ type ExpenseToggleProps = {
 
 const Info = ({ errors, control }: ExpenseToggleProps) => {
   const calculate = useVisibility();
+  const valueControl = useController({
+    name: 'value',
+    control
+  });
 
   return (
     <Step>
@@ -91,7 +95,7 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
           title="Precisando de ajuda?"
           description="Selecione entre entrada ou saída e adicione os detalhes da sua entrada"
           helpButton="Saber mais"
-          onHelpClick={() => {}}
+          onHelpClick={() => { }}
         />
         <RenderIf condition={!!errors?.name || !!errors?.value}>
           <Alert
@@ -117,7 +121,13 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
         title="Calculadora"
         isOpen={calculate.visible}
         onClose={calculate.onHidden}>
-        <Calculator />
+        <Calculator
+          onCancel={() => calculate.onHidden()}
+          onComplete={(result) => {
+            calculate.onHidden()
+            valueControl.field.onChange(result);
+          }}
+        />
       </Modal>
     </Step>
   );
