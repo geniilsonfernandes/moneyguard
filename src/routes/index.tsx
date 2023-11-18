@@ -1,4 +1,6 @@
+import ErrorPage from '@/components/ErrorPage';
 import Header from '@/components/Header';
+import NotFound from '@/components/NotFound';
 import Dashboard from '@/pages/Dashboard';
 import Expense from '@/pages/Expense';
 import {
@@ -41,7 +43,7 @@ export function PrivateRoutes(): {
       {
         path: '/',
         element: <Dashboard />,
-        errorElement: <div>Not found</div>
+        errorElement: <ErrorPage />
       },
       { path: '/expense/new', element: <Expense /> },
       { path: '/expense/:id', element: <Expense /> },
@@ -53,7 +55,7 @@ export function PrivateRoutes(): {
           { path: '/settings/2', element: <div>settings 2</div> }
         ]
       },
-      { path: '*', element: <Navigate to="/" replace /> }
+      { path: '*', element: <NotFound /> }
     ]
   };
 }

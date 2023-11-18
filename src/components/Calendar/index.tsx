@@ -72,8 +72,6 @@ const Calendar = ({ width, onClose, onChange, value = new Date() }: CalendarProp
     [onChange]
   );
 
-  console.log({ selectedDay, value });
-
   return (
     <div
       className={[

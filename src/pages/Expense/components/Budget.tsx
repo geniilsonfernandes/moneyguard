@@ -1,15 +1,20 @@
+import Alert from '@/components/Alert';
 import Input from '@/components/Input';
+import Skeleton from '@/components/Skeleton';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
+import RenderIf from '@/components/ui/RenderIf';
 import Step from '@/components/ui/Step';
 import useVisibility from '@/hooks/useVisibility';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { createBudget, getBudgets } from '@/store/reducers/budgets';
+import generateHashId from '@/utils/generateHashId';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, Wallet } from 'lucide-react';
+import { Wallet } from 'lucide-react';
+import { useEffect } from 'react';
 import { Control, Controller, FieldErrors, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ExpenseFields } from '../shared/schema';
-import Alert from '@/components/Alert';
-import RenderIf from '@/components/ui/RenderIf';
 
 type BudgetProps = {
   errors?: FieldErrors<ExpenseFields>;
@@ -32,18 +37,11 @@ const createBudgetSchema = z.object({
     })
 });
 
-const Budget = ({
-  control,
-  budgets,
-  onCreateBuget,
-  bugetQuantityLimit,
-  errors: budgetErrors
-}: BudgetProps) => {
+const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
   const {
     control: budgetControl,
     trigger,
     getValues,
-
     setError,
     reset,
     formState: { errors, isValid }
@@ -51,8 +49,11 @@ const Budget = ({
     resolver: zodResolver(createBudgetSchema),
     mode: 'onChange'
   });
+  const dispatch = useAppDispatch();
+  const { data: budgets, error, loading } = useAppSelector((state) => state.budgets);
   const createBugetModal = useVisibility({});
 
+  const bugetQuantityLimit = 10 - budgets.length;
   const createBuget = () => {
     trigger(['budget_name']).then((isValid) => {
       if (isValid) {
@@ -67,40 +68,66 @@ const Budget = ({
           return;
         }
 
-        onCreateBuget(getValues().budget_name);
+        dispatch(
+          createBudget({
+            id: generateHashId(),
+            name,
+            value: 400
+          })
+        );
         createBugetModal.onHidden();
         reset();
       }
     });
   };
 
+  useEffect(() => {
+    dispatch(getBudgets());
+  }, [dispatch]);
+
   return (
     <Step>
       <div className="min-h-[375px] space-y-8">
+        {error && (
+          <Alert
+            variant="danger"
+            title="Ocorreu um erro ao receber os orcamentos"
+            description="Tente novamente mais tarde"
+          />
+        )}
+        {loading && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 pb-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Skeleton key={i} className="h-20" />
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 pb-8">
-          {budgets.map((buget) => (
-            <Controller
-              control={control}
-              name="budget"
-              key={buget.id}
-              render={({ field: { onChange, value } }) => (
-                <Button
-                  variant="outline"
-                  size="xl"
-                  key={buget.name}
-                  active={buget.id === value?.id}
-                  onClick={() => onChange(buget)}>
-                  <div className="flex items-center text-base justify-between">
-                    <div className="flex flex-col justify-start items-start">
-                      {buget.name}
-                      <span className="text-zinc-400 text-xs">R$ {buget.value} Restantes</span>
+          {budgets.length > 0 &&
+            budgets.map((buget) => (
+              <Controller
+                control={control}
+                name="budget"
+                key={buget.id}
+                render={({ field: { onChange, value } }) => (
+                  <Button
+                    variant="outline"
+                    size="xl"
+                    key={buget.name}
+                    active={buget.id === value?.id}
+                    onClick={() => onChange(buget)}>
+                    <div className="flex items-center text-base justify-between">
+                      <div className="flex flex-col justify-start items-start">
+                        {buget.name}
+                        <span className="text-zinc-400 text-xs">R$ {buget.value} Restantes</span>
+                      </div>
+                      <Wallet size={18} />
                     </div>
-                    <Wallet size={18} />
-                  </div>
-                </Button>
-              )}
-            />
-          ))}
+                  </Button>
+                )}
+              />
+            ))}
 
           <Button
             variant="outline"
@@ -108,7 +135,7 @@ const Budget = ({
             onClick={() => createBugetModal.onShow()}
             disabled={bugetQuantityLimit <= 0}>
             <div className="flex items-center text-base justify-between">
-              <div className="flex flex-col justify-start items-start">
+              <div className="flex flex-col justify-start text-left">
                 {bugetQuantityLimit <= 0
                   ? 'Limite de orçamentos atingido'
                   : ` Criar Novo orçamento`}
@@ -116,10 +143,10 @@ const Budget = ({
                   {bugetQuantityLimit} espaços disponíveis
                 </span>
               </div>
-              <Plus size={18} />
             </div>
           </Button>
         </div>
+
         <Alert
           variant="neutral"
           title="Criar novo orçamento"

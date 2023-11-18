@@ -31,9 +31,9 @@ export enum PaymentEnum {
 }
 
 export type FrequencyFields = {
-  periodicityMode: keyof typeof PeriodicityEnum;
-  paymentMode: keyof typeof PaymentEnum;
-  date?: Date;
+  periodicity_mode: keyof typeof PeriodicityEnum;
+  payment_mode: keyof typeof PaymentEnum;
+  due_date?: Date;
   duration?: number;
 };
 
@@ -42,11 +42,11 @@ export type ExpenseFields = ExpenseInfoFields & BudgetFields & FrequencyFields;
 export const defaultValues: ExpenseFields = {
   type: 'expense',
   value: 0,
-  paymentMode: PaymentEnum.parcel,
-  periodicityMode: PeriodicityEnum.only,
+  payment_mode: PaymentEnum.parcel,
+  periodicity_mode: PeriodicityEnum.only,
   name: '',
   note: '',
-  date: dayjs().toDate(),
+  due_date: dayjs().toDate(),
   budget: {} as BudgetFields['budget'],
   duration: 3
 };
@@ -60,8 +60,8 @@ export const createSchema = z.object({
     .refine((value) => value > 0, {
       message: 'O valor deve ser maior que 0'
     }),
-  paymentMode: z.string(),
-  periodicityMode: z.string(),
+  payment_mode: z.string(),
+  periodicity_mode: z.string(),
   name: z
     .string({
       required_error: 'Nome obrigatório',
@@ -71,7 +71,7 @@ export const createSchema = z.object({
       message: 'O nome não pode ser vazio'
     }),
   note: z.string().trim(),
-  date: z
+  due_date: z
     .date({
       required_error: 'Data de inicio deve ser informada',
       invalid_type_error: 'O valor deve ser uma data'

@@ -45,7 +45,7 @@ const View = ({ expense }: ViewProps) => {
             <div>
               <span className="text-zinc-500">Data:</span>
               <h1 className="text-zinc-950 text-base">
-                {dayjs(expense.date).format('DD [de] MMMM YYYY')}
+                {dayjs(expense.due_date).format('DD [de] MMMM YYYY')}
               </h1>
             </div>
             <div>
@@ -57,8 +57,8 @@ const View = ({ expense }: ViewProps) => {
               <h1>
                 {calculateValue(
                   expense.duration || 0,
-                  expense.paymentMode,
-                  expense.periodicityMode,
+                  expense.payment_mode,
+                  expense.periodicity_mode,
                   expense.value
                 )}
               </h1>

@@ -20,9 +20,6 @@ import CounterPeriocity from './CounterPeriocity';
 import PayMethod from './PayMethod';
 import Periodicity from './Periodicity';
 
-
-
-
 type FrequencyProps = {
   errors?: FieldErrors<ExpenseFields>;
   control?: Control<ExpenseFields>;
@@ -38,7 +35,7 @@ const Frequency = ({ control }: FrequencyProps) => {
   });
   const paymentMode = useWatch({
     control,
-    name: 'paymentMode'
+    name: 'payment_mode'
   });
 
   const { field: valueControl } = useController({
@@ -47,7 +44,7 @@ const Frequency = ({ control }: FrequencyProps) => {
   });
 
   const { field: periodicityControl } = useController({
-    name: 'periodicityMode',
+    name: 'periodicity_mode',
     control
   });
 
@@ -56,7 +53,7 @@ const Frequency = ({ control }: FrequencyProps) => {
       <div className="flex items-center gap-4 ">
         <Controller
           control={control}
-          name="date"
+          name="due_date"
           render={({ field: { onChange, value } }) => (
             <div className="w-full space-y-8">
               <Input
@@ -118,7 +115,7 @@ const Frequency = ({ control }: FrequencyProps) => {
             <Periodicity />
             <Controller
               control={control}
-              name="paymentMode"
+              name="payment_mode"
               render={({ field: { onChange, value } }) => (
                 <PayMethod onChange={onChange} value={value} />
               )}
@@ -148,7 +145,7 @@ const Frequency = ({ control }: FrequencyProps) => {
         title="ficou com duvidas?"
         description="Selecione o tipo de frequência da sua entrada, mensal ou uma entrada unica."
         helpButton="Como funciona"
-        onHelpClick={() => { }}
+        onHelpClick={() => {}}
       />
     </div>
   );
