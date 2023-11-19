@@ -35,6 +35,7 @@ export type FrequencyFields = {
   payment_mode: keyof typeof PaymentEnum;
   due_date?: Date;
   duration?: number;
+  period_date?: Date[];
 };
 
 export type ExpenseFields = ExpenseInfoFields & BudgetFields & FrequencyFields;
@@ -48,7 +49,8 @@ export const defaultValues: ExpenseFields = {
   note: '',
   due_date: dayjs().toDate(),
   budget: {} as BudgetFields['budget'],
-  duration: 3
+  duration: 1,
+  period_date: []
 };
 
 export const createSchema = z.object({

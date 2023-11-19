@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 import { ExpenseFieldsWithId, financialRecordStorage } from '../storage';
+import dayjs from 'dayjs';
 
 type origins = 'create' | 'update' | 'delete' | null;
 
@@ -17,6 +18,33 @@ const initialState: DataState = {
   error: null,
   origin: null
 };
+
+function filterExpensesByMonth(expenses: ExpenseFieldsWithId[], month: string): ExpenseFieldsWithId[] {
+
+  const filteredExpenses: ExpenseFieldsWithId[] = [];
+
+  expenses.forEach((expense) => {
+    const { periodicity_mode } = expense;
+
+    if (periodicity_mode === 'fixed') {
+      filteredExpenses.push(expense);
+      return
+    }
+    const period = expense.period_date || [];
+
+    const hasDateInPeriod = period.some((date) => {
+      const expenseDate = dayjs(date).format('MM/YYYY');
+
+      return expenseDate === month;
+    });
+
+    if (hasDateInPeriod) {
+      filteredExpenses.push(expense);
+    }
+  });
+
+  return filteredExpenses;
+}
 
 const financialRecordsSlice = createSlice({
   name: 'expense',
@@ -52,11 +80,17 @@ export const {
 } = financialRecordsSlice.actions;
 
 // export const getFinancialRecords = () => async (dispatch: Dispatch, getState: () => RootState)
-export const getFinancialRecords = () => async (dispatch: Dispatch) => {
+export const getFinancialRecords = ({
+  month = dayjs().format('MM/YYYY')
+}: {
+  month?: string //  12/2023
+} = {}) => async (dispatch: Dispatch) => {
   dispatch(fetchDataStart());
   try {
     const data = financialRecordStorage.getData();
-    dispatch(fetchDataSuccess(data));
+
+
+    dispatch(fetchDataSuccess(filterExpensesByMonth(data, month)));
   } catch (error) {
     dispatch(fetchDataFailure('Erro ao carregar os dados'));
   }

@@ -1,6 +1,9 @@
 import generateHashId from './generateHashId';
 
-type ItemWithId = { id: string };
+type ItemWithId = {
+  id: string,
+  created_at: Date
+};
 
 class LocalStorageUtil<T extends ItemWithId> {
   private key: string;
@@ -22,9 +25,13 @@ class LocalStorageUtil<T extends ItemWithId> {
 
   // Adiciona um novo item aos dados existentes
   // Adiciona um novo item aos dados existentes
-  addItem(item: Omit<T, 'id'>): void {
+  addItem(item: Omit<T, 'id' | 'created_at'>): void {
     const data = this.getData();
-    const newItem: T = { id: generateHashId(8), ...item } as T;
+    const newItem: T = {
+      id: generateHashId(16),
+      created_at: new Date()
+      , ...item
+    } as T;
     data.push(newItem);
     this.saveData(data);
   }

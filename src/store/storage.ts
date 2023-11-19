@@ -1,13 +1,19 @@
 import { ExpenseFields } from '@/pages/Expense/shared/schema';
 import LocalStorageUtil from '@/utils/useStorage';
 
-export type ExpenseFieldsWithId = ExpenseFields & { id: string };
+export type ExpenseFieldsWithId = ExpenseFields & {
+  id: string,
+  created_at: Date
+};
 
 export type BudgetsWithId = {
   name: string;
   id: string;
   value: number;
-} & { id: string };
+} & {
+  id: string,
+  created_at: Date
+};
 
 const financialRecordStorage = new LocalStorageUtil<ExpenseFieldsWithId>('financialRecords');
 const budgetStorage = new LocalStorageUtil<BudgetsWithId>('budgets');
@@ -18,17 +24,20 @@ if (!hasBudgets) {
     {
       name: 'Casa',
       id: '1',
-      value: 100
+      value: 100,
+      created_at: new Date()
     },
     {
       name: 'Lazer',
       id: '2',
-      value: 200
+      value: 200,
+      created_at: new Date()
     },
     {
       name: 'Transporte',
       id: '3',
-      value: 300
+      value: 300,
+      created_at: new Date()
     }
   ]);
 }

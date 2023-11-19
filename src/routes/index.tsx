@@ -3,6 +3,8 @@ import Header from '@/components/Header';
 import NotFound from '@/components/NotFound';
 import Dashboard from '@/pages/Dashboard';
 import Expense from '@/pages/Expense';
+import SingIn from '@/pages/SingIn';
+import SingUp from '@/pages/SingUp';
 import {
   Outlet,
   Navigate,
@@ -10,6 +12,13 @@ import {
   RouterProvider,
   RouteObject
 } from 'react-router-dom';
+
+
+import {
+  useSession,
+
+} from "@clerk/clerk-react";
+
 
 const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
   return <div className="bg-slate-100">{children}</div>;
@@ -62,12 +71,19 @@ export function PrivateRoutes(): {
 
 function PublicRoute(): RouteObject[] {
   return [
-    { path: '/login', element: <div>login</div> },
-    { path: '*', element: <Navigate to="/login" replace /> }
+    { path: '/sign-in', element: <SingIn /> },
+    { path: '/sign-up', element: <SingUp /> },
+    { path: '*', element: <Navigate to="/sign-in" replace /> }
   ];
 }
 
 const checkAuth = () => {
+  const { isSignedIn } = useSession();
+
+  if (!isSignedIn) {
+    return false;
+  }
+
   return true;
 };
 

@@ -57,7 +57,8 @@ const Frequency = ({ control }: FrequencyProps) => {
           render={({ field: { onChange, value } }) => (
             <div className="w-full space-y-8">
               <Input
-                label="Data inicial"
+                label="Data de vencimento"
+                name="due_date"
                 value={dayjs(value).format('DD/MM/YYYY')}
                 onChange={onChange}
                 width="full"
@@ -131,9 +132,9 @@ const Frequency = ({ control }: FrequencyProps) => {
           </div>
         </Switch>
         <Switch
-          checked={periodicityControl.value === 'fixedMode'}
+          checked={periodicityControl.value === PeriodicityEnum.fixed}
           onCheckedChange={(e) => {
-            e ? periodicityControl.onChange('fixedMode') : periodicityControl.onChange('fixedMode');
+            e ? periodicityControl.onChange(PeriodicityEnum.fixed) : periodicityControl.onChange(PeriodicityEnum.fixed);
           }}
           label="Fixo mensalmente"
           helpertext="será cobrado mensalmente"
@@ -145,7 +146,7 @@ const Frequency = ({ control }: FrequencyProps) => {
         title="ficou com duvidas?"
         description="Selecione o tipo de frequência da sua entrada, mensal ou uma entrada unica."
         helpButton="Como funciona"
-        onHelpClick={() => {}}
+        onHelpClick={() => { }}
       />
     </div>
   );

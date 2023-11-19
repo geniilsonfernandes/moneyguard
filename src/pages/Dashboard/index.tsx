@@ -1,21 +1,19 @@
-import ExpenseCard from '@/components/ExpenseCard';
-import MonthControl from '@/components/MonthControl';
-import SalaryAmount from '@/components/SalaryAmount';
-import formatNumber from '@/utils/formatNumber';
-import Button from '@/components/ui/Button';
 import Alert from '@/components/Alert';
 import EmptyComponent from '@/components/EmptyComponent';
+import ExpenseGroup from '@/components/ExpenseGroup';
+import ExpenseItem from '@/components/ExpenseItem';
 import SubHeader from '@/components/Layouts/SubHeader';
+import MonthControl from '@/components/MonthControl';
+import SalaryAmount from '@/components/SalaryAmount';
 import Statistics from '@/components/Statistics';
+import Button from '@/components/ui/Button';
 import { useAppDispatch, useAppSelector } from '@/store';
+import { getBudgets } from '@/store/reducers/budgets';
 import { getFinancialRecords } from '@/store/reducers/financialRecords';
+import formatNumber from '@/utils/formatNumber';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loading from './Loading';
-import ExpenseGroup from '@/components/ExpenseGroup';
-import ExpenseItem from '@/components/ExpenseItem';
-import { getBudgets } from '@/store/reducers/budgets';
-
 const Dashboard = () => {
   const dispatch = useAppDispatch();
   const { data, loading, origin } = useAppSelector((state) => state.financialRecords);
@@ -28,9 +26,22 @@ const Dashboard = () => {
     dispatch(getBudgets());
   }, [dispatch, origin]);
 
+
+  const handleChangeMonth = (month: string) => {
+
+    dispatch(getFinancialRecords({ month }));
+  };
+  // tela de resumo simples
+  // todos vao ter o array de periodo de datas e os que sao unico vai ter somente um item no array
+  // usa mongo db
+
+
   if (loading) {
     return <Loading />;
   }
+
+
+
 
   return (
     <div className="bg-slate-100 ">
@@ -40,7 +51,9 @@ const Dashboard = () => {
 
       <div className="container space-y-6 pb-6  -mt-6 ">
         <div className="bg-slate-950 p-8 rounded-lg shadow-lg text-white flex flex-col gap-6 sm:flex-row sm:justify-between">
-          <MonthControl />
+          <MonthControl
+            onChangeMonth={handleChangeMonth}
+          />
           <div className="text-zinc-50 flex flex-col gap-2">
             <span className="text-base">Total de despesas este mês:</span>
             <span className="uppercase font-bold text-lg">{monthExpense}</span>
@@ -74,7 +87,9 @@ const Dashboard = () => {
           {budgets &&
             budgets.map(({ name, id }) => {
               const filteredData = data.filter((record) => record.budget.name === name);
-
+              if (filteredData.length === 0) {
+                return null;
+              }
               return (
                 <ExpenseGroup
                   name={name}

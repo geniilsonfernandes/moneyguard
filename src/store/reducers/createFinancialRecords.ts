@@ -2,6 +2,7 @@ import { ExpenseFields } from '@/pages/Expense/shared/schema';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 import { financialRecordStorage } from '../storage';
+import dayjs from 'dayjs';
 
 type createProps = {
   data: ExpenseFields;
@@ -44,17 +45,35 @@ const createFinancialRecordsSlice = createSlice({
 export const { fetchDataStart, fetchDataSuccess, fetchDataFailure } =
   createFinancialRecordsSlice.actions;
 
+
+
+
+function generateDateArray(initialDate: Date, numberOfMonths: number): Date[] {
+  const datesArray: Date[] = [];
+  let currentDate = dayjs(initialDate);
+
+  for (let i = 0; i < numberOfMonths; i++) {
+    datesArray.push(currentDate.toDate());
+    currentDate = currentDate.add(1, 'month');
+  }
+
+  return datesArray;
+}
+
 export const createFinancialRecords =
   ({ data }: createProps) =>
-  async (dispatch: Dispatch) => {
-    dispatch(fetchDataStart());
-    try {
-      financialRecordStorage.addItem(data);
-      dispatch(fetchDataSuccess());
-      return true;
-    } catch (error) {
-      dispatch(fetchDataFailure('Erro ao criar o orçamento'));
-    }
-  };
+    async (dispatch: Dispatch) => {
+      dispatch(fetchDataStart());
+      try {
+        const period_date = generateDateArray(data.due_date as Date, data.duration || 1);
+
+
+        financialRecordStorage.addItem({ ...data, period_date });
+        dispatch(fetchDataSuccess());
+        return true;
+      } catch (error) {
+        dispatch(fetchDataFailure('Erro ao criar o orçamento'));
+      }
+    };
 
 export default createFinancialRecordsSlice.reducer;

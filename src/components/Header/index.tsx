@@ -3,6 +3,11 @@ import useVisibility from '@/hooks/useVisibility';
 import { Bell, LogOut, Menu, Search, Settings, User2, X } from 'lucide-react';
 import { HTMLAttributes, useRef } from 'react';
 
+import {
+  useAuth, useSession,
+} from "@clerk/clerk-react";
+
+
 type ButtonMenuProps = HTMLAttributes<HTMLButtonElement>;
 const ButtonMenu = (props: ButtonMenuProps) => {
   return (
@@ -50,6 +55,16 @@ const Header = () => {
   const isSmallScreen = useMediaQuery('sm');
   const menuRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const session = useSession();
+  const { signOut, ...auth } = useAuth();
+
+
+  console.log({
+    session,
+    auth
+  });
+
+
 
   if (isSmallScreen) {
     return (
@@ -80,7 +95,13 @@ const Header = () => {
                   <User />
                   <div className="space-y-2 pt-4">
                     <ButtonMenuList icon={<Settings />} title="Configurações" />
-                    <ButtonMenuList icon={<LogOut />} title="Sair" />
+                    <ButtonMenuList icon={<LogOut />} title="Sair"
+                      onClick={() => {
+                        console.log(session);
+
+                        signOut();
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -133,7 +154,11 @@ const Header = () => {
                   <User />
                   <div className="space-y-2 pt-4">
                     <ButtonMenuList icon={<Settings />} title="Configurações" />
-                    <ButtonMenuList icon={<LogOut />} title="Sair" />
+                    <ButtonMenuList icon={<LogOut />} title="Sair" onClick={() => {
+                      console.log(session);
+
+                      signOut();
+                    }} />
                   </div>
                 </div>
               </div>

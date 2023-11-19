@@ -2,17 +2,24 @@ import useMonth from '@/hooks/useMonth';
 import { ChevronRight, ChevronLeft, RotateCw } from 'lucide-react';
 import { ButtonSmall } from '../ui/Button';
 
-const MonthControl = () => {
+
+type MonthControlProps = {
+  onChangeMonth: (month: string) => void
+};
+const MonthControl = ({ onChangeMonth }: MonthControlProps) => {
   const { getNextMonth, getPreviousMonth, monthFormatted, resetMonth, changed } = useMonth();
 
   const prev = () => {
-    getPreviousMonth();
+    const month = getPreviousMonth();
+    onChangeMonth(month.format('MM/YYYY'));
   };
   const next = () => {
-    getNextMonth();
+    const month = getNextMonth();
+    onChangeMonth(month.format('MM/YYYY'));
   };
   const reset = () => {
-    resetMonth();
+    const month = resetMonth();
+    onChangeMonth(month.format('MM/YYYY'));
   };
 
   return (
