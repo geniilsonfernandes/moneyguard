@@ -6,24 +6,32 @@ import Expense from '@/pages/Expense';
 import SingIn from '@/pages/SingIn';
 import SingUp from '@/pages/SingUp';
 import {
-  Outlet,
   Navigate,
-  createBrowserRouter,
+  Outlet,
+  RouteObject,
   RouterProvider,
-  RouteObject
+  createBrowserRouter
 } from 'react-router-dom';
 
 
 import {
-  useSession,
-
+  useAuth,
 } from "@clerk/clerk-react";
+import { useAppDispatch } from '@/store';
+import { login, logout } from '@/store/reducers/auth';
 
 
 const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
   return <div className="bg-slate-100">{children}</div>;
 };
 
+const PublicLayout = () => {
+  return (
+    <WrapperLayout>
+      <Outlet />
+    </WrapperLayout>
+  );
+};
 const Layout = () => {
   return (
     <WrapperLayout>
@@ -69,26 +77,35 @@ export function PrivateRoutes(): {
   };
 }
 
-function PublicRoute(): RouteObject[] {
-  return [
-    { path: '/sign-in', element: <SingIn /> },
-    { path: '/sign-up', element: <SingUp /> },
-    { path: '*', element: <Navigate to="/sign-in" replace /> }
-  ];
+function PublicRoute(): {
+  element: JSX.Element;
+  children: RouteObject[];
+} {
+  return {
+    element: <PublicLayout />,
+    children: [
+      { path: '/sign-in', element: <SingIn /> },
+      { path: '/sign-up', element: <SingUp /> },
+      { path: '*', element: <Navigate to="/sign-in" replace /> }
+    ]
+  }
 }
 
 const checkAuth = () => {
-  const { isSignedIn } = useSession();
+  const dispatch = useAppDispatch();
+  const { isSignedIn, userId } = useAuth();
 
   if (!isSignedIn) {
+    dispatch(logout());
     return false;
   }
-
+   
+  dispatch(login(userId));
   return true;
 };
 
 export function AppRouter() {
-  const router = createBrowserRouter([checkAuth() ? PrivateRoutes() : {}, ...PublicRoute()]);
+  const router = createBrowserRouter([checkAuth() ? PrivateRoutes() : PublicRoute()]);
 
   return <RouterProvider router={router} />;
 }

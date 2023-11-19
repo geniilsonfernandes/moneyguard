@@ -4,7 +4,7 @@ import { Bell, LogOut, Menu, Search, Settings, User2, X } from 'lucide-react';
 import { HTMLAttributes, useRef } from 'react';
 
 import {
-  useAuth, useSession,
+  useAuth, useSession
 } from "@clerk/clerk-react";
 
 

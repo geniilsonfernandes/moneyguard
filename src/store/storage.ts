@@ -3,7 +3,8 @@ import LocalStorageUtil from '@/utils/useStorage';
 
 export type ExpenseFieldsWithId = ExpenseFields & {
   id: string,
-  created_at: Date
+  created_at: Date,
+  user_id: string
 };
 
 export type BudgetsWithId = {

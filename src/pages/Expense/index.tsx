@@ -5,7 +5,6 @@ import RenderIf from '@/components/ui/RenderIf';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { createFinancialRecords } from '@/store/reducers/createFinancialRecords';
 import { financialRecordsSetOrigin, getFinancialRecords } from '@/store/reducers/financialRecords';
-import generateHashId from '@/utils/generateHashId';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import Confetti from 'react-confetti';
@@ -21,10 +20,8 @@ import { steps } from './steps';
 
 const Expense = () => {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.createFinancialRecords);
-  const budgetsReducer = useAppSelector((state) => state.budgets);
+  const { loading, error, success } = useAppSelector((state) => state.createFinancialRecords);
   const navigate = useNavigate();
-  const [budgets, setBudgets] = useState(budgetsReducer.data);
 
   const { width, height } = {
     width: window.innerWidth - 20,
@@ -32,14 +29,12 @@ const Expense = () => {
   };
   const [step, setSteps] = useState<Steps>('INFO');
 
-  const bugetQuantityLimit = 10 - budgets.length;
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     setValue,
-    clearErrors,
     trigger,
     getValues
   } = useForm<ExpenseFields>({
@@ -90,21 +85,7 @@ const Expense = () => {
     goBack();
   };
 
-  const handleCreateBudget = (newBudget: string) => {
-    if (!newBudget) {
-      return;
-    }
 
-    const createNewBudget = {
-      name: newBudget,
-      id: `new-${generateHashId()}`,
-      value: 0
-    };
-
-    setValue('budget', createNewBudget);
-    clearErrors('budget');
-    setBudgets([...budgets, createNewBudget]);
-  };
 
   const onSubmit = async (data: ExpenseFields) => {
     const d = await dispatch(
@@ -149,9 +130,6 @@ const Expense = () => {
               <Budget
                 errors={errors}
                 control={control}
-                budgets={budgets}
-                onCreateBuget={handleCreateBudget}
-                bugetQuantityLimit={bugetQuantityLimit}
               />
             )}
             {step === 'FREQUENCY' && (
@@ -187,7 +165,7 @@ const Expense = () => {
               variant="info"
               title="Precisando de ajuda?"
               helpButton="Saber mais"
-              onHelpClick={() => {}}
+              onHelpClick={() => { }}
             />
           </div>
         </RenderIf>

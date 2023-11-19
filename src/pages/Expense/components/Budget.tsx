@@ -19,9 +19,6 @@ import { ExpenseFields } from '../shared/schema';
 type BudgetProps = {
   errors?: FieldErrors<ExpenseFields>;
   control?: Control<ExpenseFields>;
-  budgets: { name: string; id: string; value: number }[];
-  onCreateBuget: (newName: string) => void;
-  bugetQuantityLimit: number;
 };
 
 type budgetFields = {
@@ -72,7 +69,9 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
           createBudget({
             id: generateHashId(),
             name,
-            value: 400
+            value: 400,
+            created_at: new Date()
+
           })
         );
         createBugetModal.onHidden();
