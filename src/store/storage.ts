@@ -1,4 +1,5 @@
 import { ExpenseFields } from '@/pages/Expense/shared/schema';
+import generateHashId from '@/utils/generateHashId';
 import LocalStorageUtil from '@/utils/useStorage';
 
 export type ExpenseFieldsWithId = ExpenseFields & {
@@ -24,19 +25,19 @@ if (!hasBudgets) {
   budgetStorage.saveData([
     {
       name: 'Casa',
-      id: '1',
+      id: generateHashId(),
       value: 100,
       created_at: new Date()
     },
     {
       name: 'Lazer',
-      id: '2',
+      id: generateHashId(),
       value: 200,
       created_at: new Date()
     },
     {
       name: 'Transporte',
-      id: '3',
+      id: generateHashId(),
       value: 300,
       created_at: new Date()
     }

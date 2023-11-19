@@ -1,10 +1,3 @@
-import ErrorPage from '@/components/ErrorPage';
-import Header from '@/components/Header';
-import NotFound from '@/components/NotFound';
-import Dashboard from '@/pages/Dashboard';
-import Expense from '@/pages/Expense';
-import SingIn from '@/pages/SingIn';
-import SingUp from '@/pages/SingUp';
 import {
   Navigate,
   Outlet,
@@ -12,10 +5,17 @@ import {
   RouterProvider,
   createBrowserRouter
 } from 'react-router-dom';
+import ErrorPage from '@/components/ErrorPage';
+import Header from '@/components/Header';
+import NotFound from '@/components/NotFound';
+import Dashboard from '@/pages/Dashboard';
+import Expense from '@/pages/Expense';
+import SingIn from '@/pages/SingIn';
+import SingUp from '@/pages/SingUp';
+import ExpenseView from '@/components/ExpenseView';
 import { useAuth } from '@clerk/clerk-react';
 import { useAppDispatch } from '@/store';
 import { login, logout } from '@/store/reducers/auth';
-import ExpeseView from '@/components/ExpeseView';
 
 const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
   return <div className="bg-slate-100">{children}</div>;
@@ -60,7 +60,7 @@ export function PrivateRoutes(): {
         children: [
           {
             path: '/expense-view/:id',
-            element: <ExpeseView />,
+            element: <ExpenseView />,
             errorElement: <ErrorPage />,
             ErrorBoundary: () => <ErrorPage />
           }

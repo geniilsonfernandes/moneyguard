@@ -82,7 +82,7 @@ export const {
 } = financialRecordsSlice.actions;
 
 // export const getFinancialRecords = () => async (dispatch: Dispatch, getState: () => RootState)
-export const getFinancialRecords =
+export const getExpenses =
   ({
     month = dayjs().format('MM/YYYY')
   }: {

@@ -1,15 +1,17 @@
 import Alert from '@/components/Alert';
 import SubHeader from '@/components/Layouts/SubHeader';
+import Loader from '@/components/Loader';
 import Button from '@/components/ui/Button';
 import RenderIf from '@/components/ui/RenderIf';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { createFinancialRecords } from '@/store/reducers/createFinancialRecords';
-import { getFinancialRecords } from '@/store/reducers/financialRecords';
+import { createExpense, updateExepense } from '@/store/reducers/createExpense';
+import { getExpenses } from '@/store/reducers/getExpenses';
+import { getExpenseById } from '@/store/reducers/getExpense';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { FieldErrors, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Budget from './components/Budget';
 import Frequency from './components/Frequency';
 import Info from './components/Info';
@@ -17,17 +19,34 @@ import View from './components/View';
 import { Steps } from './components/shared';
 import { ExpenseFields, createSchema, defaultValues } from './shared/schema';
 import { steps } from './steps';
+import { getBudgets } from '@/store/reducers/budgets';
+import dayjs from 'dayjs';
+
+
+const texts = {
+  edit: {
+    header: 'Editar entrada',
+    button: 'Editar'
+  },
+  create: {
+    header: 'Adicionar nova entrada',
+    button: 'Salvar e continuar'
+  }
+}
 
 const Expense = () => {
+  const [step, setSteps] = useState<Steps>('INFO');
+  const { id } = useParams() as { id: string };
   const dispatch = useAppDispatch();
-  const { loading, error, success } = useAppSelector((state) => state.createFinancialRecords);
   const navigate = useNavigate();
-
+  const { loading } = useAppSelector((state) => state.createExpense);
+  const expense = useAppSelector((state) => state.expense);
   const { width, height } = {
     width: window.innerWidth - 20,
     height: window.innerHeight
   };
-  const [step, setSteps] = useState<Steps>('INFO');
+
+  const hasEdit = !id ? "create" : "edit";
 
   const {
     control,
@@ -64,8 +83,6 @@ const Expense = () => {
       });
     } else if (step === 'FREQUENCY') {
       setSteps('FINISH');
-    } else if (step === 'FINISH') {
-      /// tentar salvar
     }
   };
 
@@ -85,23 +102,82 @@ const Expense = () => {
   };
 
   const onSubmit = async (data: ExpenseFields) => {
+    if (hasEdit) {
+      const editing = await dispatch(
+        updateExepense({
+          data,
+          id
+        })
+      );
+
+      if (editing) {
+        dispatch(getExpenses());
+        setSteps('FINISH');
+      }
+      return
+    }
+
+
     const d = await dispatch(
-      createFinancialRecords({
+      createExpense({
         data
       })
     );
 
     if (d) {
-      dispatch(getFinancialRecords());
+      dispatch(getExpenses());
       setSteps('FINISH');
     }
   };
+
+
+  useEffect(() => {
+    const getExpense = async () => {
+      const data = await dispatch(getExpenseById({ id }));
+
+
+      if (data) {
+        setValue('name', data.name);
+        setValue("type", data.type)
+        setValue('value', data.value);
+        setValue('budget', data.budget);
+
+        // period
+        setValue('periodicity_mode', data.periodicity_mode);
+        setValue('payment_mode', data.payment_mode);
+        setValue("due_date", dayjs(data.due_date).toDate());
+        setValue("duration", data.duration)
+      }
+    };
+
+    if (id) {
+      getExpense();
+    }
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    dispatch(getBudgets());
+  }, [dispatch]);
+
+  if (expense.loading) {
+    return <div className="bg-white">
+      <SubHeader
+        goBack={goBack}
+        title={texts[hasEdit].header}
+        subTitle="Cadastre uma nova entrada para organizar seus gastos"
+        className="grid grid-cols-6 gap-8"
+      />
+      <div className='py-20'>
+        <Loader />
+      </div>
+    </div>
+  }
 
   return (
     <div className="bg-white">
       <SubHeader
         goBack={goBack}
-        title="Adicionar nova entrada"
+        title={texts[hasEdit].header}
         subTitle="Cadastre uma nova entrada para organizar seus gastos"
         className="grid grid-cols-6 gap-8"
       />
@@ -126,6 +202,22 @@ const Expense = () => {
             {step === 'FREQUENCY' && (
               <Frequency errors={errors} control={control} setValue={setValue} />
             )}
+            <RenderIf condition={Object.keys(errors).length > 0} className="my-4">
+              <Alert
+                variant="danger"
+                title="Atenção!"
+                description="alguns campos precisam ser preenchidos corretamente"
+                body={
+                  <div>
+                    {Object.values(errors).map((error) => (
+                      <p key={error.message}>
+                        {error.root?.type} {error.message}
+                      </p>
+                    ))}
+                  </div>
+                }
+              />
+            </RenderIf>
 
             <div className="flex justify-end items-center pt-8 ">
               <div className="flex gap-2">
@@ -146,7 +238,7 @@ const Expense = () => {
                     isLoading={loading}
                     type="submit"
                   >
-                    {loading ? '...' : 'Confirmar nova entrada'}
+                    {texts[hasEdit].button}
                   </Button>
                 )}
               </div>
@@ -157,7 +249,7 @@ const Expense = () => {
               variant="info"
               title="Precisando de ajuda?"
               helpButton="Saber mais"
-              onHelpClick={() => {}}
+              onHelpClick={() => { }}
             />
           </div>
         </RenderIf>

@@ -14,7 +14,7 @@ const initialState: DataState = {
   error: null
 };
 
-const getFinancialRecordsSlice = createSlice({
+const getExpenseSlice = createSlice({
   name: 'get/expense',
   initialState,
   reducers: {
@@ -34,10 +34,10 @@ const getFinancialRecordsSlice = createSlice({
 });
 
 export const { fetchDataStart, fetchDataSuccess, fetchDataFailure } =
-  getFinancialRecordsSlice.actions;
+  getExpenseSlice.actions;
 
 // export const getFinancialRecords = () => async (dispatch: Dispatch, getState: () => RootState)
-export const getFinancialRecordsById =
+export const getExpenseById =
   ({ id }: { id: string }) =>
     async (dispatch: Dispatch) => {
       dispatch(fetchDataStart());
@@ -57,9 +57,11 @@ export const getFinancialRecordsById =
             dispatch(fetchDataSuccess(data));
           }, 1000);
         });
+
+        return data;
       } catch (error) {
         dispatch(fetchDataFailure('Erro ao carregar os dados'));
       }
     };
 
-export default getFinancialRecordsSlice.reducer;
+export default getExpenseSlice.reducer;

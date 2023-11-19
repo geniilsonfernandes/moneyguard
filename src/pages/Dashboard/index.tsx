@@ -7,27 +7,44 @@ import MonthControl from '@/components/MonthControl';
 import SalaryAmount from '@/components/SalaryAmount';
 import Statistics from '@/components/Statistics';
 import Button from '@/components/ui/Button';
+import Loading from './Loading';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { getBudgets } from '@/store/reducers/budgets';
-import { getFinancialRecords } from '@/store/reducers/financialRecords';
+import {  getExpenses } from '@/store/reducers/getExpenses';
 import formatNumber from '@/utils/formatNumber';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import Loading from './Loading';
+import { ExpenseFieldsWithId } from '@/store/storage';
+
+
+const calculateExpense = (expenses: ExpenseFieldsWithId[]) => {
+  return expenses.reduce((acc, record) => {
+    if (record.type === 'expense') {
+      return acc + record.value
+    }
+    if (record.type === 'income') {
+      return acc - record.value
+    }
+    return acc
+  }, 0)
+}
+
+
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const { data, loading, origin } = useAppSelector((state) => state.financialRecords);
+  const { data, loading, origin } = useAppSelector((state) => state.expenses);
   const { data: budgets } = useAppSelector((state) => state.budgets);
   const navigate = useNavigate();
-  const monthExpense = formatNumber(1032);
+  const monthExpense = calculateExpense(data);
+
 
   useEffect(() => {
-    dispatch(getFinancialRecords());
+    dispatch( getExpenses());
     dispatch(getBudgets());
   }, [dispatch, origin]);
 
   const handleChangeMonth = (month: string) => {
-    dispatch(getFinancialRecords({ month }));
+    dispatch( getExpenses({ month }));
   };
   // tela de resumo simples
   // todos vao ter o array de periodo de datas e os que sao unico vai ter somente um item no array
@@ -36,6 +53,7 @@ const Dashboard = () => {
   const openExpense = (id: string) => {
     navigate(`/expense-view/${id}`);
   };
+
 
   if (loading) {
     return <Loading />;
@@ -53,7 +71,7 @@ const Dashboard = () => {
           <MonthControl onChangeMonth={handleChangeMonth} />
           <div className="text-zinc-50 flex flex-col gap-2">
             <span className="text-base">Total de despesas este mês:</span>
-            <span className="uppercase font-bold text-lg">{monthExpense}</span>
+            <span className="uppercase font-bold text-lg">{formatNumber(monthExpense)}</span>
           </div>
         </div>
 
@@ -93,7 +111,7 @@ const Dashboard = () => {
                   name={name}
                   id={id}
                   key={id}
-                  totalExpense={filteredData.reduce((acc, record) => acc + record.value, 0)}
+                  totalExpense={calculateExpense(filteredData)}
                   totalItems={filteredData.length}
                 >
                   {filteredData.map((record) => (

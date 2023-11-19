@@ -1,18 +1,18 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import financialRecords from './reducers/financialRecords';
-import createFinancialRecords from './reducers/createFinancialRecords';
+import getExpenses from './reducers/getExpenses';
+import createExpense from './reducers/createExpense';
 import budgets from './reducers/budgets';
 import auth from './reducers/auth';
-import getFinancialRecords from './reducers/getFinancialRecords';
+import getExpense from './reducers/getExpense';
 
 export const store = configureStore({
   reducer: {
     // Add your reducers here
     // Example:
-    financialRecords: financialRecords,
-    createFinancialRecords: createFinancialRecords,
-    getFinancialRecords: getFinancialRecords,
+    expenses: getExpenses,
+    createExpense: createExpense,
+    expense: getExpense,
     budgets: budgets,
     auth: auth
   }
