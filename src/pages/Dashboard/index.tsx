@@ -12,7 +12,7 @@ import { getBudgets } from '@/store/reducers/budgets';
 import { getFinancialRecords } from '@/store/reducers/financialRecords';
 import formatNumber from '@/utils/formatNumber';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
 const Dashboard = () => {
   const dispatch = useAppDispatch();
@@ -26,34 +26,31 @@ const Dashboard = () => {
     dispatch(getBudgets());
   }, [dispatch, origin]);
 
-
   const handleChangeMonth = (month: string) => {
-
     dispatch(getFinancialRecords({ month }));
   };
   // tela de resumo simples
   // todos vao ter o array de periodo de datas e os que sao unico vai ter somente um item no array
   // usa mongo db
 
+  const openExpense = (id: string) => {
+    navigate(`/expense-view/${id}`);
+  };
 
   if (loading) {
     return <Loading />;
   }
 
-
-
-
   return (
     <div className="bg-slate-100 ">
+      <Outlet />
       <SubHeader className="flex justify-between items-end py-12">
         <SalaryAmount />
       </SubHeader>
 
       <div className="container space-y-6 pb-6  -mt-6 ">
         <div className="bg-slate-950 p-8 rounded-lg shadow-lg text-white flex flex-col gap-6 sm:flex-row sm:justify-between">
-          <MonthControl
-            onChangeMonth={handleChangeMonth}
-          />
+          <MonthControl onChangeMonth={handleChangeMonth} />
           <div className="text-zinc-50 flex flex-col gap-2">
             <span className="text-base">Total de despesas este mês:</span>
             <span className="uppercase font-bold text-lg">{monthExpense}</span>
@@ -80,7 +77,8 @@ const Dashboard = () => {
               variant="fill"
               onClick={() => {
                 navigate('/expense/new');
-              }}>
+              }}
+            >
               Nova entrada
             </Button>
           </div>
@@ -96,7 +94,8 @@ const Dashboard = () => {
                   id={id}
                   key={id}
                   totalExpense={filteredData.reduce((acc, record) => acc + record.value, 0)}
-                  totalItems={filteredData.length}>
+                  totalItems={filteredData.length}
+                >
                   {filteredData.map((record) => (
                     <ExpenseItem
                       key={record.id}
@@ -105,6 +104,7 @@ const Dashboard = () => {
                       name={record.name}
                       type={record.type}
                       value={record.value}
+                      onClick={() => openExpense(record.id)}
                     />
                   ))}
                 </ExpenseGroup>

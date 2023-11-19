@@ -19,8 +19,10 @@ const initialState: DataState = {
   origin: null
 };
 
-function filterExpensesByMonth(expenses: ExpenseFieldsWithId[], month: string): ExpenseFieldsWithId[] {
-
+function filterExpensesByMonth(
+  expenses: ExpenseFieldsWithId[],
+  month: string
+): ExpenseFieldsWithId[] {
   const filteredExpenses: ExpenseFieldsWithId[] = [];
 
   expenses.forEach((expense) => {
@@ -28,7 +30,7 @@ function filterExpensesByMonth(expenses: ExpenseFieldsWithId[], month: string): 
 
     if (periodicity_mode === 'fixed') {
       filteredExpenses.push(expense);
-      return
+      return;
     }
     const period = expense.period_date || [];
 
@@ -80,20 +82,21 @@ export const {
 } = financialRecordsSlice.actions;
 
 // export const getFinancialRecords = () => async (dispatch: Dispatch, getState: () => RootState)
-export const getFinancialRecords = ({
-  month = dayjs().format('MM/YYYY')
-}: {
-  month?: string //  12/2023
-} = {}) => async (dispatch: Dispatch) => {
-  dispatch(fetchDataStart());
-  try {
-    const data = financialRecordStorage.getData();
+export const getFinancialRecords =
+  ({
+    month = dayjs().format('MM/YYYY')
+  }: {
+    month?: string; //  12/2023
+  } = {}) =>
+  async (dispatch: Dispatch) => {
+    dispatch(fetchDataStart());
+    try {
+      const data = financialRecordStorage.getData();
 
-
-    dispatch(fetchDataSuccess(filterExpensesByMonth(data, month)));
-  } catch (error) {
-    dispatch(fetchDataFailure('Erro ao carregar os dados'));
-  }
-};
+      dispatch(fetchDataSuccess(filterExpensesByMonth(data, month)));
+    } catch (error) {
+      dispatch(fetchDataFailure('Erro ao carregar os dados'));
+    }
+  };
 
 export default financialRecordsSlice.reducer;

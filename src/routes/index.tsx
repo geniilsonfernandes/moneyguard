@@ -12,14 +12,10 @@ import {
   RouterProvider,
   createBrowserRouter
 } from 'react-router-dom';
-
-
-import {
-  useAuth,
-} from "@clerk/clerk-react";
+import { useAuth } from '@clerk/clerk-react';
 import { useAppDispatch } from '@/store';
 import { login, logout } from '@/store/reducers/auth';
-
+import ExpeseView from '@/components/ExpeseView';
 
 const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
   return <div className="bg-slate-100">{children}</div>;
@@ -60,7 +56,15 @@ export function PrivateRoutes(): {
       {
         path: '/',
         element: <Dashboard />,
-        errorElement: <ErrorPage />
+        errorElement: <ErrorPage />,
+        children: [
+          {
+            path: '/expense-view/:id',
+            element: <ExpeseView />,
+            errorElement: <ErrorPage />,
+            ErrorBoundary: () => <ErrorPage />
+          }
+        ]
       },
       { path: '/expense/new', element: <Expense /> },
       { path: '/expense/:id', element: <Expense /> },
@@ -88,7 +92,7 @@ function PublicRoute(): {
       { path: '/sign-up', element: <SingUp /> },
       { path: '*', element: <Navigate to="/sign-in" replace /> }
     ]
-  }
+  };
 }
 
 const checkAuth = () => {
@@ -99,7 +103,7 @@ const checkAuth = () => {
     dispatch(logout());
     return false;
   }
-   
+
   dispatch(login(userId));
   return true;
 };

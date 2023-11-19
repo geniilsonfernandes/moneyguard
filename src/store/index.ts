@@ -4,6 +4,7 @@ import financialRecords from './reducers/financialRecords';
 import createFinancialRecords from './reducers/createFinancialRecords';
 import budgets from './reducers/budgets';
 import auth from './reducers/auth';
+import getFinancialRecords from './reducers/getFinancialRecords';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     // Example:
     financialRecords: financialRecords,
     createFinancialRecords: createFinancialRecords,
+    getFinancialRecords: getFinancialRecords,
     budgets: budgets,
     auth: auth
   }

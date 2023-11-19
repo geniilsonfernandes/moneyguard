@@ -6,7 +6,6 @@ import { financialRecordStorage } from '../storage';
 
 import { RootState } from '..';
 
-
 type createProps = {
   data: ExpenseFields;
 };
@@ -48,9 +47,6 @@ const createFinancialRecordsSlice = createSlice({
 export const { fetchDataStart, fetchDataSuccess, fetchDataFailure } =
   createFinancialRecordsSlice.actions;
 
-
-
-
 function generateDateArray(initialDate: Date, numberOfMonths: number): Date[] {
   const datesArray: Date[] = [];
   let currentDate = dayjs(initialDate);
@@ -65,22 +61,21 @@ function generateDateArray(initialDate: Date, numberOfMonths: number): Date[] {
 
 export const createFinancialRecords =
   ({ data }: createProps) =>
-    async (dispatch: Dispatch, getState: () => RootState) => {
-      const { user_id } = getState().auth
+  async (dispatch: Dispatch, getState: () => RootState) => {
+    const { user_id } = getState().auth;
 
-      dispatch(fetchDataStart());
-      try {
-        
-        const period_date = generateDateArray(data.due_date as Date, data.duration || 1);
-        financialRecordStorage.addItem({ ...data, period_date, user_id });
-        
-        dispatch(fetchDataSuccess());
-        return true;
-      } catch (error) {
-        console.log(error);
+    dispatch(fetchDataStart());
+    try {
+      const period_date = generateDateArray(data.due_date as Date, data.duration || 1);
+      financialRecordStorage.addItem({ ...data, period_date, user_id });
 
-        dispatch(fetchDataFailure('Erro ao criar o orçamento'));
-      }
-    };
+      dispatch(fetchDataSuccess());
+      return true;
+    } catch (error) {
+      console.log(error);
+
+      dispatch(fetchDataFailure('Erro ao criar o orçamento'));
+    }
+  };
 
 export default createFinancialRecordsSlice.reducer;

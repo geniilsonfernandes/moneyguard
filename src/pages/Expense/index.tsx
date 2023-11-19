@@ -4,7 +4,7 @@ import Button from '@/components/ui/Button';
 import RenderIf from '@/components/ui/RenderIf';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { createFinancialRecords } from '@/store/reducers/createFinancialRecords';
-import { financialRecordsSetOrigin, getFinancialRecords } from '@/store/reducers/financialRecords';
+import { getFinancialRecords } from '@/store/reducers/financialRecords';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import Confetti from 'react-confetti';
@@ -28,7 +28,6 @@ const Expense = () => {
     height: window.innerHeight
   };
   const [step, setSteps] = useState<Steps>('INFO');
-
 
   const {
     control,
@@ -85,8 +84,6 @@ const Expense = () => {
     goBack();
   };
 
-
-
   const onSubmit = async (data: ExpenseFields) => {
     const d = await dispatch(
       createFinancialRecords({
@@ -96,7 +93,6 @@ const Expense = () => {
 
     if (d) {
       dispatch(getFinancialRecords());
-      dispatch(financialRecordsSetOrigin('create'));
       setSteps('FINISH');
     }
   };
@@ -126,12 +122,7 @@ const Expense = () => {
               </div>
             </div>
             {step === 'INFO' && <Info errors={errors} control={control} />}
-            {step === 'BUDGET' && (
-              <Budget
-                errors={errors}
-                control={control}
-              />
-            )}
+            {step === 'BUDGET' && <Budget errors={errors} control={control} />}
             {step === 'FREQUENCY' && (
               <Frequency errors={errors} control={control} setValue={setValue} />
             )}
@@ -153,7 +144,8 @@ const Expense = () => {
                     onClick={handleSubmit(onSubmit, onInvalid)}
                     disabled={loading}
                     isLoading={loading}
-                    type="submit">
+                    type="submit"
+                  >
                     {loading ? '...' : 'Confirmar nova entrada'}
                   </Button>
                 )}
@@ -165,7 +157,7 @@ const Expense = () => {
               variant="info"
               title="Precisando de ajuda?"
               helpButton="Saber mais"
-              onHelpClick={() => { }}
+              onHelpClick={() => {}}
             />
           </div>
         </RenderIf>
@@ -213,7 +205,8 @@ const Expense = () => {
               onClick={() => navigate('/')}
               disabled={loading}
               isLoading={loading}
-              type="submit">
+              type="submit"
+            >
               {loading ? '...' : 'Confirmar e voltar para página inicial'}
             </Button>
             <Confetti width={width} height={height} recycle={false} />

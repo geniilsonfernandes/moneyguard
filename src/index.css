@@ -36,6 +36,10 @@
   }
 }
 
+.no-scroll {
+  overflow: hidden;
+}
+
 .fadeIn {
   animation: 400ms fadeIn forwards;
 }

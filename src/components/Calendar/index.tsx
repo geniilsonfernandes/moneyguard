@@ -38,7 +38,8 @@ const DayButton = ({ day, isActive, isToday, ...props }: DayButtonProps) => {
           isToday
         })
       )}
-      {...props}>
+      {...props}
+    >
       {day}
     </button>
   );
@@ -79,7 +80,8 @@ const Calendar = ({ width, onClose, onChange, value = new Date() }: CalendarProp
         width === 'full' && 'w-full',
         width === 'md' && 'w-1/2',
         width === 'sm' && 'w-1/3'
-      ].join(' ')}>
+      ].join(' ')}
+    >
       <div className="flex justify-between mb-4 bg-slate-200 px-6 py-4 rounded-t-lg">
         <div>
           <span className="text-zinc-400 text-xs">{currentDate.format('YYYY')}</span>
@@ -120,7 +122,8 @@ const Calendar = ({ width, onClose, onChange, value = new Date() }: CalendarProp
             isActive={date.toDateString() === selectedDay?.toDateString()}
             onClick={() => {
               handleSelectDay(date);
-            }}>
+            }}
+          >
             {day}
           </DayButton>
         ))}

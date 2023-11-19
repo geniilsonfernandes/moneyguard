@@ -104,7 +104,8 @@ const Frequency = ({ control }: FrequencyProps) => {
           label="Parcelar ou repetir"
           helpertext="escolha o modo de parcelamento"
           name="month-mode"
-          condition={periodicityControl.value === PeriodicityEnum.repeat}>
+          condition={periodicityControl.value === PeriodicityEnum.repeat}
+        >
           <div className="space-y-4">
             <Controller
               control={control}
@@ -134,7 +135,9 @@ const Frequency = ({ control }: FrequencyProps) => {
         <Switch
           checked={periodicityControl.value === PeriodicityEnum.fixed}
           onCheckedChange={(e) => {
-            e ? periodicityControl.onChange(PeriodicityEnum.fixed) : periodicityControl.onChange(PeriodicityEnum.fixed);
+            e
+              ? periodicityControl.onChange(PeriodicityEnum.fixed)
+              : periodicityControl.onChange(PeriodicityEnum.fixed);
           }}
           label="Fixo mensalmente"
           helpertext="será cobrado mensalmente"
@@ -146,7 +149,7 @@ const Frequency = ({ control }: FrequencyProps) => {
         title="ficou com duvidas?"
         description="Selecione o tipo de frequência da sua entrada, mensal ou uma entrada unica."
         helpButton="Como funciona"
-        onHelpClick={() => { }}
+        onHelpClick={() => {}}
       />
     </div>
   );

@@ -22,7 +22,6 @@ function useMonth() {
     return newMonth;
   };
 
-
   const resetMonth = () => {
     setChanged(false);
     setCurrentMonth(dayjs());

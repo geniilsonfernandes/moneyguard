@@ -2,9 +2,9 @@ import { ExpenseFields } from '@/pages/Expense/shared/schema';
 import LocalStorageUtil from '@/utils/useStorage';
 
 export type ExpenseFieldsWithId = ExpenseFields & {
-  id: string,
-  created_at: Date,
-  user_id: string
+  id: string;
+  created_at: Date;
+  user_id: string;
 };
 
 export type BudgetsWithId = {
@@ -12,8 +12,8 @@ export type BudgetsWithId = {
   id: string;
   value: number;
 } & {
-  id: string,
-  created_at: Date
+  id: string;
+  created_at: Date;
 };
 
 const financialRecordStorage = new LocalStorageUtil<ExpenseFieldsWithId>('financialRecords');

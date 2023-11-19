@@ -16,7 +16,8 @@ const SubHeader = ({ children, className, goBack, title, subTitle }: SubHeaderPr
         <div className="container py-4 pt-8">
           <button
             onClick={goBack}
-            className="flex items-center gap-2 text-base  text-zinc-950 font-semibold">
+            className="flex items-center gap-2 text-base  text-zinc-950 font-semibold"
+          >
             <div className="flex items-center justify-center h-[48px] rounded-lg">
               <ArrowLeft size={18} />
             </div>

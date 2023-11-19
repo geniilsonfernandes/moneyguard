@@ -55,7 +55,7 @@ type AlertProps = {
   onHelpClick?: () => void;
 };
 
-const Alert = ({ variant, title, body, description, helpButton, onClose }: AlertProps) => {
+const Alert = ({ variant, title, body, description, helpButton, onClose, onHelpClick }: AlertProps) => {
   return (
     <div className={cn(AlertVariants({ variant }))}>
       <div className="flex p-4 flex-col sm:flex-row gap-4 relative">
@@ -64,7 +64,9 @@ const Alert = ({ variant, title, body, description, helpButton, onClose }: Alert
           <h4 className="text-neutral-700 text-base font-bold">{title}</h4>
           <p className="text-neutral-600 text-sm">{description}</p>
           {helpButton && (
-            <button className="text-sm hover:underline flex gap-1 items-center">
+            <button className="text-sm hover:underline flex gap-1 items-center"
+              onClick={onHelpClick}
+            >
               {helpButton} <ChevronRight size={16} />
             </button>
           )}
@@ -80,7 +82,8 @@ const Alert = ({ variant, title, body, description, helpButton, onClose }: Alert
           className={cn(
             AlertBorderVariants({ variant }),
             'bg-white rounded-b-lg rounded-t-none p-4 border-x-0 border-b-0 text-neutral-600 text-sm'
-          )}>
+          )}
+        >
           {body}
         </div>
       )}

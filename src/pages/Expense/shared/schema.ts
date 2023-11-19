@@ -33,7 +33,7 @@ export enum PaymentEnum {
 export type FrequencyFields = {
   periodicity_mode: keyof typeof PeriodicityEnum;
   payment_mode: keyof typeof PaymentEnum;
-  due_date?: Date;
+  due_date: Date;
   duration?: number;
   period_date?: Date[];
 };

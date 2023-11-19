@@ -30,7 +30,8 @@ const Switch = ({
           className="w-[42px] h-[25px] rounded-full relative bg-slate-200  data-[state=checked]:bg-black outline-none cursor-default"
           id={name}
           onCheckedChange={onCheckedChange}
-          checked={checked}>
+          checked={checked}
+        >
           <SwitchRD.Thumb className="block w-[21px] h-[21px] bg-white rounded-full  transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
         </SwitchRD.Root>
       </div>

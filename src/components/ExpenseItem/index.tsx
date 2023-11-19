@@ -9,13 +9,16 @@ export type ExpenseItemProps = {
   value?: number;
   name?: string;
   id?: string;
+  onClick?: () => void;
 };
 
-const ExpenseItem = ({ type, group = true, id, name, value = 0 }: ExpenseItemProps) => {
+const ExpenseItem = ({ type, group = true, id, name, value = 0, onClick }: ExpenseItemProps) => {
   const expense = formatNumber(value);
 
   const handleToView = () => {
-    alert('to view' + id);
+    if (onClick) {
+      onClick();
+    }
   };
 
   return (
@@ -26,7 +29,9 @@ const ExpenseItem = ({ type, group = true, id, name, value = 0 }: ExpenseItemPro
         group && 'rounded-lg border hover:border-slate-950'
       ].join(' ')}
       aria-label={id}
-      tabIndex={0}>
+      tabIndex={0}
+      onClick={handleToView}
+    >
       <h4 className="text-zinc-950 font-normal text-base flex gap-3">
         {type === 'income' ? (
           <ChevronUpCircle className="text-green-500" />
@@ -39,7 +44,8 @@ const ExpenseItem = ({ type, group = true, id, name, value = 0 }: ExpenseItemPro
         <AmountBadge amount={expense} type={type} />
         <button
           onClick={handleToView}
-          className="text-zinc-400  hover:bg-slate-200 h-[32px] w-[32px] flex-center rounded-lg">
+          className="text-zinc-400  hover:bg-slate-200 h-[32px] w-[32px] flex-center rounded-lg"
+        >
           <ChevronRight />
         </button>
       </div>

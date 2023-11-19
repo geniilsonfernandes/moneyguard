@@ -51,7 +51,8 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
             className="flex items-center gap-2 p-2 rounded-lg"
             onClick={() => {
               calculate.visible ? calculate.onHidden() : calculate.onShow();
-            }}>
+            }}
+          >
             <CalculatorIcon />
           </button>
         </div>
@@ -95,7 +96,7 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
           title="Precisando de ajuda?"
           description="Selecione entre entrada ou saída e adicione os detalhes da sua entrada"
           helpButton="Saber mais"
-          onHelpClick={() => { }}
+          onHelpClick={() => {}}
         />
         <RenderIf condition={!!errors?.name || !!errors?.value}>
           <Alert
@@ -120,11 +121,12 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
         mode="full"
         title="Calculadora"
         isOpen={calculate.visible}
-        onClose={calculate.onHidden}>
+        onClose={calculate.onHidden}
+      >
         <Calculator
           onCancel={() => calculate.onHidden()}
           onComplete={(result) => {
-            calculate.onHidden()
+            calculate.onHidden();
             valueControl.field.onChange(result);
           }}
         />
