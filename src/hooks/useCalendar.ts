@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { useMemo, useState } from 'react';
 
@@ -21,11 +21,7 @@ interface YearCalendar {
   nextMonth: () => void;
   previousMonth: () => void;
   month: CalendarWeek[];
-  currentDate: string;
-}
-
-interface UseYearCalendarProps {
-  monthFormat?: string;
+  currentDate: Dayjs;
 }
 
 /**
@@ -35,7 +31,7 @@ interface UseYearCalendarProps {
  * @param {string} props.monthFormat - The format of the month to be displayed (default: 'MMMM YYYY').
  * @return {Object} The generated calendar.
  */
-const useCalendar = ({ monthFormat = 'MMMM YYYY' }: UseYearCalendarProps = {}): YearCalendar => {
+const useCalendar = (): YearCalendar => {
   const [currentDate, setCurrentDate] = useState(dayjs());
 
   const calendarWeek = useMemo(() => {
@@ -106,7 +102,7 @@ const useCalendar = ({ monthFormat = 'MMMM YYYY' }: UseYearCalendarProps = {}): 
   return {
     nextMonth,
     previousMonth,
-    currentDate: currentDate.format(monthFormat),
+    currentDate: currentDate,
     month: calendarWeek
   };
 };

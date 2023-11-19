@@ -2,7 +2,8 @@ import useCalendar from '@/hooks/useCalendar';
 import { cn } from '@/utils';
 import { cva } from 'class-variance-authority';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import Button from '../ui/Button';
 
 const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
 
@@ -64,26 +65,30 @@ const Calendar = ({ width, onClose, onChange, value = new Date() }: CalendarProp
     nextMonth();
   };
 
-  const handleSelectDay = (date: Date) => {
-    setSelectedDay(date);
-    if (onChange) {
-      onChange(date);
-    }
-  };
+  const handleSelectDay = useCallback(
+    (date: Date) => {
+      setSelectedDay(date);
+      onChange?.(date);
+    },
+    [onChange]
+  );
 
   return (
     <div
       className={[
-        'bg-slate-100 p-6 rounded-lg',
+        'bg-slate-100 rounded-lg',
         width === 'full' && 'w-full',
         width === 'md' && 'w-1/2',
         width === 'sm' && 'w-1/3'
       ].join(' ')}
     >
-      <div className="flex justify-between mb-4">
-        <h3 className="text-2xl first-letter:capitalize font-medium min-w-[150px]">
-          {currentDate}
-        </h3>
+      <div className="flex justify-between mb-4 bg-slate-200 px-6 py-4 rounded-t-lg">
+        <div>
+          <span className="text-zinc-400 text-xs">{currentDate.format('YYYY')}</span>
+          <h3 className="text-2xl capitalize font-medium min-w-[150px]">
+            {currentDate.format('ddd, DD [de] MMM')}
+          </h3>
+        </div>
         <div className="flex gap-4">
           <div className="flex gap-2">
             <button onClick={prev}>
@@ -107,7 +112,7 @@ const Calendar = ({ width, onClose, onChange, value = new Date() }: CalendarProp
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 pb-4">
         {month.map(({ day, disabled, isToday, date, id }) => (
           <DayButton
             key={id}
@@ -122,6 +127,12 @@ const Calendar = ({ width, onClose, onChange, value = new Date() }: CalendarProp
             {day}
           </DayButton>
         ))}
+      </div>
+      <div className="flex justify-end p-6">
+        <Button variant="ghost" onClick={onClose}>
+          Cancelar
+        </Button>
+        <Button onClick={onClose}>Confirmar</Button>
       </div>
     </div>
   );

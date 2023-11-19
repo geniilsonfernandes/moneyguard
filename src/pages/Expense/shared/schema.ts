@@ -16,12 +16,26 @@ export type BudgetFields = {
   };
 };
 
+export enum PeriodicityEnum {
+  onlyMode = 'onlyMode',
+  monthMode = 'monthMode',
+  fixedMode = 'fixedMode',
+  fixed = 'fixed',
+  repeat = 'repeat',
+  only = 'only'
+}
+
+export enum PaymentEnum {
+  all = 'all',
+  parcel = 'parcel'
+}
+
 export type FrequencyFields = {
-  mode: 'onlyMode' | 'monthMode';
-  date?: Date;
+  periodicity_mode: keyof typeof PeriodicityEnum;
+  payment_mode: keyof typeof PaymentEnum;
+  due_date: Date;
   duration?: number;
-  customDuration?: number;
-  durationMode?: 'fixed' | 'custom';
+  period_date?: Date[];
 };
 
 export type ExpenseFields = ExpenseInfoFields & BudgetFields & FrequencyFields;
@@ -29,14 +43,14 @@ export type ExpenseFields = ExpenseInfoFields & BudgetFields & FrequencyFields;
 export const defaultValues: ExpenseFields = {
   type: 'expense',
   value: 0,
+  payment_mode: PaymentEnum.parcel,
+  periodicity_mode: PeriodicityEnum.only,
   name: '',
   note: '',
+  due_date: dayjs().toDate(),
   budget: {} as BudgetFields['budget'],
-  mode: 'onlyMode',
-  date: dayjs().toDate(),
-  duration: 3,
-  customDuration: 1,
-  durationMode: 'fixed'
+  duration: 1,
+  period_date: []
 };
 
 export const createSchema = z.object({
@@ -48,7 +62,8 @@ export const createSchema = z.object({
     .refine((value) => value > 0, {
       message: 'O valor deve ser maior que 0'
     }),
-  mode: z.string(),
+  payment_mode: z.string(),
+  periodicity_mode: z.string(),
   name: z
     .string({
       required_error: 'Nome obrigatório',
@@ -58,6 +73,17 @@ export const createSchema = z.object({
       message: 'O nome não pode ser vazio'
     }),
   note: z.string().trim(),
+  due_date: z
+    .date({
+      required_error: 'Data de inicio deve ser informada',
+      invalid_type_error: 'O valor deve ser uma data'
+    })
+    .refine((value) => value !== null, {
+      message: 'Data de inicio deve ser informada'
+    })
+    .transform((value) => {
+      return dayjs(value).toDate();
+    }),
   budget: z.nullable(
     z.object({
       name: z
@@ -69,18 +95,5 @@ export const createSchema = z.object({
         })
     })
   ),
-  date: z
-    .date({
-      required_error: 'Data de inicio deve ser informada',
-      invalid_type_error: 'O valor deve ser uma data'
-    })
-    .refine((value) => value !== null, {
-      message: 'Data de inicio deve ser informada'
-    })
-    .transform((value) => {
-      return dayjs(value).toDate();
-    }),
-  duration: z.optional(z.number()),
-  durationMode: z.optional(z.string()),
-  customDuration: z.optional(z.number())
+  duration: z.optional(z.number())
 });

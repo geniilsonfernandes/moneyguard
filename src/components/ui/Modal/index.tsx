@@ -30,7 +30,7 @@ const Modal = ({ children, title, footer, isOpen, onClose, mode = 'full' }: Moda
                 <X size={16} />
               </Button>
             </Dialog.Title>
-            <Dialog.Description className="py-14 container">{children}</Dialog.Description>
+            <Dialog.Description className="py-8 container">{children}</Dialog.Description>
             <div className="container">{footer}</div>
           </Dialog.Content>
         </Dialog.Portal>

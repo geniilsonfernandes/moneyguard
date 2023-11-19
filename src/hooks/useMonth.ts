@@ -9,18 +9,23 @@ function useMonth() {
   const [changed, setChanged] = useState(false);
 
   const getNextMonth = () => {
-    setCurrentMonth(currentMonth.add(1, 'month'));
+    const newMonth = currentMonth.add(1, 'month');
+    setCurrentMonth(newMonth);
     setChanged(true);
+    return newMonth;
   };
 
   const getPreviousMonth = () => {
-    setCurrentMonth(currentMonth.subtract(1, 'month'));
+    const newMonth = currentMonth.subtract(1, 'month');
+    setCurrentMonth(newMonth);
     setChanged(true);
+    return newMonth;
   };
 
   const resetMonth = () => {
     setChanged(false);
     setCurrentMonth(dayjs());
+    return dayjs();
   };
 
   return {

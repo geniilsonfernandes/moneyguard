@@ -1,74 +1,64 @@
 import Alert from '@/components/Alert';
 import Calendar from '@/components/Calendar';
 import Input from '@/components/Input';
-import Button from '@/components/ui/Button';
+import Switch from '@/components/Switch';
 import RenderIf from '@/components/ui/RenderIf';
 import Step from '@/components/ui/Step';
 import useVisibility from '@/hooks/useVisibility';
-import * as Switch from '@radix-ui/react-switch';
-import { Control, Controller, FieldErrors, useController, UseFormSetValue } from 'react-hook-form';
-import { ExpenseFields } from '../shared/schema';
+import calculateValue from '@/utils/calculateValue';
 import dayjs from 'dayjs';
-import Counter from '@/components/Counter';
-
-const durationOptions = [
-  {
-    label: '3 mêses',
-    value: 3
-  },
-  {
-    label: '6 mêses',
-    value: 6
-  },
-  {
-    label: '12 mêses',
-    value: 12
-  },
-  {
-    label: '24 mêses',
-    value: 24
-  }
-];
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  UseFormSetValue,
+  useController,
+  useWatch
+} from 'react-hook-form';
+import { ExpenseFields, PeriodicityEnum } from '../shared/schema';
+import CounterPeriocity from './CounterPeriocity';
+import PayMethod from './PayMethod';
+import Periodicity from './Periodicity';
 
 type FrequencyProps = {
   errors?: FieldErrors<ExpenseFields>;
   control?: Control<ExpenseFields>;
-  setValue: UseFormSetValue<ExpenseFields>;
+  setValue?: UseFormSetValue<ExpenseFields>;
 };
 
-const Frequency = ({ control, setValue }: FrequencyProps) => {
+const Frequency = ({ control }: FrequencyProps) => {
   const modalCalendar = useVisibility({});
   const configFrequency = useVisibility({});
+  const duration = useWatch({
+    control,
+    name: 'duration'
+  });
+  const paymentMode = useWatch({
+    control,
+    name: 'payment_mode'
+  });
 
-  const { field: modeControl } = useController({
-    name: 'mode',
+  const { field: valueControl } = useController({
+    name: 'value',
     control
   });
 
-  const durationModeControl = useController({
-    name: 'durationMode',
+  const { field: periodicityControl } = useController({
+    name: 'periodicity_mode',
     control
   });
-
-  const changeDurationMode = (mode: 'fixed' | 'custom') => {
-    if (mode === 'custom') {
-      setValue('duration', -1);
-      setValue('durationMode', mode);
-    } else {
-      setValue('durationMode', mode);
-    }
-  };
 
   return (
     <div className="space-y-8 pb-8 pt-8">
       <div className="flex items-center gap-4 ">
         <Controller
           control={control}
-          name="date"
+          name="due_date"
           render={({ field: { onChange, value } }) => (
             <div className="w-full space-y-8">
               <Input
-                label="Data inicial"
+                label="Data de vencimento"
+                name="due_date"
                 value={dayjs(value).format('DD/MM/YYYY')}
                 onChange={onChange}
                 width="full"
@@ -96,94 +86,63 @@ const Frequency = ({ control, setValue }: FrequencyProps) => {
         />
       </div>
 
-      <Step name="Tipo de frequência desse lançamento">
-        <div className="rounded-lg h-[80px] flex items-center gap-4 font-medium text-base">
-          <Switch.Root
-            className="w-[42px] h-[25px] rounded-full relative bg-slate-200  data-[state=checked]:bg-black outline-none cursor-default"
-            id="only-mode"
-            onCheckedChange={(e) => {
-              e ? modeControl.onChange('onlyMode') : modeControl.onChange('monthMode');
-            }}
-            checked={modeControl.value === 'onlyMode'}>
-            <Switch.Thumb className="block w-[21px] h-[21px] bg-white rounded-full  transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
-          </Switch.Root>
-          <label htmlFor="only-mode">Somente esse mês</label>
-        </div>
-        <div className="rounded-lg min-h-[80px]  font-medium text-base space-y-8">
-          <div className="flex items-center gap-4">
-            <Switch.Root
-              className="w-[42px] h-[25px] rounded-full relative bg-slate-200  data-[state=checked]:bg-black outline-none cursor-default"
-              id="month-mode"
-              onCheckedChange={(e) => {
-                e ? configFrequency.onShow() : configFrequency.onHidden();
-                e ? modeControl.onChange('monthMode') : modeControl.onChange('onlyMode');
-              }}
-              checked={modeControl.value === 'monthMode'}>
-              <Switch.Thumb className="block w-[21px] h-[21px] bg-white rounded-full  transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
-            </Switch.Root>
-            <label htmlFor="month-mode">Mensal</label>
+      <Step name="Tipo de recorrência desse lançamento">
+        <Switch
+          checked={periodicityControl.value === PeriodicityEnum.only}
+          onCheckedChange={() => periodicityControl.onChange(PeriodicityEnum.only)}
+          label="Não recorrente"
+          helpertext="esse lancamento será cobrado uma vez"
+          name="only-mode"
+        />
+
+        <Switch
+          checked={periodicityControl.value === PeriodicityEnum.repeat}
+          onCheckedChange={(e) => {
+            e ? configFrequency.onShow() : configFrequency.onHidden();
+            periodicityControl.onChange(PeriodicityEnum.repeat);
+          }}
+          label="Parcelar ou repetir"
+          helpertext="escolha o modo de parcelamento"
+          name="month-mode"
+          condition={periodicityControl.value === PeriodicityEnum.repeat}
+        >
+          <div className="space-y-4">
+            <Controller
+              control={control}
+              name="duration"
+              render={({ field: { onChange, value } }) => (
+                <CounterPeriocity onChange={onChange} value={value} />
+              )}
+            />
+            <Periodicity />
+            <Controller
+              control={control}
+              name="payment_mode"
+              render={({ field: { onChange, value } }) => (
+                <PayMethod onChange={onChange} value={value} />
+              )}
+            />
+
+            <div>{calculateValue(duration || 0, paymentMode, 'repeat', valueControl.value)}</div>
+
+            <Alert
+              variant="neutral"
+              title="Como funciona parcelar ou repetir uma entrada?"
+              description="Selecione a quantas vezes deseja parcelar ou repetir uma entrada e o modo de que vai ser cobrado."
+            />
           </div>
-
-          <RenderIf
-            condition={modeControl.value === 'monthMode'}
-            className="space-y-4 rounded-lg mb-8">
-            <div className="flex flex-col gap-4 ">
-              <span>Duração</span>
-              <div className="flex flex-col sm:flex-row gap-4">
-                {durationOptions.map((btn) => (
-                  <Controller
-                    key={btn.value}
-                    control={control}
-                    name="duration"
-                    render={({ field: { onChange, value } }) => (
-                      <Button
-                        variant="outline"
-                        key={btn.value}
-                        onClick={() => {
-                          changeDurationMode('fixed');
-                          onChange(btn.value);
-                        }}
-                        active={btn.value === value}>
-                        {btn.label}
-                      </Button>
-                    )}
-                  />
-                ))}
-                <Button
-                  variant="outline"
-                  onClick={() => changeDurationMode('custom')}
-                  active={durationModeControl.field.value === 'custom'}>
-                  Colocar Manual
-                </Button>
-              </div>
-            </div>
-
-            <RenderIf condition={durationModeControl.field.value === 'custom'} className="pt-4">
-              <Controller
-                control={control}
-                name="customDuration"
-                render={({ field: { onChange, value } }) => (
-                  <Counter onChange={(value) => onChange(Number(value))} value={value} />
-                )}
-              />
-            </RenderIf>
-          </RenderIf>
-        </div>
-        <RenderIf condition={modeControl.value === 'monthMode'} className="my-4">
-          <Alert
-            variant="neutral"
-            title="Entendendo o modo mensal"
-            description="Selecione a data e a duração da sua entrada mensal. "
-            body={
-              <div>
-                <ul>
-                  <li>Selecione a data em que sua entrada foi criada ou quando ela ira iniciar.</li>
-                  <li>Selecione a duração da sua entrada. Ex: 4 meses</li>
-                </ul>
-              </div>
-            }
-          />
-        </RenderIf>
+        </Switch>
+        <Switch
+          checked={periodicityControl.value === PeriodicityEnum.fixed}
+          onCheckedChange={(e) => {
+            e
+              ? periodicityControl.onChange(PeriodicityEnum.fixed)
+              : periodicityControl.onChange(PeriodicityEnum.fixed);
+          }}
+          label="Fixo mensalmente"
+          helpertext="será cobrado mensalmente"
+          name="fixed-mode"
+        />
       </Step>
       <Alert
         variant="info"

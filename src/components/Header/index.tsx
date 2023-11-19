@@ -3,12 +3,15 @@ import useVisibility from '@/hooks/useVisibility';
 import { Bell, LogOut, Menu, Search, Settings, User2, X } from 'lucide-react';
 import { HTMLAttributes, useRef } from 'react';
 
+import { useAuth, useSession } from '@clerk/clerk-react';
+
 type ButtonMenuProps = HTMLAttributes<HTMLButtonElement>;
 const ButtonMenu = (props: ButtonMenuProps) => {
   return (
     <button
       className="bg-white rounded-lg  h-[48px] w-[48px] flex justify-center items-center text-zinc-600"
-      {...props}>
+      {...props}
+    >
       {props.children}
     </button>
   );
@@ -50,6 +53,13 @@ const Header = () => {
   const isSmallScreen = useMediaQuery('sm');
   const menuRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const session = useSession();
+  const { signOut, ...auth } = useAuth();
+
+  console.log({
+    session,
+    auth
+  });
 
   if (isSmallScreen) {
     return (
@@ -69,18 +79,28 @@ const Header = () => {
             <ButtonMenu
               onClick={() => {
                 menuControl.visible ? menuControl.onHidden() : menuControl.onShow();
-              }}>
+              }}
+            >
               {menuControl.visible ? <X size={22} /> : <Menu size={22} />}
             </ButtonMenu>
             {menuControl.visible && (
               <div
                 className="absolute w-full h-full left-0 top-[56px] flex justify-end "
-                ref={menuRef}>
+                ref={menuRef}
+              >
                 <div className="bg-white border border-slate-100 absolute w-[80%] rounded-lg z-50 p-4">
                   <User />
                   <div className="space-y-2 pt-4">
                     <ButtonMenuList icon={<Settings />} title="Configurações" />
-                    <ButtonMenuList icon={<LogOut />} title="Sair" />
+                    <ButtonMenuList
+                      icon={<LogOut />}
+                      title="Sair"
+                      onClick={() => {
+                        console.log(session);
+
+                        signOut();
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -122,18 +142,28 @@ const Header = () => {
             <ButtonMenu
               onClick={() => {
                 userControl.visible ? userControl.onHidden() : userControl.onShow();
-              }}>
+              }}
+            >
               <User2 size={22} />
             </ButtonMenu>
             {userControl.visible && (
               <div
                 className="absolute w-full h-full left-0 top-[56px] flex justify-end "
-                ref={userRef}>
+                ref={userRef}
+              >
                 <div className="bg-white border border-slate-100 absolute w-[80%] rounded-lg z-50 p-4">
                   <User />
                   <div className="space-y-2 pt-4">
                     <ButtonMenuList icon={<Settings />} title="Configurações" />
-                    <ButtonMenuList icon={<LogOut />} title="Sair" />
+                    <ButtonMenuList
+                      icon={<LogOut />}
+                      title="Sair"
+                      onClick={() => {
+                        console.log(session);
+
+                        signOut();
+                      }}
+                    />
                   </div>
                 </div>
               </div>

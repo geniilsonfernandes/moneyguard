@@ -1,62 +1,56 @@
-import ExpenseCard from '@/components/ExpenseCard';
+import Alert from '@/components/Alert';
+import EmptyComponent from '@/components/EmptyComponent';
 import ExpenseGroup from '@/components/ExpenseGroup';
+import ExpenseItem from '@/components/ExpenseItem';
+import SubHeader from '@/components/Layouts/SubHeader';
 import MonthControl from '@/components/MonthControl';
 import SalaryAmount from '@/components/SalaryAmount';
-import formatNumber from '@/utils/formatNumber';
-
+import Statistics from '@/components/Statistics';
 import Button from '@/components/ui/Button';
-
-import Alert from '@/components/Alert';
-import SubHeader from '@/components/Layouts/SubHeader';
-import { changeTheme } from '@/utils/changeTheme';
-import { TrendingUp, Wallet } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-
-const Statistics = () => {
-  return (
-    <div className="text-neutral-500 border border-salte-200 bg-white rounded-lg">
-      <div className="p-4">
-        <h3 className="font-bold text-zinc-800 gap-2 flex items-center">
-          <span className="w-[38px] h-[38px] bg-slate-100 rounded-lg flex-center">
-            <Wallet size={20} />
-          </span>
-          Economia este mês
-        </h3>
-        <div className="flex items-center justify-between pt-8 text-zinc-950">
-          <h1 className=" text-3xl font-normal ">
-            {formatNumber(100 + 300 + -200, {
-              style: 'currency',
-              currency: 'BRL',
-              minimumFractionDigits: 2
-            })}
-          </h1>
-          <div className="w-[48px] h-[48px] border border-slate-800 rounded-full flex-center">
-            <TrendingUp size={24} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
+import { useAppDispatch, useAppSelector } from '@/store';
+import { getBudgets } from '@/store/reducers/budgets';
+import { getFinancialRecords } from '@/store/reducers/financialRecords';
+import formatNumber from '@/utils/formatNumber';
+import { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import Loading from './Loading';
 const Dashboard = () => {
+  const dispatch = useAppDispatch();
+  const { data, loading, origin } = useAppSelector((state) => state.financialRecords);
+  const { data: budgets } = useAppSelector((state) => state.budgets);
   const navigate = useNavigate();
+  const monthExpense = formatNumber(1032);
 
-  const monthExpense = formatNumber(1032, {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 2
-  });
+  useEffect(() => {
+    dispatch(getFinancialRecords());
+    dispatch(getBudgets());
+  }, [dispatch, origin]);
+
+  const handleChangeMonth = (month: string) => {
+    dispatch(getFinancialRecords({ month }));
+  };
+  // tela de resumo simples
+  // todos vao ter o array de periodo de datas e os que sao unico vai ter somente um item no array
+  // usa mongo db
+
+  const openExpense = (id: string) => {
+    navigate(`/expense-view/${id}`);
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="bg-slate-100 ">
+      <Outlet />
       <SubHeader className="flex justify-between items-end py-12">
         <SalaryAmount />
       </SubHeader>
 
       <div className="container space-y-6 pb-6  -mt-6 ">
         <div className="bg-slate-950 p-8 rounded-lg shadow-lg text-white flex flex-col gap-6 sm:flex-row sm:justify-between">
-          <MonthControl />
+          <MonthControl onChangeMonth={handleChangeMonth} />
           <div className="text-zinc-50 flex flex-col gap-2">
             <span className="text-base">Total de despesas este mês:</span>
             <span className="uppercase font-bold text-lg">{monthExpense}</span>
@@ -83,14 +77,40 @@ const Dashboard = () => {
               variant="fill"
               onClick={() => {
                 navigate('/expense/new');
-                changeTheme('theme1');
-              }}>
+              }}
+            >
               Nova entrada
             </Button>
           </div>
-
-          <ExpenseCard />
-          <ExpenseGroup />
+          {budgets &&
+            budgets.map(({ name, id }) => {
+              const filteredData = data.filter((record) => record.budget.name === name);
+              if (filteredData.length === 0) {
+                return null;
+              }
+              return (
+                <ExpenseGroup
+                  name={name}
+                  id={id}
+                  key={id}
+                  totalExpense={filteredData.reduce((acc, record) => acc + record.value, 0)}
+                  totalItems={filteredData.length}
+                >
+                  {filteredData.map((record) => (
+                    <ExpenseItem
+                      key={record.id}
+                      group={false}
+                      id={record.id}
+                      name={record.name}
+                      type={record.type}
+                      value={record.value}
+                      onClick={() => openExpense(record.id)}
+                    />
+                  ))}
+                </ExpenseGroup>
+              );
+            })}
+          {data.length === 0 && <EmptyComponent onCreateClick={() => navigate('/expense/new')} />}
         </div>
       </div>
     </div>

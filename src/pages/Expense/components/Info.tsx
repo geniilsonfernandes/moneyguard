@@ -3,9 +3,13 @@ import Input, { Textarea, ValueInput } from '@/components/Input';
 import Step from '@/components/ui/Step';
 
 import Alert from '@/components/Alert';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { Control, Controller, FieldErrors, useController } from 'react-hook-form';
 import { ExpenseFields } from '../shared/schema';
 import RenderIf from '@/components/ui/RenderIf';
+import { Calculator as CalculatorIcon } from 'lucide-react';
+import useVisibility from '@/hooks/useVisibility';
+import Modal from '@/components/ui/Modal';
+import Calculator from '@/components/Calculator';
 
 type ExpenseToggleProps = {
   errors?: FieldErrors<ExpenseFields>;
@@ -13,6 +17,12 @@ type ExpenseToggleProps = {
 };
 
 const Info = ({ errors, control }: ExpenseToggleProps) => {
+  const calculate = useVisibility();
+  const valueControl = useController({
+    name: 'value',
+    control
+  });
+
   return (
     <Step>
       <div className="space-y-8">
@@ -24,18 +34,28 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
           )}
         />
 
-        <Controller
-          control={control}
-          name="value"
-          render={({ field: { onChange, value } }) => (
-            <ValueInput
-              onChange={(changedValue = 0) => onChange(changedValue)}
-              error={!!errors?.value}
-              helperText={errors?.value?.message}
-              value={value}
-            />
-          )}
-        />
+        <div className="flex items-center justify-between">
+          <Controller
+            control={control}
+            name="value"
+            render={({ field: { onChange, value } }) => (
+              <ValueInput
+                onChange={(changedValue = 0) => onChange(changedValue)}
+                error={!!errors?.value}
+                helperText={errors?.value?.message}
+                value={value}
+              />
+            )}
+          />
+          <button
+            className="flex items-center gap-2 p-2 rounded-lg"
+            onClick={() => {
+              calculate.visible ? calculate.onHidden() : calculate.onShow();
+            }}
+          >
+            <CalculatorIcon />
+          </button>
+        </div>
 
         <Controller
           control={control}
@@ -97,6 +117,20 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
           />
         </RenderIf>
       </div>
+      <Modal
+        mode="full"
+        title="Calculadora"
+        isOpen={calculate.visible}
+        onClose={calculate.onHidden}
+      >
+        <Calculator
+          onCancel={() => calculate.onHidden()}
+          onComplete={(result) => {
+            calculate.onHidden();
+            valueControl.field.onChange(result);
+          }}
+        />
+      </Modal>
     </Step>
   );
 };

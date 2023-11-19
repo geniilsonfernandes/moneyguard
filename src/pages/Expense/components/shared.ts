@@ -1,1 +1,1 @@
-export type CreateBudgetSteps = 'INFO' | 'BUDGET' | 'FREQUENCY' | 'FINISH';
+export type Steps = 'INFO' | 'BUDGET' | 'FREQUENCY' | 'FINISH';

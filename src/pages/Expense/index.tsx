@@ -1,84 +1,39 @@
+import Alert from '@/components/Alert';
 import SubHeader from '@/components/Layouts/SubHeader';
 import Button from '@/components/ui/Button';
+import RenderIf from '@/components/ui/RenderIf';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { createFinancialRecords } from '@/store/reducers/createFinancialRecords';
+import { getFinancialRecords } from '@/store/reducers/financialRecords';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import Confetti from 'react-confetti';
 import { FieldErrors, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-
-import Alert from '@/components/Alert';
-import RenderIf from '@/components/ui/RenderIf';
-import generateHashId from '@/utils/generateHashId';
-import Confetti from 'react-confetti';
 import Budget from './components/Budget';
 import Frequency from './components/Frequency';
 import Info from './components/Info';
 import View from './components/View';
-import { CreateBudgetSteps } from './components/shared';
+import { Steps } from './components/shared';
 import { ExpenseFields, createSchema, defaultValues } from './shared/schema';
-
-const steps = {
-  INFO: {
-    order: 1,
-    percentage: 0.25,
-    title: 'Adicionar informações iniciais',
-    subtitle: 'Forneça o nome, valor e uma nota para a entrada inicial.'
-  },
-  BUDGET: {
-    order: 2,
-    percentage: 0.5,
-    title: 'Inserir detalhes de orçamento',
-    subtitle: 'Insira o nome, valor e adicione uma nota para o orçamento.'
-  },
-  FREQUENCY: {
-    order: 3,
-    percentage: 0.75,
-    title: 'Estabelecer frequência e data',
-    subtitle: 'Configure a frequência desejada.'
-  },
-  FINISH: {
-    order: 4,
-    percentage: 0,
-    title: 'Finalizar processo',
-    subtitle: 'Conclua o processo de entrada de dados.'
-  }
-};
-
-const defaultBudgets = [
-  {
-    name: 'Casa',
-    id: '1',
-    value: 100
-  },
-  {
-    name: 'Lazer',
-    id: '2',
-    value: 200
-  },
-  {
-    name: 'Transporte',
-    id: '3',
-    value: 300
-  }
-];
+import { steps } from './steps';
 
 const Expense = () => {
+  const dispatch = useAppDispatch();
+  const { loading, error, success } = useAppSelector((state) => state.createFinancialRecords);
   const navigate = useNavigate();
 
-  const [budgets, setBudgets] = useState(defaultBudgets);
   const { width, height } = {
     width: window.innerWidth - 20,
     height: window.innerHeight
   };
-  const [step, setSteps] = useState<CreateBudgetSteps>('INFO');
-
-  const bugetQuantityLimit = 10 - budgets.length;
+  const [step, setSteps] = useState<Steps>('INFO');
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setValue,
-    clearErrors,
     trigger,
     getValues
   } = useForm<ExpenseFields>({
@@ -129,29 +84,17 @@ const Expense = () => {
     goBack();
   };
 
-  const handleCreateBudget = (newBudget: string) => {
-    if (!newBudget) {
-      return;
+  const onSubmit = async (data: ExpenseFields) => {
+    const d = await dispatch(
+      createFinancialRecords({
+        data
+      })
+    );
+
+    if (d) {
+      dispatch(getFinancialRecords());
+      setSteps('FINISH');
     }
-
-    const createNewBudget = {
-      name: newBudget,
-      id: `new-${generateHashId()}`,
-      value: 0
-    };
-
-    setValue('budget', createNewBudget);
-    clearErrors('budget');
-    setBudgets([...budgets, createNewBudget]);
-  };
-
-  const onSubmit = (data: ExpenseFields) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(data);
-        resolve(true);
-      }, 2000);
-    });
   };
 
   return (
@@ -179,15 +122,7 @@ const Expense = () => {
               </div>
             </div>
             {step === 'INFO' && <Info errors={errors} control={control} />}
-            {step === 'BUDGET' && (
-              <Budget
-                errors={errors}
-                control={control}
-                budgets={budgets}
-                onCreateBuget={handleCreateBudget}
-                bugetQuantityLimit={bugetQuantityLimit}
-              />
-            )}
+            {step === 'BUDGET' && <Budget errors={errors} control={control} />}
             {step === 'FREQUENCY' && (
               <Frequency errors={errors} control={control} setValue={setValue} />
             )}
@@ -197,9 +132,23 @@ const Expense = () => {
                 <Button variant="ghost" onClick={previousStep}>
                   {step === 'INFO' ? 'Cancelar' : 'Etapa anterior'}
                 </Button>
-                <Button variant="fill" onClick={changeStep}>
-                  Avançar
-                </Button>
+
+                {step !== 'FREQUENCY' && (
+                  <Button variant="fill" onClick={changeStep}>
+                    Proxima etapa
+                  </Button>
+                )}
+                {step === 'FREQUENCY' && (
+                  <Button
+                    variant="fill"
+                    onClick={handleSubmit(onSubmit, onInvalid)}
+                    disabled={loading}
+                    isLoading={loading}
+                    type="submit"
+                  >
+                    {loading ? '...' : 'Confirmar nova entrada'}
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -219,15 +168,14 @@ const Expense = () => {
                 <div className="sm:max-w-[440px] text-center sm:text-left">
                   <h1 className="text-3xl font-bold text-zinc-950">Tudo pronto!</h1>
                   <h1 className="text-3xl font-bold mb-4 text-zinc-950">
-                    Veja ao lado os detalhes da sua entrada antes de confirmar
+                    Veja ao lado os detalhes da sua nova entrada.
                   </h1>
                   <p className="text-zinc-500 mb-8">
-                    Você pode clicar no botão abaixo para salvar ou se esqueceu algo e só voltar ao
-                    passo anterior
+                    Use o botão abaixo para voltar a página inicial
                   </p>
                 </div>
                 <div className="flex gap-2 justify-center sm:justify-start">
-                  <Button variant="outline" onClick={previousStep}>
+                  <Button variant="outline" onClick={previousStep} disabled={true}>
                     Editar entrada
                   </Button>
                 </div>
@@ -254,11 +202,12 @@ const Expense = () => {
             <Button
               variant="fill"
               width="full"
-              onClick={handleSubmit(onSubmit, onInvalid)}
-              disabled={isSubmitting}
-              isLoading={isSubmitting}
-              type="submit">
-              {isSubmitting ? '...' : 'Confirmar nova entrada'}
+              onClick={() => navigate('/')}
+              disabled={loading}
+              isLoading={loading}
+              type="submit"
+            >
+              {loading ? '...' : 'Confirmar e voltar para página inicial'}
             </Button>
             <Confetti width={width} height={height} recycle={false} />
           </div>
