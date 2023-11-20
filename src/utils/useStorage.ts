@@ -5,6 +5,20 @@ type ItemWithId = {
   created_at: Date;
 };
 
+export class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.message = message;
+  }
+}
+
+export class StorageError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.message = message;
+  }
+}
+
 class LocalStorageUtil<T extends ItemWithId> {
   private key: string;
 
@@ -29,9 +43,14 @@ class LocalStorageUtil<T extends ItemWithId> {
 
   updateItem(item: T): void {
     const data = this.getData();
-    const index = data.findIndex((i) => i.id === item.id);
-    if (index !== -1) {
-      data[index] = item;
+    const findIndex = data.findIndex((i) => i.id === item.id);
+
+    if (findIndex === -1) {
+      throw new NotFoundError('Item not found');
+    }
+
+    if (findIndex !== -1) {
+      data[findIndex] = item;
       this.saveData(data);
     }
   }
@@ -39,6 +58,10 @@ class LocalStorageUtil<T extends ItemWithId> {
   // Adiciona um novo item aos dados existentes
   // Adiciona um novo item aos dados existentes
   addItem(item: Omit<T, 'id' | 'created_at'>): void {
+    if (!item) {
+      throw new StorageError('data is required');
+    }
+
     const data = this.getData();
     const newItem: T = {
       id: generateHashId(16),

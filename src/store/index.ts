@@ -5,6 +5,7 @@ import createExpense from './reducers/createExpense';
 import budgets from './reducers/budgets';
 import auth from './reducers/auth';
 import getExpense from './reducers/getExpense';
+import deleteExpense from './reducers/deleteExpense';
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     // Example:
     expenses: getExpenses,
     createExpense: createExpense,
+    deleteExpense: deleteExpense,
     expense: getExpense,
     budgets: budgets,
     auth: auth

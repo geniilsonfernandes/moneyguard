@@ -10,8 +10,7 @@ const ButtonMenu = (props: ButtonMenuProps) => {
   return (
     <button
       className="bg-white rounded-lg  h-[48px] w-[48px] flex justify-center items-center text-zinc-600"
-      {...props}
-    >
+      {...props}>
       {props.children}
     </button>
   );
@@ -34,16 +33,43 @@ const ButtonMenuList = ({ icon, title, ...props }: ButtonMenuListProps) => {
 };
 
 const User = () => {
+  const { session } = useSession();
+
+  const fullName = session?.user?.fullName;
+  const hasImage = session?.user?.hasImage;
+  const image = session?.user?.imageUrl;
+  const email = session?.user?.primaryEmailAddress?.emailAddress;
+
   return (
     <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
       <div className="w-[48px] h-[48px] flex justify-center items-center border border-slate-200 rounded-lg">
-        <User2 />
+        {hasImage && <img src={image} className="min-w-[48px] h-[48px] object-cover rounded-lg" />}
+
+        {!hasImage && <User2 />}
       </div>
       <div className="flex flex-col">
-        <h4 className="text-zinc-950 font-semibold">Genilson fernandes</h4>
-        <span className="text-zinc-400">@genilsondev</span>
+        <h4 className="text-zinc-950 font-semibold">{fullName}</h4>
+        <span className="text-zinc-400 text-xs">{email}</span>
       </div>
     </div>
+  );
+};
+
+type UserButtonProps = HTMLAttributes<HTMLButtonElement>;
+const UserButton = (props: UserButtonProps) => {
+  const { session } = useSession();
+
+  const hasImage = session?.user?.hasImage;
+  const image = session?.user?.imageUrl;
+
+  return (
+    <button
+      className="w-[48px] h-[48px] flex justify-center items-center border border-slate-200 rounded-lg"
+      {...props}>
+      {hasImage && <img src={image} className="min-w-[48px] h-[48px] object-cover rounded-lg" />}
+
+      {!hasImage && <User2 />}
+    </button>
   );
 };
 
@@ -53,13 +79,8 @@ const Header = () => {
   const isSmallScreen = useMediaQuery('sm');
   const menuRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
-  const session = useSession();
-  const { signOut, ...auth } = useAuth();
 
-  console.log({
-    session,
-    auth
-  });
+  const { signOut } = useAuth();
 
   if (isSmallScreen) {
     return (
@@ -79,15 +100,13 @@ const Header = () => {
             <ButtonMenu
               onClick={() => {
                 menuControl.visible ? menuControl.onHidden() : menuControl.onShow();
-              }}
-            >
+              }}>
               {menuControl.visible ? <X size={22} /> : <Menu size={22} />}
             </ButtonMenu>
             {menuControl.visible && (
               <div
                 className="absolute w-full h-full left-0 top-[56px] flex justify-end "
-                ref={menuRef}
-              >
+                ref={menuRef}>
                 <div className="bg-white border border-slate-100 absolute w-[80%] rounded-lg z-50 p-4">
                   <User />
                   <div className="space-y-2 pt-4">
@@ -96,8 +115,6 @@ const Header = () => {
                       icon={<LogOut />}
                       title="Sair"
                       onClick={() => {
-                        console.log(session);
-
                         signOut();
                       }}
                     />
@@ -132,25 +149,21 @@ const Header = () => {
               placeholder="Pesquisar por nome ou orçamento"
             />
           </div>
-          <div className="col-span-4 flex justify-end gap-4 relative">
+          <div className="col-span-4 flex justify-end gap-4 relative ">
             <ButtonMenu>
               <Bell size={22} />
             </ButtonMenu>
             <ButtonMenu>
               <Settings size={22} />
             </ButtonMenu>
-            <ButtonMenu
+            <UserButton
               onClick={() => {
                 userControl.visible ? userControl.onHidden() : userControl.onShow();
-              }}
-            >
-              <User2 size={22} />
-            </ButtonMenu>
+              }}></UserButton>
             {userControl.visible && (
               <div
-                className="absolute w-full h-full left-0 top-[56px] flex justify-end "
-                ref={userRef}
-              >
+                className="absolute w-[400px] h-full right-0  top-[56px] flex justify-end "
+                ref={userRef}>
                 <div className="bg-white border border-slate-100 absolute w-[80%] rounded-lg z-50 p-4">
                   <User />
                   <div className="space-y-2 pt-4">
@@ -159,8 +172,6 @@ const Header = () => {
                       icon={<LogOut />}
                       title="Sair"
                       onClick={() => {
-                        console.log(session);
-
                         signOut();
                       }}
                     />

@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button';
 import RenderIf from '@/components/ui/RenderIf';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { createExpense, updateExepense } from '@/store/reducers/createExpense';
-import { getExpenses } from '@/store/reducers/getExpenses';
+import { initHydrateExpenses } from '@/store/reducers/getExpenses';
 import { getExpenseById } from '@/store/reducers/getExpense';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
@@ -22,7 +22,6 @@ import { steps } from './steps';
 import { getBudgets } from '@/store/reducers/budgets';
 import dayjs from 'dayjs';
 
-
 const texts = {
   edit: {
     header: 'Editar entrada',
@@ -32,21 +31,21 @@ const texts = {
     header: 'Adicionar nova entrada',
     button: 'Salvar e continuar'
   }
-}
+};
 
 const Expense = () => {
   const [step, setSteps] = useState<Steps>('INFO');
   const { id } = useParams() as { id: string };
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading } = useAppSelector((state) => state.createExpense);
+  const { loading, error } = useAppSelector((state) => state.createExpense);
   const expense = useAppSelector((state) => state.expense);
   const { width, height } = {
     width: window.innerWidth - 20,
     height: window.innerHeight
   };
 
-  const hasEdit = !id ? "create" : "edit";
+  const hasEdit = id ? 'edit' : 'create';
 
   const {
     control,
@@ -102,7 +101,7 @@ const Expense = () => {
   };
 
   const onSubmit = async (data: ExpenseFields) => {
-    if (hasEdit) {
+    if (hasEdit === 'edit') {
       const editing = await dispatch(
         updateExepense({
           data,
@@ -111,66 +110,65 @@ const Expense = () => {
       );
 
       if (editing) {
-        dispatch(getExpenses());
+        dispatch(initHydrateExpenses());
         setSteps('FINISH');
       }
-      return
+      return;
     }
 
-
-    const d = await dispatch(
+    const creating = await dispatch(
       createExpense({
         data
       })
     );
 
-    if (d) {
-      dispatch(getExpenses());
+    if (creating) {
+      dispatch(initHydrateExpenses());
       setSteps('FINISH');
     }
   };
-
 
   useEffect(() => {
     const getExpense = async () => {
       const data = await dispatch(getExpenseById({ id }));
 
-
       if (data) {
         setValue('name', data.name);
-        setValue("type", data.type)
+        setValue('type', data.type);
         setValue('value', data.value);
         setValue('budget', data.budget);
 
         // period
         setValue('periodicity_mode', data.periodicity_mode);
         setValue('payment_mode', data.payment_mode);
-        setValue("due_date", dayjs(data.due_date).toDate());
-        setValue("duration", data.duration)
+        setValue('due_date', dayjs(data.due_date).toDate());
+        setValue('duration', data.duration);
       }
     };
 
     if (id) {
       getExpense();
     }
-  }, [dispatch, id]);
+  }, [dispatch, id, setValue]);
 
   useEffect(() => {
     dispatch(getBudgets());
   }, [dispatch]);
 
   if (expense.loading) {
-    return <div className="bg-white">
-      <SubHeader
-        goBack={goBack}
-        title={texts[hasEdit].header}
-        subTitle="Cadastre uma nova entrada para organizar seus gastos"
-        className="grid grid-cols-6 gap-8"
-      />
-      <div className='py-20'>
-        <Loader />
+    return (
+      <div className="bg-white">
+        <SubHeader
+          goBack={goBack}
+          title={texts[hasEdit].header}
+          subTitle="Cadastre uma nova entrada para organizar seus gastos"
+          className="grid grid-cols-6 gap-8"
+        />
+        <div className="py-20">
+          <Loader />
+        </div>
       </div>
-    </div>
+    );
   }
 
   return (
@@ -218,6 +216,18 @@ const Expense = () => {
                 }
               />
             </RenderIf>
+            <RenderIf condition={!!error?.status} className="my-4">
+              <Alert
+                variant="danger"
+                title={error?.message || ''}
+                description="Alguma coisa deu errado, tente novamente"
+                body={
+                  <div>
+                    <p>{error?.details}</p>
+                  </div>
+                }
+              />
+            </RenderIf>
 
             <div className="flex justify-end items-center pt-8 ">
               <div className="flex gap-2">
@@ -236,8 +246,7 @@ const Expense = () => {
                     onClick={handleSubmit(onSubmit, onInvalid)}
                     disabled={loading}
                     isLoading={loading}
-                    type="submit"
-                  >
+                    type="submit">
                     {texts[hasEdit].button}
                   </Button>
                 )}
@@ -249,7 +258,7 @@ const Expense = () => {
               variant="info"
               title="Precisando de ajuda?"
               helpButton="Saber mais"
-              onHelpClick={() => { }}
+              onHelpClick={() => {}}
             />
           </div>
         </RenderIf>
@@ -297,8 +306,7 @@ const Expense = () => {
               onClick={() => navigate('/')}
               disabled={loading}
               isLoading={loading}
-              type="submit"
-            >
+              type="submit">
               {loading ? '...' : 'Confirmar e voltar para página inicial'}
             </Button>
             <Confetti width={width} height={height} recycle={false} />
