@@ -10,7 +10,7 @@ import Button from '@/components/ui/Button';
 import Loading from './Loading';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { getBudgets } from '@/store/reducers/budgets';
-import {  getExpenses } from '@/store/reducers/getExpenses';
+import { getExpenses } from '@/store/reducers/getExpenses';
 import formatNumber from '@/utils/formatNumber';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -19,6 +19,7 @@ import { ExpenseFieldsWithId } from '@/store/storage';
 
 const calculateExpense = (expenses: ExpenseFieldsWithId[]) => {
   return expenses.reduce((acc, record) => {
+    const { periodicity_mode, payment_mode, duration } = record
     if (record.type === 'expense') {
       return acc + record.value
     }
@@ -39,12 +40,12 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    dispatch( getExpenses());
+    dispatch(getExpenses());
     dispatch(getBudgets());
   }, [dispatch, origin]);
 
   const handleChangeMonth = (month: string) => {
-    dispatch( getExpenses({ month }));
+    dispatch(getExpenses({ month }));
   };
   // tela de resumo simples
   // todos vao ter o array de periodo de datas e os que sao unico vai ter somente um item no array
