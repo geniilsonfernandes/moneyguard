@@ -1,10 +1,10 @@
+import { AppRouter } from '@/routes';
+import { ClerkLoaded, ClerkLoading, ClerkProvider } from '@clerk/clerk-react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { AppRouter } from '@/routes';
 import { Provider } from 'react-redux';
-import { store } from './store';
-import { ClerkProvider, ClerkLoading, ClerkLoaded } from '@clerk/clerk-react';
 import Loader from './components/Loader';
+import { store } from './store';
 
 import './index.css';
 if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) {

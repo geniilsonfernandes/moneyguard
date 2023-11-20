@@ -92,7 +92,10 @@ export const createSchema = z.object({
         })
         .refine((value) => value.trim().length > 0, {
           message: 'O orçamento não pode ser vazio'
-        })
+        }),
+      id: z
+        .string(),
+        
     })
   ),
   duration: z.optional(z.number())

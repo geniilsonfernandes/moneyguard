@@ -1,10 +1,14 @@
 import ErrorPage from '@/components/ErrorPage';
+import ExpenseView from '@/components/ExpenseView';
 import Header from '@/components/Header';
 import NotFound from '@/components/NotFound';
 import Dashboard from '@/pages/Dashboard';
 import Expense from '@/pages/Expense';
 import SingIn from '@/pages/SingIn';
 import SingUp from '@/pages/SingUp';
+import { useAppDispatch } from '@/store';
+import { login, logout } from '@/store/reducers/auth';
+import { useAuth } from '@clerk/clerk-react';
 import {
   Navigate,
   Outlet,
@@ -12,10 +16,6 @@ import {
   RouterProvider,
   createBrowserRouter
 } from 'react-router-dom';
-import { useAuth } from '@clerk/clerk-react';
-import { useAppDispatch } from '@/store';
-import { login, logout } from '@/store/reducers/auth';
-import ExpeseView from '@/components/ExpeseView';
 
 const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
   return <div className="bg-slate-100">{children}</div>;
@@ -60,7 +60,7 @@ export function PrivateRoutes(): {
         children: [
           {
             path: '/expense-view/:id',
-            element: <ExpeseView />,
+            element: <ExpenseView />,
             errorElement: <ErrorPage />,
             ErrorBoundary: () => <ErrorPage />
           }
@@ -95,21 +95,17 @@ function PublicRoute(): {
   };
 }
 
-const checkAuth = () => {
+export function AppRouter() {
   const dispatch = useAppDispatch();
   const { isSignedIn, userId } = useAuth();
 
   if (!isSignedIn) {
     dispatch(logout());
-    return false;
+  } else {
+    dispatch(login(userId));
   }
 
-  dispatch(login(userId));
-  return true;
-};
-
-export function AppRouter() {
-  const router = createBrowserRouter([checkAuth() ? PrivateRoutes() : PublicRoute()]);
+  const router = createBrowserRouter([isSignedIn ? PrivateRoutes() : PublicRoute()]);
 
   return <RouterProvider router={router} />;
 }

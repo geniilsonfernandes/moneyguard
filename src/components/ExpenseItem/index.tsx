@@ -30,8 +30,7 @@ const ExpenseItem = ({ type, group = true, id, name, value = 0, onClick }: Expen
       ].join(' ')}
       aria-label={id}
       tabIndex={0}
-      onClick={handleToView}
-    >
+      onClick={handleToView}>
       <h4 className="text-zinc-950 font-normal text-base flex gap-3">
         {type === 'income' ? (
           <ChevronUpCircle className="text-green-500" />
@@ -44,8 +43,7 @@ const ExpenseItem = ({ type, group = true, id, name, value = 0, onClick }: Expen
         <AmountBadge amount={expense} type={type} />
         <button
           onClick={handleToView}
-          className="text-zinc-400  hover:bg-slate-200 h-[32px] w-[32px] flex-center rounded-lg"
-        >
+          className="text-zinc-400  hover:bg-slate-200 h-[32px] w-[32px] flex-center rounded-lg">
           <ChevronRight />
         </button>
       </div>
