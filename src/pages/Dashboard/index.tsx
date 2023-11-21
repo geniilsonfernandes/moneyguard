@@ -12,17 +12,18 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { getBudgets } from '@/store/reducers/budgets';
 import { getExpenses } from '@/store/reducers/getExpenses';
 import { cn } from '@/utils';
-import formatNumber from '@/utils/formatNumber';
+import { useSession } from '@clerk/clerk-react';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
+import formatNumber from '@/utils/formatNumber';
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
   const { data, loading, origin, hydrating } = useAppSelector((state) => state.expenses);
   const { data: budgets } = useAppSelector((state) => state.budgets);
   const navigate = useNavigate();
-  const { expense, income, total } = useCalculateExpense(data);
+  const { expense, income } = useCalculateExpense(data);
 
   useEffect(() => {
     dispatch(getExpenses());
@@ -32,9 +33,10 @@ const Dashboard = () => {
   const handleChangeMonth = (month: string) => {
     dispatch(getExpenses({ month }));
   };
-  // tela de resumo simples
-  // todos vao ter o array de periodo de datas e os que sao unico vai ter somente um item no array
-  // usa mongo db
+
+  const { session } = useSession();
+
+  const firstName = session?.user?.firstName;
 
   const openExpense = (id: string) => {
     navigate(`/expense-view/${id}`);
@@ -47,10 +49,11 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="bg-slate-100 ">
+    <div className="bg-slate-50 ">
       <Outlet />
-      <SubHeader className="flex justify-between items-end py-12">
-        {/* <SalaryAmount /> */}
+      <SubHeader className="flex flex-col py-12">
+        <span className="text-3xl text-zinc-500">Olá</span>
+        <h4 className="text-4xl text-zinc-950 font-bold">{firstName}</h4>
       </SubHeader>
 
       <div className="container space-y-6 pb-6  -mt-6 ">
@@ -64,12 +67,25 @@ const Dashboard = () => {
           title="Estatisticas de despesas?"
           description="As estatísticas fornecem um resumo das suas despesas deste mês, levando em conta seus gastos recentes e os meses anteriores."
         />
-        <div className="bg-slate-950 p-8 rounded-lg shadow-lg text-white flex flex-col gap-6 sm:flex-row sm:justify-between">
-          <div className="text-zinc-50 flex flex-col gap-2">
-            <span className="text-base">Total de despesas este mês:</span>
-            <span className="uppercase font-bold text-lg">{formatNumber(total)}</span>
+        <div className="border p-4 rounded-lg flex gap-6 sm:flex-row sm:justify-between">
+          <div className="flex gap-6 items-center">
+            <div>
+              <h4 className="text-neutral-700 text-lg font-bold">Despesas este mês</h4>
+              <p className="text-neutral-600 text-sm">{formatNumber(expense)}</p>
+            </div>
+            <div aria-label="divisor" className="bg-slate-400 w-px h-10" />
+            <div>
+              <h4 className="text-neutral-700 text-lg font-bold">Orçamento disponível</h4>
+              <p className="text-neutral-600 text-sm">{formatNumber(income)}</p>
+            </div>
           </div>
-          <MonthControl onChangeMonth={handleChangeMonth} />
+          <Button
+            variant="fill"
+            onClick={() => {
+              navigate('/expense/new');
+            }}>
+            novo despesa
+          </Button>
         </div>
 
         <div
@@ -81,20 +97,9 @@ const Dashboard = () => {
               variant="neutral"
             />
           </RenderIf>
-          <div className="flex justify-between py-4">
-            <div>
-              <h1 className="font-semibold text-zinc-950 text-2xl flex">Despesas</h1>
-              <p className="text-zinc-500 text-sm mt-1">controle suas despesas</p>
-            </div>
 
-            <Button
-              variant="fill"
-              onClick={() => {
-                navigate('/expense/new');
-              }}>
-              Nova entrada
-            </Button>
-          </div>
+          <MonthControl onChangeMonth={handleChangeMonth} />
+
           <div className="space-y-3">
             {budgets &&
               budgets.map(({ name, id }) => {
@@ -111,7 +116,7 @@ const Dashboard = () => {
                         id={record.id}
                         name={record.name}
                         type={record.type}
-                        value={record.value}
+                        expense={record}
                         onClick={() => openExpense(record.id)}
                       />
                     ))}
