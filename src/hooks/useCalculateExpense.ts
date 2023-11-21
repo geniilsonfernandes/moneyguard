@@ -2,6 +2,8 @@ import { ExpenseStorageDTO } from '@/store/storage';
 
 type CalculateExpenseReturn = {
   income: number;
+  incomeQuantity: number;
+  expenseQuantity: number;
   expense: number;
   total: number;
 };
@@ -11,6 +13,8 @@ const calculateExpense = (expenses: ExpenseStorageDTO[]): CalculateExpenseReturn
     return {
       income: 0,
       expense: 0,
+      incomeQuantity: 0,
+      expenseQuantity: 0,
       total: 0
     };
   }
@@ -28,20 +32,26 @@ const calculateExpense = (expenses: ExpenseStorageDTO[]): CalculateExpenseReturn
         return {
           income: acc.income,
           expense: acc.expense + valueToPay,
-          total: acc.total - valueToPay
+          total: acc.total - valueToPay,
+          expenseQuantity: acc.expenseQuantity + 1,
+          incomeQuantity: acc.incomeQuantity
         };
       }
       if (record.type === 'income') {
         return {
           income: acc.income + valueToPay,
+          incomeQuantity: acc.incomeQuantity + 1,
           expense: acc.expense,
-          total: acc.total + valueToPay
+          total: acc.total + valueToPay,
+          expenseQuantity: acc.expenseQuantity
         };
       }
       return acc;
     },
     {
       income: 0,
+      incomeQuantity: 0,
+      expenseQuantity: 0,
       expense: 0,
       total: 0
     }
@@ -51,9 +61,7 @@ const calculateExpense = (expenses: ExpenseStorageDTO[]): CalculateExpenseReturn
 type UseCalculateExpenseReturn = CalculateExpenseReturn;
 
 const useCalculateExpense = (expenses: ExpenseStorageDTO[]): UseCalculateExpenseReturn => {
-  const { expense, income, total } = calculateExpense(expenses);
-
-  return { expense, income, total };
+  return calculateExpense(expenses);
 };
 
 export default useCalculateExpense;

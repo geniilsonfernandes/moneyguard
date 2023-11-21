@@ -22,21 +22,30 @@ const MonthControl = ({ onChangeMonth }: MonthControlProps) => {
   };
 
   return (
-    <div className="flex gap-4 items-center">
-      <div className="flex justify-between items-center ">
-        <ButtonSmall onClick={prev}>
-          <ChevronLeft />
-        </ButtonSmall>
-        <span className="min-w-[200px] text-center text-zinc-50 capitalize">{monthFormatted}</span>
-        <ButtonSmall onClick={next}>
-          <ChevronRight />
-        </ButtonSmall>
+    <div className="flex flex-col sm:flex-row gap-4 justify-between py-4 ">
+      <div>
+        <h1 className="font-semibold text-zinc-950 text-2xl flex">Finanças de {monthFormatted}</h1>
+        <p className="text-zinc-500 text-sm mt-1">controle suas despesas</p>
       </div>
-      {changed && (
-        <ButtonSmall onClick={reset}>
-          <RotateCw />
-        </ButtonSmall>
-      )}
+
+      <div className="flex gap-4 items-center ">
+        <div className="flex justify-between items-center w-full sm:w-auto">
+          <ButtonSmall onClick={prev}>
+            <ChevronLeft />
+          </ButtonSmall>
+          <span className="sm:min-w-[200px] text-center text-zinc-950 capitalize">
+            {monthFormatted}
+          </span>
+          <ButtonSmall onClick={next}>
+            <ChevronRight />
+          </ButtonSmall>
+        </div>
+        {changed && (
+          <ButtonSmall onClick={reset}>
+            <RotateCw />
+          </ButtonSmall>
+        )}
+      </div>
     </div>
   );
 };
