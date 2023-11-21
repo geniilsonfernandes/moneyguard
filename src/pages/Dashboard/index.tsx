@@ -51,7 +51,7 @@ const Dashboard = () => {
     <div className="bg-slate-100 ">
       <Outlet />
       <SubHeader className="flex justify-between items-end py-12">
-        <SalaryAmount />
+        {/* <SalaryAmount /> */}
       </SubHeader>
 
       <div className="container space-y-6 pb-6  -mt-6 ">
