@@ -4,7 +4,6 @@ import ExpenseGroup from '@/components/ExpenseGroup';
 import ExpenseItem from '@/components/ExpenseItem';
 import SubHeader from '@/components/Layouts/SubHeader';
 import MonthControl from '@/components/MonthControl';
-import SalaryAmount from '@/components/SalaryAmount';
 import Statistics from '@/components/Statistics';
 import Button from '@/components/ui/Button';
 import RenderIf from '@/components/ui/RenderIf';
