@@ -1,11 +1,12 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
+import { api } from '@/http/api/api';
+import endpoints, { BudgetsResponse, ExpensesResponse } from '@/http/api/endpoints';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { Dispatch } from 'redux';
 import { RootState } from '..';
-import { api } from '@/http/api/api';
-import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
-import endpoints, { ExpenseAxiosResponse } from '@/http/api/endpoints';
 import { updateUserId } from './auth';
+import { setBudgets } from './budgets';
 
 type origins = 'create' | 'update' | 'delete' | null;
 
@@ -21,6 +22,7 @@ interface DataState {
 
 const initialState: DataState = {
   data: [],
+
   loading: false,
   error: null,
   origin: null,
@@ -89,27 +91,44 @@ export const getExpenses =
   ({ month = dayjs().format('MM/YYYY') }: getExpensesProps = {}) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(fetchDataStart());
-    const { email, name, clerk_user_id } = getState().auth;
+    const { email, name, clerk_user_id, ...auth } = getState().auth;
     try {
       dispatch(setMonth(month));
+
+      let user_id;
+      if (auth.user_id !== '') {
+        user_id = auth.user_id;
+      } else {
+        const {
+          data: { user }
+        } = await api.post(endpoints.users.get(), {
+          email,
+          name,
+          clerk_id: clerk_user_id
+        });
+        user_id = user.id;
+        dispatch(updateUserId(user.id));
+      }
+
       const {
-        data: { user }
-      } = await api.post(endpoints.users.get(), {
-        email,
-        name,
-        clerk_id: clerk_user_id
+        data: { budgets }
+      } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
+        params: {
+          user_id
+        }
       });
+
+      dispatch(setBudgets(budgets));
 
       const {
         data: { expenses }
-      } = await api.get<ExpenseAxiosResponse>(endpoints.expenses.get(), {
+      } = await api.get<ExpensesResponse>(endpoints.expenses.get(), {
         params: {
-          user_id: user.id,
+          user_id: user_id,
           period: month
         }
       });
 
-      dispatch(updateUserId(user.id));
       dispatch(fetchDataSuccess(expenses));
       dispatch(setCurrentMonthExpenses(expenses));
     } catch (error) {
@@ -128,7 +147,7 @@ export const initHydrateExpenses =
 
       const {
         data: { expenses }
-      } = await api.get<ExpenseAxiosResponse>(endpoints.expenses.get(), {
+      } = await api.get<ExpensesResponse>(endpoints.expenses.get(), {
         params: {
           user_id: user_id,
           period: monthquery

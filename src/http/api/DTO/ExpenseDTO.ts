@@ -1,14 +1,17 @@
+import BudgetDTO from './BudgetDTO';
+
 interface ExpenseDTO {
   id: string;
   user_id: string;
   budget_id: string;
+  budget: BudgetDTO;
   type: ExpensesType;
   name: string;
   note: string;
   amount: number;
   payment_mode: PaymentMode;
   periodicity_mode: PeriodicityMode;
-  dueDate: string;
+  due_date: string;
   period_dates: string[];
   duration: number;
   created_at: string;

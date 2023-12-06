@@ -8,7 +8,6 @@ import Statistics from '@/components/Statistics';
 import Button from '@/components/ui/Button';
 import useCalculateExpense from '@/hooks/useCalculateExpense';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { getBudgets } from '@/store/reducers/budgets';
 import { getExpenses, initHydrateExpenses } from '@/store/reducers/getExpenses';
 import { cn } from '@/utils';
 import formatNumber from '@/utils/formatNumber';
@@ -28,13 +27,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(getExpenses());
-    dispatch(getBudgets());
   }, [dispatch, origin]);
 
   const handleChangeMonth = (month: string) => {
     // dispatch(getExpenses({ month }));
     dispatch(initHydrateExpenses({ current_month: month }));
   };
+  console.log({ budgets });
 
   const { session } = useSession();
 
@@ -97,12 +96,11 @@ const Dashboard = () => {
           <div className="space-y-3">
             {budgets &&
               budgets.map(({ name, id }) => {
-                const filteredExpenses = data.filter(
-                  (record) => record.budget_id === '0826f5a3-e229-471d-937c-4a104ba436c5'
-                );
+                const filteredExpenses = data.filter((record) => record.budget_id === id);
                 if (filteredExpenses.length === 0) {
                   return null;
                 }
+                console.log({ filteredExpenses });
 
                 return (
                   <ExpenseGroup name={name} id={id} key={id} expenses={filteredExpenses}>

@@ -117,7 +117,7 @@ const ExpenseView = () => {
                   <span className="text-xs text-zinc-400 ml-4">{id}</span>
                 </h3>
                 <div className="flex items-end justify-between text-zinc-950">
-                  <h1 className=" text-3xl font-normal ">{formatNumber(data.value)}</h1>
+                  <h1 className=" text-3xl font-normal ">{formatNumber(data.amount)}</h1>
                   <div className="w-[48px] h-[48px] border border-slate-800 rounded-full flex-center">
                     <DollarSign size={24} />
                   </div>
@@ -140,7 +140,7 @@ const ExpenseView = () => {
                         data.duration || 0,
                         data.payment_mode,
                         data.periodicity_mode,
-                        data.value
+                        data.amount
                       )}
                     </h1>
                   </div>
