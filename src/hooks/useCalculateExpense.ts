@@ -1,4 +1,5 @@
-import { ExpenseStorageDTO } from '@/store/storage';
+import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
+import { useMemo } from 'react';
 
 type CalculateExpenseReturn = {
   income: number;
@@ -8,7 +9,7 @@ type CalculateExpenseReturn = {
   total: number;
 };
 
-const calculateExpense = (expenses: ExpenseStorageDTO[]): CalculateExpenseReturn => {
+const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
   if (expenses.length === 0) {
     return {
       income: 0,
@@ -20,15 +21,15 @@ const calculateExpense = (expenses: ExpenseStorageDTO[]): CalculateExpenseReturn
   }
 
   return expenses.reduce(
-    (acc, record) => {
+    (acc, record: ExpenseDTO) => {
       const { periodicity_mode, payment_mode, duration = 1 } = record;
 
       const valueToPay =
-        payment_mode === 'parcel' && periodicity_mode === 'repeat'
-          ? record.value / duration
-          : record.value;
+        payment_mode === 'PARCEL' && periodicity_mode === 'FIXED'
+          ? record.amount / duration
+          : record.amount;
 
-      if (record.type === 'expense') {
+      if (record.type === 'EXPENSE') {
         return {
           income: acc.income,
           expense: acc.expense + valueToPay,
@@ -37,7 +38,7 @@ const calculateExpense = (expenses: ExpenseStorageDTO[]): CalculateExpenseReturn
           incomeQuantity: acc.incomeQuantity
         };
       }
-      if (record.type === 'income') {
+      if (record.type === 'INCOME') {
         return {
           income: acc.income + valueToPay,
           incomeQuantity: acc.incomeQuantity + 1,
@@ -60,8 +61,10 @@ const calculateExpense = (expenses: ExpenseStorageDTO[]): CalculateExpenseReturn
 
 type UseCalculateExpenseReturn = CalculateExpenseReturn;
 
-const useCalculateExpense = (expenses: ExpenseStorageDTO[]): UseCalculateExpenseReturn => {
-  return calculateExpense(expenses);
+const useCalculateExpense = (expenses: ExpenseDTO[]): UseCalculateExpenseReturn => {
+  const calcute = useMemo(() => calculateExpense(expenses), [expenses]);
+
+  return calcute;
 };
 
 export default useCalculateExpense;

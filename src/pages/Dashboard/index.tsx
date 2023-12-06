@@ -6,24 +6,25 @@ import SubHeader from '@/components/Layouts/SubHeader';
 import MonthControl from '@/components/MonthControl';
 import Statistics from '@/components/Statistics';
 import Button from '@/components/ui/Button';
-import RenderIf from '@/components/ui/RenderIf';
 import useCalculateExpense from '@/hooks/useCalculateExpense';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { getBudgets } from '@/store/reducers/budgets';
-import { getExpenses } from '@/store/reducers/getExpenses';
+import { getExpenses, initHydrateExpenses } from '@/store/reducers/getExpenses';
 import { cn } from '@/utils';
+import formatNumber from '@/utils/formatNumber';
 import { useSession } from '@clerk/clerk-react';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
-import formatNumber from '@/utils/formatNumber';
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const { data, loading, origin, hydrating } = useAppSelector((state) => state.expenses);
+  const { data, loading, origin, hydrating, currentMonthExpenses } = useAppSelector(
+    (state) => state.expenses
+  );
   const { data: budgets } = useAppSelector((state) => state.budgets);
   const navigate = useNavigate();
-  const { expense, income } = useCalculateExpense(data);
+  const { expense, income } = useCalculateExpense(currentMonthExpenses || []);
 
   useEffect(() => {
     dispatch(getExpenses());
@@ -31,7 +32,8 @@ const Dashboard = () => {
   }, [dispatch, origin]);
 
   const handleChangeMonth = (month: string) => {
-    dispatch(getExpenses({ month }));
+    // dispatch(getExpenses({ month }));
+    dispatch(initHydrateExpenses({ current_month: month }));
   };
 
   const { session } = useSession();
@@ -90,23 +92,18 @@ const Dashboard = () => {
 
         <div
           className={cn('space-y-3', hydrating && 'animate-pulse pointer-events-none opacity-20')}>
-          <RenderIf condition={hydrating}>
-            <Alert
-              title="Atualizando Despesas"
-              description="Atualizando despesas..."
-              variant="neutral"
-            />
-          </RenderIf>
-
           <MonthControl onChangeMonth={handleChangeMonth} />
 
           <div className="space-y-3">
             {budgets &&
               budgets.map(({ name, id }) => {
-                const filteredExpenses = data.filter((record) => record.budget.name === name);
+                const filteredExpenses = data.filter(
+                  (record) => record.budget_id === '0826f5a3-e229-471d-937c-4a104ba436c5'
+                );
                 if (filteredExpenses.length === 0) {
                   return null;
                 }
+
                 return (
                   <ExpenseGroup name={name} id={id} key={id} expenses={filteredExpenses}>
                     {filteredExpenses.map((record) => (

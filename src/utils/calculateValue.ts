@@ -1,24 +1,24 @@
-import { PaymentEnum, PeriodicityEnum } from '@/pages/Expense/shared/schema';
+import { PaymentMode, PeriodicityMode } from '@/http/api/DTO/ExpenseDTO';
 import formatNumber from './formatNumber';
 
 const calculateValue = (
   duration: number,
-  paymentMode: keyof typeof PaymentEnum = 'all',
-  periodicityEnum: keyof typeof PeriodicityEnum = 'only',
-  value: number
+  paymentMode: keyof typeof PaymentMode = 'ALL',
+  periodicityEnum: keyof typeof PeriodicityMode = 'ONCE',
+  amount: number
 ) => {
-  if (periodicityEnum === 'repeat') {
+  if (periodicityEnum === 'FIXED') {
     return `
     Em ${duration}x de
-     ${paymentMode === 'all' ? formatNumber(value) : formatNumber(value / (duration || 0))}
+     ${paymentMode === 'ALL' ? formatNumber(amount) : formatNumber(amount / (duration || 0))}
     `;
   }
 
-  if (periodicityEnum === 'only') {
-    return `Sem recorrência ${formatNumber(value)}`;
+  if (periodicityEnum === 'ONCE') {
+    return `Sem recorrência ${formatNumber(amount)}`;
   }
 
-  return `Fixo mensal ${formatNumber(value)}`;
+  return `Fixo mensal ${formatNumber(amount)}`;
 };
 
 export default calculateValue;

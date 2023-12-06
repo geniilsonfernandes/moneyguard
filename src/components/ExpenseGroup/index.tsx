@@ -1,18 +1,20 @@
 import { Wallet2 as Wallet } from 'lucide-react';
 
 import AmountBadge from '@/components/AmounBadge';
-import useVisibility from '@/hooks/useVisibility';
-import RenderIf from '../ui/RenderIf';
-import formatNumber from '@/utils/formatNumber';
 import useCalculateExpense from '@/hooks/useCalculateExpense';
-import { ExpenseStorageDTO } from '@/store/storage';
+import useVisibility from '@/hooks/useVisibility';
+import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
+import formatNumber from '@/utils/formatNumber';
+import RenderIf from '../ui/RenderIf';
 type ExpenseGroupProps = {
   children: React.ReactNode;
   name?: string;
   id?: string;
-  expenses?: ExpenseStorageDTO[];
+  expenses?: ExpenseDTO[];
 };
 const ExpenseGroup = ({ children, name, id, expenses = [] }: ExpenseGroupProps) => {
+  console.log({ expenses });
+
   const { total } = useCalculateExpense(expenses);
   const { visible, toggleVisibility } = useVisibility({
     defaultVisibility: true
