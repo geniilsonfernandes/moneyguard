@@ -7,7 +7,7 @@ import Expense from '@/pages/Expense';
 import SingIn from '@/pages/SingIn';
 import SingUp from '@/pages/SingUp';
 import { useAppDispatch } from '@/store';
-import { login, logout } from '@/store/reducers/auth';
+import { loginUser, logoutUser } from '@/store/reducers/auth';
 import { useSession } from '@clerk/clerk-react';
 import {
   Navigate,
@@ -102,10 +102,10 @@ export function AppRouter() {
   console.log({ isSignedIn, session });
 
   if (!isSignedIn) {
-    dispatch(logout());
+    dispatch(logoutUser());
   } else {
     dispatch(
-      login({
+      loginUser({
         clerk_user_id: session.user.id,
         user_id: session.user.id,
         email: session.publicUserData.identifier,

@@ -39,7 +39,7 @@ const Frequency = ({ control }: FrequencyProps) => {
   });
 
   const { field: valueControl } = useController({
-    name: 'value',
+    name: 'amount',
     control
   });
 
@@ -88,24 +88,23 @@ const Frequency = ({ control }: FrequencyProps) => {
 
       <Step name="Tipo de recorrência desse lançamento">
         <Switch
-          checked={periodicityControl.value === PeriodicityEnum.only}
-          onCheckedChange={() => periodicityControl.onChange(PeriodicityEnum.only)}
+          checked={periodicityControl.value === PeriodicityEnum.ONCE}
+          onCheckedChange={() => periodicityControl.onChange(PeriodicityEnum.ONCE)}
           label="Não recorrente"
           helpertext="esse lancamento será cobrado uma vez"
           name="only-mode"
         />
 
         <Switch
-          checked={periodicityControl.value === PeriodicityEnum.repeat}
+          checked={periodicityControl.value === PeriodicityEnum.MONTHLY}
           onCheckedChange={(e) => {
             e ? configFrequency.onShow() : configFrequency.onHidden();
-            periodicityControl.onChange(PeriodicityEnum.repeat);
+            periodicityControl.onChange(PeriodicityEnum.MONTHLY);
           }}
           label="Parcelar ou repetir"
           helpertext="escolha o modo de parcelamento"
           name="month-mode"
-          condition={periodicityControl.value === PeriodicityEnum.repeat}
-        >
+          condition={periodicityControl.value === PeriodicityEnum.MONTHLY}>
           <div className="space-y-4">
             <Controller
               control={control}
@@ -123,7 +122,7 @@ const Frequency = ({ control }: FrequencyProps) => {
               )}
             />
 
-            <div>{calculateValue(duration || 0, paymentMode, 'repeat', valueControl.value)}</div>
+            <div>{calculateValue(duration || 0, paymentMode, 'MONTHLY', valueControl.value)}</div>
 
             <Alert
               variant="neutral"
@@ -133,11 +132,11 @@ const Frequency = ({ control }: FrequencyProps) => {
           </div>
         </Switch>
         <Switch
-          checked={periodicityControl.value === PeriodicityEnum.fixed}
+          checked={periodicityControl.value === PeriodicityEnum.FIXED}
           onCheckedChange={(e) => {
             e
-              ? periodicityControl.onChange(PeriodicityEnum.fixed)
-              : periodicityControl.onChange(PeriodicityEnum.fixed);
+              ? periodicityControl.onChange(PeriodicityEnum.FIXED)
+              : periodicityControl.onChange(PeriodicityEnum.FIXED);
           }}
           label="Fixo mensalmente"
           helpertext="será cobrado mensalmente"

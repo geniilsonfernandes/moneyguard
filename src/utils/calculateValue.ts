@@ -7,10 +7,10 @@ const calculateValue = (
   periodicityEnum: keyof typeof PeriodicityMode = 'ONCE',
   amount: number
 ) => {
-  if (periodicityEnum === 'FIXED') {
+  if (periodicityEnum === 'MONTHLY') {
     return `
     Em ${duration}x de
-     ${paymentMode === 'ALL' ? formatNumber(amount) : formatNumber(amount / (duration || 0))}
+     ${paymentMode === 'PARCEL' ? formatNumber(amount) : formatNumber(amount / (duration || 0))}
     `;
   }
 

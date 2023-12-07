@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 import { z } from 'zod';
 
 export type ExpenseInfoFields = {
-  type: 'income' | 'expense';
-  value: number;
+  type: 'INCOME' | 'EXPENSE';
+  amount: number;
   name: string;
   note: string;
 };
@@ -12,22 +12,18 @@ export type BudgetFields = {
   budget: {
     name: string;
     id: string;
-    value: number;
   };
 };
 
 export enum PeriodicityEnum {
-  onlyMode = 'onlyMode',
-  monthMode = 'monthMode',
-  fixedMode = 'fixedMode',
-  fixed = 'fixed',
-  repeat = 'repeat',
-  only = 'only'
+  ONCE = 'ONCE',
+  MONTHLY = 'MONTHLY',
+  FIXED = 'FIXED'
 }
 
 export enum PaymentEnum {
-  all = 'all',
-  parcel = 'parcel'
+  ALL = 'ALL',
+  PARCEL = 'PARCEL'
 }
 
 export type FrequencyFields = {
@@ -41,10 +37,10 @@ export type FrequencyFields = {
 export type ExpenseFields = ExpenseInfoFields & BudgetFields & FrequencyFields;
 
 export const defaultValues: ExpenseFields = {
-  type: 'expense',
-  value: 0,
-  payment_mode: PaymentEnum.parcel,
-  periodicity_mode: PeriodicityEnum.only,
+  type: 'EXPENSE',
+  amount: 0,
+  payment_mode: PaymentEnum.PARCEL,
+  periodicity_mode: PeriodicityEnum.ONCE,
   name: '',
   note: '',
   due_date: dayjs().toDate(),
@@ -55,7 +51,7 @@ export const defaultValues: ExpenseFields = {
 
 export const createSchema = z.object({
   type: z.string(),
-  value: z
+  amount: z
     .number({
       invalid_type_error: 'O valor deve ser um número'
     })

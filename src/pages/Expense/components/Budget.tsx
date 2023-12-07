@@ -114,12 +114,11 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
                     size="xl"
                     key={buget.name}
                     active={buget.id === value?.id}
-                    onClick={() => onChange(buget)}
-                  >
+                    onClick={() => onChange(buget)}>
                     <div className="flex items-center text-base justify-between">
                       <div className="flex flex-col justify-start items-start">
                         {buget.name}
-                        <span className="text-zinc-400 text-xs">R$ {buget.value} Restantes</span>
+                        <span className="text-zinc-400 text-xs">R$ {buget.amount} Restantes</span>
                       </div>
                       <Wallet size={18} />
                     </div>
@@ -132,8 +131,7 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
             variant="outline"
             size="xl"
             onClick={() => createBugetModal.onShow()}
-            disabled={bugetQuantityLimit <= 0}
-          >
+            disabled={bugetQuantityLimit <= 0}>
             <div className="flex items-center text-base justify-between">
               <div className="flex flex-col justify-start text-left">
                 {bugetQuantityLimit <= 0
@@ -178,8 +176,7 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
           <Button width="full" onClick={() => createBuget()} disabled={!isValid}>
             Criar novo orçamento
           </Button>
-        }
-      >
+        }>
         <div>
           <Controller
             control={budgetControl}

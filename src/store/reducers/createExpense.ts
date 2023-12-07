@@ -6,6 +6,9 @@ import { ExpenseStorageDTO, financialRecordStorage } from '../storage';
 
 import { NotFoundError, StorageError } from '@/utils/useStorage';
 import { RootState } from '..';
+import { api } from '@/http/api/api';
+import endpoints from '@/http/api/endpoints';
+import { getUser } from './auth';
 
 type Error = {
   message: string | null;
@@ -13,9 +16,6 @@ type Error = {
   details?: string;
 } | null;
 
-type createProps = {
-  data: ExpenseFields;
-};
 type upadateProps = {
   data: ExpenseFields;
   id: string;
@@ -109,21 +109,17 @@ export const updateExepense =
   };
 
 export const createExpense =
-  ({ data }: createProps) =>
-  async (dispatch: Dispatch, getState: () => RootState) => {
-    const { user_id } = getState().auth;
+  ({ payload }: { payload: any }) =>
+  async (dispatch: Dispatch) => {
+    const user = getUser();
 
     dispatch(fetchDataStart());
     try {
-      const period_date = generateDateArray(data.due_date as Date, data.duration || 1);
+      await api.post(endpoints.expenses.create(), {
+        ...payload,
+        user_id: user?.user_id
+      });
 
-      const newExpense = {
-        ...data,
-        period_date,
-        user_id
-      };
-
-      financialRecordStorage.addItem(newExpense);
       dispatch(fetchDataSuccess());
 
       return true;

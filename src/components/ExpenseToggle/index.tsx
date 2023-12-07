@@ -21,28 +21,28 @@ const ButtonToggleVariants = cva(
 
 type ButtonToggleProps = {
   active?: boolean;
-  type?: 'income' | 'expense';
+  type?: 'INCOME' | 'EXPENSE';
 } & React.HTMLAttributes<HTMLButtonElement>;
 
 const ButtonToggle = ({ active, type, ...props }: ButtonToggleProps) => {
-  const text = type === 'income' ? 'Entrada' : 'Saida';
+  const text = type === 'INCOME' ? 'Entrada' : 'Saida';
 
   return (
     <button className={cn(ButtonToggleVariants({ active }))} {...props}>
-      {type === 'income' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />} {text}
+      {type === 'INCOME' ? <ArrowDownLeft size={20} /> : <ArrowUpRight size={20} />} {text}
     </button>
   );
 };
 
 type ExpenseToggleProps = {
-  onChange?: (value: 'income' | 'expense') => void;
-  value?: 'income' | 'expense';
+  onChange?: (value: 'INCOME' | 'EXPENSE') => void;
+  value?: 'INCOME' | 'EXPENSE';
 };
 
-const ExpenseToggle = ({ onChange, value = 'income' }: ExpenseToggleProps) => {
-  const [select, setSelect] = useState<'income' | 'expense'>(value);
+const ExpenseToggle = ({ onChange, value = 'INCOME' }: ExpenseToggleProps) => {
+  const [select, setSelect] = useState<'INCOME' | 'EXPENSE'>(value);
 
-  const toggleType = (type: 'income' | 'expense') => {
+  const toggleType = (type: 'INCOME' | 'EXPENSE') => {
     setSelect(type);
     onChange?.(type);
   };
@@ -50,14 +50,14 @@ const ExpenseToggle = ({ onChange, value = 'income' }: ExpenseToggleProps) => {
   return (
     <div className="p-1 bg-slate-100 rounded-md flex gap-2">
       <ButtonToggle
-        active={select === 'income'}
-        type="income"
-        onClick={() => toggleType('income')}
+        active={select === 'INCOME'}
+        type="INCOME"
+        onClick={() => toggleType('INCOME')}
       />
       <ButtonToggle
-        active={select === 'expense'}
-        type="expense"
-        onClick={() => toggleType('expense')}
+        active={select === 'EXPENSE'}
+        type="EXPENSE"
+        onClick={() => toggleType('EXPENSE')}
       />
     </div>
   );

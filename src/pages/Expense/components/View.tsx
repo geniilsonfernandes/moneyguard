@@ -15,7 +15,7 @@ const View = ({ expense }: ViewProps) => {
       <FadeIn animation="bounce">
         <div className="flex flex-col items-center justify-center ounded-lg mx-auto w-full">
           <div className="bg-slate-950 w-full px-8 py-4 rounded-lg relative space-y-4">
-            {expense.type === 'income' ? (
+            {expense.type === 'INCOME' ? (
               <div className="text-green-400 pt-4">
                 <ArrowUpCircle /> Entrada
               </div>
@@ -31,7 +31,7 @@ const View = ({ expense }: ViewProps) => {
             <div>
               <span className="text-zinc-500">Valor:</span>
               <h1 className="text-zinc-50 text-2xl font-bold">
-                {formatNumber(expense.value, {
+                {formatNumber(expense.amount, {
                   style: 'currency',
                   currency: 'BRL',
                   minimumFractionDigits: 2
@@ -59,7 +59,7 @@ const View = ({ expense }: ViewProps) => {
                   expense.duration || 0,
                   expense.payment_mode,
                   expense.periodicity_mode,
-                  expense.value
+                  expense.amount
                 )}
               </h1>
             </div>

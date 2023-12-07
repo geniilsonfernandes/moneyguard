@@ -5,7 +5,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { Dispatch } from 'redux';
 import { RootState } from '..';
-import { updateUserId } from './auth';
+import { getUser, saveUser, updateUserId } from './auth';
 import { setBudgets } from './budgets';
 
 type origins = 'create' | 'update' | 'delete' | null;
@@ -91,13 +91,15 @@ export const getExpenses =
   ({ month = dayjs().format('MM/YYYY') }: getExpensesProps = {}) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(fetchDataStart());
-    const { email, name, clerk_user_id, ...auth } = getState().auth;
+    const { email, name, clerk_user_id } = getState().auth;
+    const user = getUser();
     try {
       dispatch(setMonth(month));
 
       let user_id;
-      if (auth.user_id !== '') {
-        user_id = auth.user_id;
+      if (user?.user_id) {
+        user_id = user.user_id;
+        dispatch(updateUserId(user.user_id));
       } else {
         const {
           data: { user }
@@ -107,6 +109,12 @@ export const getExpenses =
           clerk_id: clerk_user_id
         });
         user_id = user.id;
+        saveUser({
+          clerk_user_id: user.clerk_id,
+          email: user.email,
+          name: user.name,
+          user_id: user.id
+        });
         dispatch(updateUserId(user.id));
       }
 

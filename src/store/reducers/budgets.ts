@@ -5,6 +5,7 @@ import BudgetDTO from '@/http/api/DTO/BudgetDTO';
 import { api } from '@/http/api/api';
 import endpoints, { BudgetsResponse } from '@/http/api/endpoints';
 import { RootState } from '..';
+import { getUser } from './auth';
 
 interface DataState {
   data: BudgetDTO[];
@@ -45,13 +46,20 @@ export const { fetchDataStart, fetchDataSuccess, fetchDataFailure, setBudgets } 
 
 export const getBudgets = () => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(fetchDataStart());
-  const { user_id } = getState().auth;
+  const user = getUser();
+  const hasBudgets = getState().budgets.data.length > 0;
+
+  if (hasBudgets) {
+    dispatch(fetchDataSuccess(getState().budgets.data));
+    return;
+  }
+
   try {
     const {
       data: { budgets }
     } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
       params: {
-        user_id
+        user_id: user?.user_id || ''
       }
     });
     dispatch(fetchDataSuccess(budgets));
