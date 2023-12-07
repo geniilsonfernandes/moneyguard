@@ -1,15 +1,17 @@
+import { api } from '@/http/api/api';
+import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
+import endpoints, { ExpenseResponse } from '@/http/api/endpoints';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
-import { ExpenseStorageDTO, financialRecordStorage } from '../storage';
 
 interface DataState {
-  data: ExpenseStorageDTO;
+  data: ExpenseDTO;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: DataState = {
-  data: {} as ExpenseStorageDTO,
+  data: {} as ExpenseDTO,
   loading: false,
   error: null
 };
@@ -22,14 +24,14 @@ const getExpenseSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchDataSuccess(state, action: PayloadAction<ExpenseStorageDTO>) {
+    fetchDataSuccess(state, action: PayloadAction<ExpenseDTO>) {
       state.loading = false;
       state.data = action.payload;
     },
     fetchDataFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
-      state.data = {} as ExpenseStorageDTO;
+      state.data = {} as ExpenseDTO;
     }
   }
 });
@@ -42,21 +44,15 @@ export const getExpenseById =
   async (dispatch: Dispatch) => {
     dispatch(fetchDataStart());
     try {
-      const data = financialRecordStorage.getById(id);
+      const {
+        data: { expense }
+      } = await api.get<ExpenseResponse>(endpoints.expenses.getById(id));
 
-      if (!data) {
-        dispatch(fetchDataFailure('Erro ao carregar os dados'));
-        return;
-      }
+      console.log(expense);
 
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(data);
-          dispatch(fetchDataSuccess(data));
-        }, 1000);
-      });
+      dispatch(fetchDataSuccess(expense));
 
-      return data;
+      return expense;
     } catch (error) {
       dispatch(fetchDataFailure('Erro ao carregar os dados'));
     }

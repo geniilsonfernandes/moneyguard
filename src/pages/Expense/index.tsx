@@ -4,10 +4,9 @@ import Loader from '@/components/Loader';
 import Button from '@/components/ui/Button';
 import RenderIf from '@/components/ui/RenderIf';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { createExpense, updateExepense } from '@/store/reducers/createExpense';
-import { initHydrateExpenses } from '@/store/reducers/getExpenses';
 import { getExpenseById } from '@/store/reducers/getExpense';
 import { zodResolver } from '@hookform/resolvers/zod';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import Confetti from 'react-confetti';
 import { FieldErrors, useForm } from 'react-hook-form';
@@ -19,8 +18,8 @@ import View from './components/View';
 import { Steps } from './components/shared';
 import { ExpenseFields, createSchema, defaultValues } from './shared/schema';
 import { steps } from './steps';
-import { getBudgets } from '@/store/reducers/budgets';
-import dayjs from 'dayjs';
+import { getUser } from '@/store/reducers/auth';
+import { createExpense } from '@/store/reducers/createExpense';
 
 const texts = {
   edit: {
@@ -68,7 +67,7 @@ const Expense = () => {
 
   const changeStep = () => {
     if (step === 'INFO') {
-      trigger(['name', 'value']).then((isValid) => {
+      trigger(['name', 'amount']).then((isValid) => {
         if (isValid) {
           setSteps('BUDGET');
           return;
@@ -81,7 +80,7 @@ const Expense = () => {
         }
       });
     } else if (step === 'FREQUENCY') {
-      setSteps('FINISH');
+      return;
     }
   };
 
@@ -101,31 +100,57 @@ const Expense = () => {
   };
 
   const onSubmit = async (data: ExpenseFields) => {
-    if (hasEdit === 'edit') {
-      const editing = await dispatch(
-        updateExepense({
-          data,
-          id
-        })
-      );
+    console.log(data);
+    const dataDuration = data.periodicity_mode === 'ONCE' ? 1 : data.duration || 1;
 
-      if (editing) {
-        dispatch(initHydrateExpenses());
-        setSteps('FINISH');
+    const createRangeOfDate = (date: Date) => {
+      const range = [];
+      for (let i = 0; i < dataDuration; i++) {
+        range.push(dayjs(date).add(i, 'month').toDate());
       }
-      return;
-    }
+      return range;
+    };
 
-    const creating = await dispatch(
-      createExpense({
-        data
-      })
-    );
+    const payload = {
+      amount: data.amount,
+      due_date: data.due_date,
+      name: data.name,
+      user_id: getUser()?.user_id,
+      budget_id: data.budget.id,
+      duration: data.periodicity_mode === 'ONCE' ? 1 : data.duration,
+      note: data.note,
+      payment_mode:
+        data.periodicity_mode === 'FIXED' || data.periodicity_mode === 'ONCE'
+          ? 'ALL'
+          : data.payment_mode,
+      type: data.type,
+      periodicity_mode: data.periodicity_mode,
+      period_dates: createRangeOfDate(data.due_date)
+    };
 
-    if (creating) {
-      dispatch(initHydrateExpenses());
-      setSteps('FINISH');
-    }
+    console.log({ payload });
+
+    // if (hasEdit === 'edit') {
+    //   const editing = await dispatch(
+    //     updateExepense({
+    //       data,
+    //       id
+    //     })
+    //   );
+
+    //   if (editing) {
+    //     dispatch(initHydrateExpenses());
+    //     setSteps('FINISH');
+    //   }
+    //   return;
+    // }
+
+    await dispatch(createExpense({ payload }));
+
+    // if (creating) {
+    //   dispatch(initHydrateExpenses());
+    //   setSteps('FINISH');
+    // }
   };
 
   useEffect(() => {
@@ -135,7 +160,7 @@ const Expense = () => {
       if (data) {
         setValue('name', data.name);
         setValue('type', data.type);
-        setValue('value', data.value);
+        setValue('amount', data.amount);
         setValue('budget', data.budget);
 
         // period
@@ -150,10 +175,6 @@ const Expense = () => {
       getExpense();
     }
   }, [dispatch, id, setValue]);
-
-  useEffect(() => {
-    dispatch(getBudgets());
-  }, [dispatch]);
 
   if (expense.loading) {
     return (

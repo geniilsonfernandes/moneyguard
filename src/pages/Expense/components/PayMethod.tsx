@@ -7,7 +7,7 @@ type PayMethodProps = {
   value?: keyof typeof PaymentEnum;
 };
 
-const PayMethod = ({ onChange, value = 'all' }: PayMethodProps) => {
+const PayMethod = ({ onChange, value = 'PARCEL' }: PayMethodProps) => {
   const [payment, setPayment] = useState<keyof typeof PaymentEnum>(value);
 
   const handleChange = (value: keyof typeof PaymentEnum) => {
@@ -26,19 +26,17 @@ const PayMethod = ({ onChange, value = 'all' }: PayMethodProps) => {
         <button
           className={[
             'px-4 h-12 flex items-center gap-2  rounded-lg',
-            payment === 'all' && 'bg-white'
+            payment === 'ALL' && 'bg-white'
           ].join(' ')}
-          onClick={() => handleChange('all')}
-        >
+          onClick={() => handleChange('ALL')}>
           Valor Total
         </button>
         <button
           className={[
             'px-4 h-12 flex items-center gap-2  rounded-lg',
-            payment === 'parcel' && 'bg-white'
+            payment === 'PARCEL' && 'bg-white'
           ].join(' ')}
-          onClick={() => handleChange('parcel')}
-        >
+          onClick={() => handleChange('PARCEL')}>
           Valor Parcela
         </button>
       </div>

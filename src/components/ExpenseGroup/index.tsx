@@ -1,30 +1,32 @@
 import { Wallet2 as Wallet } from 'lucide-react';
 
 import AmountBadge from '@/components/AmounBadge';
-import useVisibility from '@/hooks/useVisibility';
-import RenderIf from '../ui/RenderIf';
-import formatNumber from '@/utils/formatNumber';
 import useCalculateExpense from '@/hooks/useCalculateExpense';
-import { ExpenseStorageDTO } from '@/store/storage';
+import useVisibility from '@/hooks/useVisibility';
+import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
+import formatNumber from '@/utils/formatNumber';
+import RenderIf from '../ui/RenderIf';
 type ExpenseGroupProps = {
   children: React.ReactNode;
   name?: string;
   id?: string;
-  expenses?: ExpenseStorageDTO[];
+  expenses?: ExpenseDTO[];
 };
 const ExpenseGroup = ({ children, name, id, expenses = [] }: ExpenseGroupProps) => {
+  console.log({ expenses });
+
   const { total } = useCalculateExpense(expenses);
   const { visible, toggleVisibility } = useVisibility({
     defaultVisibility: true
   });
 
   return (
-    <div className="shadow-md rounded-lg group" aria-label="expense card">
+    <div className="border rounded-lg group" aria-label="expense card">
       <div
         className=" bg-white p-2 flex items-center justify-between border border-transparent hover:border-slate-950 rounded-t-lg cursor-pointer transition-all"
         onClick={toggleVisibility}
         aria-label={id}>
-        <h3 className="font-bold text-zinc-950 flex items-center justify-between gap-2">
+        <h3 className=" text-zinc-950 flex items-center justify-between gap-2">
           <span className="w-[38px] h-[38px] bg-slate-100 rounded-lg flex-center">
             <Wallet size={20} />
           </span>

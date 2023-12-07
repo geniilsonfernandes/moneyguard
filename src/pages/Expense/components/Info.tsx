@@ -3,13 +3,12 @@ import Input, { Textarea, ValueInput } from '@/components/Input';
 import Step from '@/components/ui/Step';
 
 import Alert from '@/components/Alert';
+import Calculator from '@/components/Calculator';
+import Modal from '@/components/ui/Modal';
+import useVisibility from '@/hooks/useVisibility';
+import { Calculator as CalculatorIcon } from 'lucide-react';
 import { Control, Controller, FieldErrors, useController } from 'react-hook-form';
 import { ExpenseFields } from '../shared/schema';
-import RenderIf from '@/components/ui/RenderIf';
-import { Calculator as CalculatorIcon } from 'lucide-react';
-import useVisibility from '@/hooks/useVisibility';
-import Modal from '@/components/ui/Modal';
-import Calculator from '@/components/Calculator';
 
 type ExpenseToggleProps = {
   errors?: FieldErrors<ExpenseFields>;
@@ -19,7 +18,7 @@ type ExpenseToggleProps = {
 const Info = ({ errors, control }: ExpenseToggleProps) => {
   const calculate = useVisibility();
   const valueControl = useController({
-    name: 'value',
+    name: 'amount',
     control
   });
 
@@ -37,12 +36,12 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
         <div className="flex items-center justify-between">
           <Controller
             control={control}
-            name="value"
+            name="amount"
             render={({ field: { onChange, value } }) => (
               <ValueInput
                 onChange={(changedValue = 0) => onChange(changedValue)}
-                error={!!errors?.value}
-                helperText={errors?.value?.message}
+                error={!!errors?.amount}
+                helperText={errors?.amount?.message}
                 value={value}
               />
             )}
@@ -51,8 +50,7 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
             className="flex items-center gap-2 p-2 rounded-lg"
             onClick={() => {
               calculate.visible ? calculate.onHidden() : calculate.onShow();
-            }}
-          >
+            }}>
             <CalculatorIcon />
           </button>
         </div>
@@ -98,31 +96,12 @@ const Info = ({ errors, control }: ExpenseToggleProps) => {
           helpButton="Saber mais"
           onHelpClick={() => {}}
         />
-        <RenderIf condition={!!errors?.name || !!errors?.value}>
-          <Alert
-            variant="danger"
-            title="Atenção!"
-            description="Preencha todos os dados para prosseguir"
-            body={
-              <div>
-                <h5>Campos obrigatórios</h5>
-                <RenderIf condition={!!errors?.name}>
-                  <p>- {errors?.name?.message}</p>
-                </RenderIf>
-                <RenderIf condition={!!errors?.value}>
-                  <p>- {errors?.value?.message}</p>
-                </RenderIf>
-              </div>
-            }
-          />
-        </RenderIf>
       </div>
       <Modal
         mode="full"
         title="Calculadora"
         isOpen={calculate.visible}
-        onClose={calculate.onHidden}
-      >
+        onClose={calculate.onHidden}>
         <Calculator
           onCancel={() => calculate.onHidden()}
           onComplete={(result) => {

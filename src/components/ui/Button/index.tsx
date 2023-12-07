@@ -118,8 +118,7 @@ const Button = ({
         className
       )}
       type={type}
-      {...props}
-    >
+      {...props}>
       {isLoading ? <Loader /> : props.children}
     </button>
   );
@@ -133,7 +132,7 @@ export const ButtonSmall = ({ className, ...props }: ButtonSmallProps) => {
   return (
     <button
       className={cn(
-        'h-[32px] w-[32px] bg-slate-800 flex items-center justify-center rounded-lg hover:bg-slate-700 transition-all',
+        'h-[32px] w-[32px] bg-slate-200 flex items-center justify-center rounded-lg hover:bg-slate-300 transition-all',
         className
       )}
       {...props}

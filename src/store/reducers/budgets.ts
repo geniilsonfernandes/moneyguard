@@ -1,9 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 import { budgetStorage, BudgetsWithId } from '../storage';
+import BudgetDTO from '@/http/api/DTO/BudgetDTO';
+import { api } from '@/http/api/api';
+import endpoints, { BudgetsResponse } from '@/http/api/endpoints';
+import { RootState } from '..';
+import { getUser } from './auth';
 
 interface DataState {
-  data: BudgetsWithId[];
+  data: BudgetDTO[];
   loading: boolean;
   error: string | null;
 }
@@ -22,25 +27,43 @@ const financialRecordsSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchDataSuccess(state, action: PayloadAction<BudgetsWithId[]>) {
+    fetchDataSuccess(state, action: PayloadAction<BudgetDTO[]>) {
       state.loading = false;
       state.data = action.payload;
     },
     fetchDataFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
+    },
+    setBudgets(state, action: PayloadAction<BudgetDTO[]>) {
+      state.data = action.payload;
     }
   }
 });
 
-export const { fetchDataStart, fetchDataSuccess, fetchDataFailure } = financialRecordsSlice.actions;
+export const { fetchDataStart, fetchDataSuccess, fetchDataFailure, setBudgets } =
+  financialRecordsSlice.actions;
 
-export const getBudgets = () => async (dispatch: Dispatch) => {
+export const getBudgets = () => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(fetchDataStart());
+  const user = getUser();
+  const hasBudgets = getState().budgets.data.length > 0;
+
+  if (hasBudgets) {
+    dispatch(fetchDataSuccess(getState().budgets.data));
+    return;
+  }
+
   try {
-    const data = budgetStorage.getData();
-    dispatch(fetchDataSuccess(data));
-    return data;
+    const {
+      data: { budgets }
+    } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
+      params: {
+        user_id: user?.user_id || ''
+      }
+    });
+    dispatch(fetchDataSuccess(budgets));
+    return budgets;
   } catch (error) {
     dispatch(fetchDataFailure('Erro ao carregar os dados'));
   }
@@ -51,7 +74,7 @@ export const createBudget = (data: BudgetsWithId) => async (dispatch: Dispatch) 
   try {
     budgetStorage.addItem(data);
     const dataStorage = budgetStorage.getData();
-    dispatch(fetchDataSuccess(dataStorage));
+    dispatch(fetchDataSuccess([]));
     return dataStorage;
   } catch (error) {
     dispatch(fetchDataFailure('Erro ao criar o orçamento'));

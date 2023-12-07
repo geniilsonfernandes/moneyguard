@@ -1,54 +1,34 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Dispatch } from 'redux';
-import { ExpenseStorageDTO, financialRecordStorage } from '../storage';
+import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
+import { api } from '@/http/api/api';
+import endpoints, { BudgetsResponse, ExpensesResponse } from '@/http/api/endpoints';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import { Dispatch } from 'redux';
 import { RootState } from '..';
+import { getUser, saveUser, updateUserId } from './auth';
+import { setBudgets } from './budgets';
 
 type origins = 'create' | 'update' | 'delete' | null;
 
 interface DataState {
-  data: ExpenseStorageDTO[];
+  data: ExpenseDTO[];
   loading: boolean;
   error: string | null;
   origin: origins;
   hydrating: boolean;
   month?: string;
+  currentMonthExpenses?: ExpenseDTO[];
 }
 
 const initialState: DataState = {
   data: [],
+
   loading: false,
   error: null,
   origin: null,
   hydrating: false,
   month: dayjs().format('MM/YYYY')
 };
-
-function filterExpensesByMonth(expenses: ExpenseStorageDTO[], month: string): ExpenseStorageDTO[] {
-  const filteredExpenses: ExpenseStorageDTO[] = [];
-
-  expenses.forEach((expense) => {
-    const { periodicity_mode } = expense;
-
-    if (periodicity_mode === 'fixed') {
-      filteredExpenses.push(expense);
-      return;
-    }
-    const period = expense.period_date || [];
-
-    const hasDateInPeriod = period.some((date: Date) => {
-      const expenseDate = dayjs(date).format('MM/YYYY');
-
-      return expenseDate === month;
-    });
-
-    if (hasDateInPeriod) {
-      filteredExpenses.push(expense);
-    }
-  });
-
-  return filteredExpenses;
-}
 
 const financialRecordsSlice = createSlice({
   name: 'expense',
@@ -58,7 +38,7 @@ const financialRecordsSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchDataSuccess(state, action: PayloadAction<ExpenseStorageDTO[]>) {
+    fetchDataSuccess(state, action: PayloadAction<ExpenseDTO[]>) {
       state.loading = false;
       state.data = action.payload;
     },
@@ -69,9 +49,12 @@ const financialRecordsSlice = createSlice({
     hydrateExpenses(state) {
       state.hydrating = true;
     },
-    hydrateExpensesSuccess(state, action: PayloadAction<ExpenseStorageDTO[]>) {
+    hydrateExpensesSuccess(state, action: PayloadAction<ExpenseDTO[]>) {
       state.hydrating = false;
       state.data = action.payload;
+    },
+    setCurrentMonthExpenses(state, action: PayloadAction<ExpenseDTO[]>) {
+      state.currentMonthExpenses = action.payload;
     },
     financialRecordsSetOrigin(state, action: PayloadAction<origins>) {
       state.origin = action.payload;
@@ -93,43 +76,96 @@ export const {
   financialRecordsClearOrigin,
   hydrateExpenses,
   hydrateExpensesSuccess,
+  setCurrentMonthExpenses,
   setMonth
 } = financialRecordsSlice.actions;
 
 type getExpensesProps = {
   month?: string; //  12/2023
 };
+type getHidrateExpensesProps = {
+  current_month?: string; //  12/2023
+};
 
 export const getExpenses =
   ({ month = dayjs().format('MM/YYYY') }: getExpensesProps = {}) =>
-  async (dispatch: Dispatch) => {
+  async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(fetchDataStart());
+    const { email, name, clerk_user_id } = getState().auth;
+    const user = getUser();
     try {
       dispatch(setMonth(month));
-      const data = financialRecordStorage.getData();
 
-      dispatch(fetchDataSuccess(filterExpensesByMonth(data, month)));
+      let user_id;
+      if (user?.user_id) {
+        user_id = user.user_id;
+        dispatch(updateUserId(user.user_id));
+      } else {
+        const {
+          data: { user }
+        } = await api.post(endpoints.users.get(), {
+          email,
+          name,
+          clerk_id: clerk_user_id
+        });
+        user_id = user.id;
+        saveUser({
+          clerk_user_id: user.clerk_id,
+          email: user.email,
+          name: user.name,
+          user_id: user.id
+        });
+        dispatch(updateUserId(user.id));
+      }
+
+      const {
+        data: { budgets }
+      } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
+        params: {
+          user_id
+        }
+      });
+
+      dispatch(setBudgets(budgets));
+
+      const {
+        data: { expenses }
+      } = await api.get<ExpensesResponse>(endpoints.expenses.get(), {
+        params: {
+          user_id: user_id,
+          period: month
+        }
+      });
+
+      dispatch(fetchDataSuccess(expenses));
+      dispatch(setCurrentMonthExpenses(expenses));
     } catch (error) {
       dispatch(fetchDataFailure('Erro ao carregar os dados'));
     }
   };
 
-export const initHydrateExpenses = () => async (dispatch: Dispatch, getState: () => RootState) => {
-  dispatch(hydrateExpenses());
-  try {
-    const { month = dayjs().format('MM/YYYY') } = getState().expenses;
+export const initHydrateExpenses =
+  ({ current_month = dayjs().format('MM/YYYY') }: getHidrateExpensesProps = {}) =>
+  async (dispatch: Dispatch, getState: () => RootState) => {
+    dispatch(hydrateExpenses());
+    try {
+      const monthquery = current_month || getState().expenses.month || dayjs().format('MM/YYYY');
 
-    const data = financialRecordStorage.getData();
+      const { user_id } = getState().auth;
 
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(data);
-        dispatch(hydrateExpensesSuccess(filterExpensesByMonth(data, month)));
-      }, 4000);
-    });
-  } catch (error) {
-    dispatch(fetchDataFailure('Erro ao carregar os dados'));
-  }
-};
+      const {
+        data: { expenses }
+      } = await api.get<ExpensesResponse>(endpoints.expenses.get(), {
+        params: {
+          user_id: user_id,
+          period: monthquery
+        }
+      });
+
+      dispatch(hydrateExpensesSuccess(expenses));
+    } catch (error) {
+      dispatch(fetchDataFailure('Erro ao carregar os dados'));
+    }
+  };
 
 export default financialRecordsSlice.reducer;

@@ -1,20 +1,19 @@
 import { ChevronDownCircle, ChevronRight, ChevronUpCircle } from 'lucide-react';
 
-import formatNumber from '@/utils/formatNumber';
+import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
+import calculateValue from '@/utils/calculateValue';
 import AmountBadge from '../AmounBadge';
 
 export type ExpenseItemProps = {
-  type?: 'income' | 'expense';
+  expense: ExpenseDTO;
+  type?: 'INCOME' | 'EXPENSE';
   group?: boolean;
-  value?: number;
   name?: string;
   id?: string;
   onClick?: () => void;
 };
 
-const ExpenseItem = ({ type, group = true, id, name, value = 0, onClick }: ExpenseItemProps) => {
-  const expense = formatNumber(value);
-
+const ExpenseItem = ({ type, group = true, id, name, onClick, expense }: ExpenseItemProps) => {
   const handleToView = () => {
     if (onClick) {
       onClick();
@@ -32,7 +31,7 @@ const ExpenseItem = ({ type, group = true, id, name, value = 0, onClick }: Expen
       tabIndex={0}
       onClick={handleToView}>
       <h4 className="text-zinc-950 font-normal text-base flex gap-3">
-        {type === 'income' ? (
+        {type === 'INCOME' ? (
           <ChevronUpCircle className="text-green-500" />
         ) : (
           <ChevronDownCircle className="text-red-500" />
@@ -40,7 +39,15 @@ const ExpenseItem = ({ type, group = true, id, name, value = 0, onClick }: Expen
         {name}
       </h4>
       <div className="flex items-center  gap-4">
-        <AmountBadge amount={expense} type={type} />
+        <AmountBadge
+          amount={calculateValue(
+            expense.duration || 0,
+            expense.payment_mode,
+            expense.periodicity_mode,
+            expense.amount
+          )}
+          type={type}
+        />
         <button
           onClick={handleToView}
           className="text-zinc-400  hover:bg-slate-200 h-[32px] w-[32px] flex-center rounded-lg">
