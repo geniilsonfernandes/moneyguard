@@ -1,6 +1,5 @@
 import { AppRouter } from '@/routes';
 import { ClerkLoaded, ClerkLoading, ClerkProvider } from '@clerk/clerk-react';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import Loader from './components/Loader';
