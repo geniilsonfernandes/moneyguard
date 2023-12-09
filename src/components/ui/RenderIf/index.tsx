@@ -39,8 +39,7 @@ const RenderIf = ({ children, condition, className, animation = 'fadeIn' }: Rend
         initial={animations[animation].initial}
         animate={animations[animation].animate}
         exit={animations[animation].exit}
-        className={className}
-      >
+        className={className}>
         <div>{children}</div>
       </motion.div>
     </AnimatePresence>

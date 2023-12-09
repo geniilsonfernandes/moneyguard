@@ -5,9 +5,9 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
 import { Dispatch } from 'redux';
 import { RootState } from '..';
-import { getUser, saveUser, updateUserId } from './auth';
-import { setBudgets } from './budgets';
+
 import { expenseCache } from '../cache';
+import { setBudgets } from './budgets';
 
 type origins = 'create' | 'update' | 'delete' | null;
 
@@ -92,41 +92,18 @@ export const getExpenses =
   ({ month = dayjs().format('MM/YYYY') }: getExpensesProps = {}) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(fetchDataStart());
-    const { email, name, clerk_user_id } = getState().auth;
-    const user = getUser();
+    const { user } = getState().auth;
 
     const cacheKey = `${endpoints.budgets.get()}${month}`;
 
     try {
       dispatch(setMonth(month));
 
-      let user_id;
-      if (user?.user_id) {
-        user_id = user.user_id;
-        dispatch(updateUserId(user.user_id));
-      } else {
-        const {
-          data: { user }
-        } = await api.post(endpoints.users.get(), {
-          email,
-          name,
-          clerk_id: clerk_user_id
-        });
-        user_id = user.id;
-        saveUser({
-          clerk_user_id: user.clerk_id,
-          email: user.email,
-          name: user.name,
-          user_id: user.id
-        });
-        dispatch(updateUserId(user.id));
-      }
-
       const {
         data: { budgets }
       } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
         params: {
-          user_id
+          user_id: user?.id
         }
       });
 
@@ -143,7 +120,7 @@ export const getExpenses =
         data: { expenses }
       } = await api.get<ExpensesResponse>(endpoints.expenses.get(), {
         params: {
-          user_id: user_id,
+          user_id: user?.id,
           period: month
         }
       });
@@ -174,13 +151,13 @@ export const initHydrateExpenses =
       return;
     }
     try {
-      const { user_id } = getState().auth;
+      const { user } = getState().auth;
 
       const {
         data: { expenses }
       } = await api.get<ExpensesResponse>(endpoints.expenses.get(), {
         params: {
-          user_id: user_id,
+          user_id: user?.id,
           period: monthquery
         }
       });

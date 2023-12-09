@@ -4,7 +4,6 @@ import Loader from '@/components/Loader';
 import Button from '@/components/ui/Button';
 import RenderIf from '@/components/ui/RenderIf';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { getUser } from '@/store/reducers/auth';
 import {
   CreateExpensePayload,
   createExpense,
@@ -116,7 +115,7 @@ const Expense = () => {
       amount: data.amount,
       due_date: data.due_date,
       name: data.name,
-      user_id: getUser()?.user_id,
+      user_id: 'getUser()?.user_id',
       budget_id: data.budget.id,
       duration: expenseDuration,
       note: data.note,

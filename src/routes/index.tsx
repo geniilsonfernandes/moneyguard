@@ -6,9 +6,7 @@ import Dashboard from '@/pages/Dashboard';
 import Expense from '@/pages/Expense';
 import SingIn from '@/pages/SingIn';
 import SingUp from '@/pages/SingUp';
-import { useAppDispatch } from '@/store';
-import { loginUser, logoutUser } from '@/store/reducers/auth';
-import { useSession } from '@clerk/clerk-react';
+
 import {
   Navigate,
   Outlet,
@@ -96,23 +94,9 @@ function PublicRoute(): {
 }
 
 export function AppRouter() {
-  const dispatch = useAppDispatch();
-  const { isSignedIn, session } = useSession();
-
-  console.log({ isSignedIn, session });
-
-  if (!isSignedIn) {
-    dispatch(logoutUser());
-  } else {
-    dispatch(
-      loginUser({
-        clerk_user_id: session.user.id,
-        user_id: session.user.id,
-        email: session.publicUserData.identifier,
-        name: session.user.fullName || ''
-      })
-    );
-  }
+  const { isSignedIn } = {
+    isSignedIn: false
+  };
 
   const router = createBrowserRouter([isSignedIn ? PrivateRoutes() : PublicRoute()]);
 
