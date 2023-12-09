@@ -33,7 +33,6 @@ const Dashboard = () => {
     // dispatch(getExpenses({ month }));
     dispatch(initHydrateExpenses({ current_month: month }));
   };
-  console.log({ budgets });
 
   const { session } = useSession();
 
@@ -42,8 +41,6 @@ const Dashboard = () => {
   const openExpense = (id: string) => {
     navigate(`/expense-view/${id}`);
   };
-
-  console.log({ data });
 
   if (loading) {
     return <Loading />;
@@ -100,7 +97,6 @@ const Dashboard = () => {
                 if (filteredExpenses.length === 0) {
                   return null;
                 }
-                console.log({ filteredExpenses });
 
                 return (
                   <ExpenseGroup name={name} id={id} key={id} expenses={filteredExpenses}>

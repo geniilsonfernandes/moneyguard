@@ -13,8 +13,6 @@ type ExpenseGroupProps = {
   expenses?: ExpenseDTO[];
 };
 const ExpenseGroup = ({ children, name, id, expenses = [] }: ExpenseGroupProps) => {
-  console.log({ expenses });
-
   const { total } = useCalculateExpense(expenses);
   const { visible, toggleVisibility } = useVisibility({
     defaultVisibility: true
@@ -40,7 +38,7 @@ const ExpenseGroup = ({ children, name, id, expenses = [] }: ExpenseGroupProps) 
         </div>
       </RenderIf>
       <div className="bg-white h-[48px] flex items-center justify-between px-4 rounded-b-lg text-zinc-400 text-sm transition-all">
-        <span>Resumo:</span>
+        <span>Resumo este mês:</span>
         <AmountBadge amount={formatNumber(total)} />
       </div>
     </div>

@@ -1,14 +1,27 @@
-import { ExpenseFields } from '@/pages/Expense/shared/schema';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
 import { Dispatch } from 'redux';
-import { ExpenseStorageDTO, financialRecordStorage } from '../storage';
 
-import { NotFoundError, StorageError } from '@/utils/useStorage';
-import { RootState } from '..';
+import { ExpensesType, PaymentMode, PeriodicityMode } from '@/http/api/DTO/ExpenseDTO';
 import { api } from '@/http/api/api';
 import endpoints from '@/http/api/endpoints';
+import { StorageError } from '@/utils/useStorage';
+import { RootState } from '..';
 import { getUser } from './auth';
+import { expenseCache } from '../cache';
+
+export type CreateExpensePayload = {
+  amount: number;
+  due_date: Date;
+  name: string;
+  user_id: string;
+  budget_id: string;
+  duration: number;
+  note: string;
+  payment_mode: keyof typeof PaymentMode;
+  type: keyof typeof ExpensesType;
+  periodicity_mode: keyof typeof PeriodicityMode;
+  period_dates: string[];
+};
 
 type Error = {
   message: string | null;
@@ -17,7 +30,7 @@ type Error = {
 } | null;
 
 type upadateProps = {
-  data: ExpenseFields;
+  data: CreateExpensePayload;
   id: string;
 };
 // financialRecordStorage.addItem(data);
@@ -57,59 +70,37 @@ const createExpenseSlice = createSlice({
 
 export const { fetchDataStart, fetchDataSuccess, fetchDataFailure } = createExpenseSlice.actions;
 
-function generateDateArray(initialDate: Date, numberOfMonths: number): Date[] {
-  const datesArray: Date[] = [];
-  let currentDate = dayjs(initialDate);
-
-  for (let i = 0; i < numberOfMonths; i++) {
-    datesArray.push(currentDate.toDate());
-    currentDate = currentDate.add(1, 'month');
-  }
-
-  return datesArray;
-}
-
 export const updateExepense =
   ({ data, id }: upadateProps) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     const { user_id } = getState().auth;
-    console.log(data);
 
     dispatch(fetchDataStart());
     try {
-      const period_date = generateDateArray(data.due_date as Date, data.duration || 1);
-      financialRecordStorage.updateItem({
+      await api.post(endpoints.expenses.update(id), {
         ...data,
-        period_date,
-        user_id,
-        id
-      } as ExpenseStorageDTO);
-
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(data);
-          dispatch(fetchDataSuccess());
-        }, 1000);
+        user_id: user_id
       });
+
+      expenseCache.invalidateAllCache();
+      dispatch(fetchDataSuccess());
 
       return true;
     } catch (error) {
-      if (error instanceof NotFoundError) {
-        dispatch(
-          fetchDataFailure({
-            message: 'Orçamento não encontrado',
-            status: true,
-            details: error.message
-          })
-        );
-        return;
-      }
+      dispatch(
+        fetchDataFailure({
+          message: 'Orçamento não encontrado',
+          status: true,
+          details: 'Orcamento não encontrado'
+        })
+      );
+
       throw error;
     }
   };
 
 export const createExpense =
-  ({ payload }: { payload: any }) =>
+  ({ payload }: { payload: CreateExpensePayload }) =>
   async (dispatch: Dispatch) => {
     const user = getUser();
 
@@ -120,6 +111,7 @@ export const createExpense =
         user_id: user?.user_id
       });
 
+      expenseCache.invalidateAllCache();
       dispatch(fetchDataSuccess());
 
       return true;

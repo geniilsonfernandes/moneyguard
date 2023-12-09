@@ -1,9 +1,8 @@
+import { api } from '@/http/api/api';
+import BudgetDTO from '@/http/api/DTO/BudgetDTO';
+import endpoints, { BudgetsResponse } from '@/http/api/endpoints';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
-import { budgetStorage, BudgetsWithId } from '../storage';
-import BudgetDTO from '@/http/api/DTO/BudgetDTO';
-import { api } from '@/http/api/api';
-import endpoints, { BudgetsResponse } from '@/http/api/endpoints';
 import { RootState } from '..';
 import { getUser } from './auth';
 
@@ -69,13 +68,25 @@ export const getBudgets = () => async (dispatch: Dispatch, getState: () => RootS
   }
 };
 
-export const createBudget = (data: BudgetsWithId) => async (dispatch: Dispatch) => {
+type createBudgetPayload = {
+  name: string;
+  amount: number;
+};
+
+export const createBudget = (payload: createBudgetPayload) => async (dispatch: Dispatch) => {
+  const user = getUser();
   dispatch(fetchDataStart());
   try {
-    budgetStorage.addItem(data);
-    const dataStorage = budgetStorage.getData();
-    dispatch(fetchDataSuccess([]));
-    return dataStorage;
+    const {
+      data: { budgets }
+    } = await api.post<BudgetsResponse>(endpoints.budgets.create(), {
+      ...payload,
+
+      user_id: user?.user_id
+    });
+
+    dispatch(fetchDataSuccess(budgets));
+    return budgets;
   } catch (error) {
     dispatch(fetchDataFailure('Erro ao criar o orçamento'));
   }

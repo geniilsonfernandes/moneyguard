@@ -14,7 +14,10 @@ const endpoints = {
     create: () => `/users`
   },
   budgets: {
-    get: () => '/budgets'
+    get: () => '/budgets',
+    create: () => '/budgets',
+    update: (id: string) => `/budgets/${id}`,
+    delete: (id: string) => `/budgets/${id}`
   }
 };
 

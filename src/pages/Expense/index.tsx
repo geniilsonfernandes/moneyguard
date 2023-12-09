@@ -4,7 +4,14 @@ import Loader from '@/components/Loader';
 import Button from '@/components/ui/Button';
 import RenderIf from '@/components/ui/RenderIf';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { getExpenseById } from '@/store/reducers/getExpense';
+import { getUser } from '@/store/reducers/auth';
+import {
+  CreateExpensePayload,
+  createExpense,
+  updateExepense
+} from '@/store/reducers/createExpense';
+import { initHydrateExpenses } from '@/store/reducers/getExpenses';
+import generateDateArray from '@/utils/generateDateArray';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -18,8 +25,6 @@ import View from './components/View';
 import { Steps } from './components/shared';
 import { ExpenseFields, createSchema, defaultValues } from './shared/schema';
 import { steps } from './steps';
-import { getUser } from '@/store/reducers/auth';
-import { createExpense } from '@/store/reducers/createExpense';
 
 const texts = {
   edit: {
@@ -39,6 +44,7 @@ const Expense = () => {
   const navigate = useNavigate();
   const { loading, error } = useAppSelector((state) => state.createExpense);
   const expense = useAppSelector((state) => state.expense);
+
   const { width, height } = {
     width: window.innerWidth - 20,
     height: window.innerHeight
@@ -100,16 +106,11 @@ const Expense = () => {
   };
 
   const onSubmit = async (data: ExpenseFields) => {
-    console.log(data);
-    const dataDuration = data.periodicity_mode === 'ONCE' ? 1 : data.duration || 1;
-
-    const createRangeOfDate = (date: Date) => {
-      const range = [];
-      for (let i = 0; i < dataDuration; i++) {
-        range.push(dayjs(date).add(i, 'month').toDate());
-      }
-      return range;
-    };
+    const expenseDuration = data.periodicity_mode === 'ONCE' ? 1 : data.duration || 1;
+    const paymentMode =
+      data.periodicity_mode === 'FIXED' || data.periodicity_mode === 'ONCE'
+        ? 'ALL'
+        : data.payment_mode;
 
     const payload = {
       amount: data.amount,
@@ -117,45 +118,40 @@ const Expense = () => {
       name: data.name,
       user_id: getUser()?.user_id,
       budget_id: data.budget.id,
-      duration: data.periodicity_mode === 'ONCE' ? 1 : data.duration,
+      duration: expenseDuration,
       note: data.note,
-      payment_mode:
-        data.periodicity_mode === 'FIXED' || data.periodicity_mode === 'ONCE'
-          ? 'ALL'
-          : data.payment_mode,
+      payment_mode: paymentMode,
       type: data.type,
       periodicity_mode: data.periodicity_mode,
-      period_dates: createRangeOfDate(data.due_date)
-    };
+      period_dates: generateDateArray(data.due_date, expenseDuration)
+    } as CreateExpensePayload;
 
-    console.log({ payload });
+    if (hasEdit === 'edit') {
+      const editing = await dispatch(
+        updateExepense({
+          data: payload,
+          id
+        })
+      );
 
-    // if (hasEdit === 'edit') {
-    //   const editing = await dispatch(
-    //     updateExepense({
-    //       data,
-    //       id
-    //     })
-    //   );
+      if (editing) {
+        dispatch(initHydrateExpenses());
+        setSteps('FINISH');
+      }
+      return;
+    }
 
-    //   if (editing) {
-    //     dispatch(initHydrateExpenses());
-    //     setSteps('FINISH');
-    //   }
-    //   return;
-    // }
+    const creating = await dispatch(createExpense({ payload }));
 
-    await dispatch(createExpense({ payload }));
-
-    // if (creating) {
-    //   dispatch(initHydrateExpenses());
-    //   setSteps('FINISH');
-    // }
+    if (creating) {
+      dispatch(initHydrateExpenses());
+      setSteps('FINISH');
+    }
   };
 
   useEffect(() => {
     const getExpense = async () => {
-      const data = await dispatch(getExpenseById({ id }));
+      const data = expense.data;
 
       if (data) {
         setValue('name', data.name);
@@ -174,7 +170,7 @@ const Expense = () => {
     if (id) {
       getExpense();
     }
-  }, [dispatch, id, setValue]);
+  }, [id, setValue, expense]);
 
   if (expense.loading) {
     return (

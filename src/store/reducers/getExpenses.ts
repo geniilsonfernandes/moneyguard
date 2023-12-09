@@ -7,6 +7,7 @@ import { Dispatch } from 'redux';
 import { RootState } from '..';
 import { getUser, saveUser, updateUserId } from './auth';
 import { setBudgets } from './budgets';
+import { expenseCache } from '../cache';
 
 type origins = 'create' | 'update' | 'delete' | null;
 
@@ -93,6 +94,9 @@ export const getExpenses =
     dispatch(fetchDataStart());
     const { email, name, clerk_user_id } = getState().auth;
     const user = getUser();
+
+    const cacheKey = `${endpoints.budgets.get()}${month}`;
+
     try {
       dispatch(setMonth(month));
 
@@ -128,6 +132,13 @@ export const getExpenses =
 
       dispatch(setBudgets(budgets));
 
+      const cacheData = expenseCache.getCache(cacheKey);
+
+      if (cacheData) {
+        dispatch(fetchDataSuccess(cacheData));
+        return;
+      }
+
       const {
         data: { expenses }
       } = await api.get<ExpensesResponse>(endpoints.expenses.get(), {
@@ -137,6 +148,9 @@ export const getExpenses =
         }
       });
 
+      expenseCache.setCache(cacheKey, expenses);
+
+      console.log(expenseCache.getCache(cacheKey), expenses);
       dispatch(fetchDataSuccess(expenses));
       dispatch(setCurrentMonthExpenses(expenses));
     } catch (error) {
@@ -148,9 +162,18 @@ export const initHydrateExpenses =
   ({ current_month = dayjs().format('MM/YYYY') }: getHidrateExpensesProps = {}) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
     dispatch(hydrateExpenses());
-    try {
-      const monthquery = current_month || getState().expenses.month || dayjs().format('MM/YYYY');
 
+    const monthquery = current_month || getState().expenses.month || dayjs().format('MM/YYYY');
+
+    const cacheKey = `${endpoints.budgets.get()}${monthquery}`;
+
+    const cacheData = expenseCache.getCache(cacheKey);
+
+    if (cacheData) {
+      dispatch(hydrateExpensesSuccess(cacheData));
+      return;
+    }
+    try {
       const { user_id } = getState().auth;
 
       const {
@@ -162,6 +185,7 @@ export const initHydrateExpenses =
         }
       });
 
+      expenseCache.setCache(cacheKey, expenses);
       dispatch(hydrateExpensesSuccess(expenses));
     } catch (error) {
       dispatch(fetchDataFailure('Erro ao carregar os dados'));

@@ -7,6 +7,7 @@ type CalculateExpenseReturn = {
   expenseQuantity: number;
   expense: number;
   total: number;
+  totalInMonth: number;
 };
 
 const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
@@ -16,18 +17,16 @@ const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
       expense: 0,
       incomeQuantity: 0,
       expenseQuantity: 0,
-      total: 0
+      total: 0,
+      totalInMonth: 0
     };
   }
 
   return expenses.reduce(
     (acc, record: ExpenseDTO) => {
-      const { periodicity_mode, payment_mode, duration = 1 } = record;
+      const { periodicity_mode, duration = 1 } = record;
 
-      const valueToPay =
-        payment_mode === 'PARCEL' && periodicity_mode === 'FIXED'
-          ? record.amount / duration
-          : record.amount;
+      const valueToPay = periodicity_mode === 'MONTHLY' ? record.amount / duration : record.amount;
 
       if (record.type === 'EXPENSE') {
         return {
@@ -35,7 +34,8 @@ const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
           expense: acc.expense + valueToPay,
           total: acc.total - valueToPay,
           expenseQuantity: acc.expenseQuantity + 1,
-          incomeQuantity: acc.incomeQuantity
+          incomeQuantity: acc.incomeQuantity,
+          totalInMonth: acc.totalInMonth
         };
       }
       if (record.type === 'INCOME') {
@@ -44,7 +44,8 @@ const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
           incomeQuantity: acc.incomeQuantity + 1,
           expense: acc.expense,
           total: acc.total + valueToPay,
-          expenseQuantity: acc.expenseQuantity
+          expenseQuantity: acc.expenseQuantity,
+          totalInMonth: acc.totalInMonth
         };
       }
       return acc;
@@ -54,7 +55,8 @@ const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
       incomeQuantity: 0,
       expenseQuantity: 0,
       expense: 0,
-      total: 0
+      total: 0,
+      totalInMonth: 0
     }
   );
 };

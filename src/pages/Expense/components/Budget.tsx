@@ -8,7 +8,6 @@ import Step from '@/components/ui/Step';
 import useVisibility from '@/hooks/useVisibility';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { createBudget, getBudgets } from '@/store/reducers/budgets';
-import generateHashId from '@/utils/generateHashId';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Wallet } from 'lucide-react';
 import { useEffect } from 'react';
@@ -37,11 +36,10 @@ const createBudgetSchema = z.object({
 const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
   const {
     control: budgetControl,
-    trigger,
-    getValues,
     setError,
     reset,
-    formState: { errors, isValid }
+    handleSubmit,
+    formState: { errors, isValid, isSubmitting }
   } = useForm<budgetFields>({
     resolver: zodResolver(createBudgetSchema),
     mode: 'onChange'
@@ -51,32 +49,21 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
   const createBugetModal = useVisibility({});
 
   const bugetQuantityLimit = 10 - budgets.length;
-  const createBuget = () => {
-    trigger(['budget_name']).then((isValid) => {
-      if (isValid) {
-        const name = getValues().budget_name;
 
-        if (budgets.some((buget) => buget.name === name)) {
-          setError(
-            'budget_name',
-            { message: 'O nome do orcamento ja existe' },
-            { shouldFocus: true }
-          );
-          return;
-        }
+  const onSubmit = async (data: budgetFields) => {
+    if (budgets.some((buget) => buget.name === data.budget_name)) {
+      setError('budget_name', { message: 'O nome do orcamento ja existe' }, { shouldFocus: true });
+      return;
+    }
 
-        dispatch(
-          createBudget({
-            id: generateHashId(),
-            name,
-            value: 400,
-            created_at: new Date()
-          })
-        );
-        createBugetModal.onHidden();
-        reset();
-      }
-    });
+    await dispatch(
+      createBudget({
+        name: data.budget_name,
+        amount: 1000
+      })
+    );
+    createBugetModal.onHidden();
+    reset();
   };
 
   useEffect(() => {
@@ -173,7 +160,11 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
         title="Criar novo orçamento"
         mode="full"
         footer={
-          <Button width="full" onClick={() => createBuget()} disabled={!isValid}>
+          <Button
+            isLoading={isSubmitting}
+            width="full"
+            onClick={handleSubmit(onSubmit)}
+            disabled={!isValid}>
             Criar novo orçamento
           </Button>
         }>
