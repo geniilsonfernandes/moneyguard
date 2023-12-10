@@ -64,7 +64,7 @@ const Dashboard = () => {
             <div className="mt-4 text-xl">
               <div className="flex gap-4">
                 <Wallet className="text-xl" />
-                <h3>{formatNumber(user?.settings.monthly_budget || 0)}</h3>
+                <h3>{formatNumber(user?.settings?.monthly_budget || 0)}</h3>
 
                 <span className="text-zinc-300">/mês</span>
               </div>
