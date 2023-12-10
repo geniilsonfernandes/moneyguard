@@ -34,7 +34,7 @@ const SingUp = () => {
 
   return (
     <div className="flex  ">
-      <div className="container h-full grid grid-cols-12 py-12 sm:p-16">
+      <div className="h-full grid grid-cols-12 py-12 sm:p-16">
         <div className="hidden sm:flex flex-col justify-between sm:col-span-5 h-full rounded-3xl">
           <Logo />
           <img
@@ -89,7 +89,7 @@ const SingUp = () => {
             />
           </RenderIf>
 
-          <div className="flex justify-end pt-8 gap-4">
+          <div className="flex lg:flex-row sm:flex-col justify-end pt-8 gap-4">
             <Button variant="ghost" onClick={() => navigate('/sign-up')}>
               Ainda não tenho uma conta
             </Button>

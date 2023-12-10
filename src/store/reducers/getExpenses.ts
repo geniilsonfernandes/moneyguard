@@ -94,7 +94,7 @@ export const getExpenses =
     dispatch(fetchDataStart());
     const { user } = getState().auth;
 
-    const cacheKey = `${endpoints.budgets.get()}${month}`;
+    const cacheKey = `${endpoints.budgets.get()}${month}${user?.id}`;
 
     try {
       dispatch(setMonth(month));
@@ -142,7 +142,7 @@ export const initHydrateExpenses =
 
     const monthquery = current_month || getState().expenses.month || dayjs().format('MM/YYYY');
 
-    const cacheKey = `${endpoints.budgets.get()}${monthquery}`;
+    const cacheKey = `${endpoints.budgets.get()}${monthquery}${getState().auth.user?.id}`;
 
     const cacheData = expenseCache.getCache(cacheKey);
 

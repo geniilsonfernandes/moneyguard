@@ -46,7 +46,7 @@ const SingUp = () => {
 
   return (
     <div className="flexs  ">
-      <div className="container h-full grid grid-cols-12 py-12 sm:p-16">
+      <div className="h-full grid grid-cols-12 py-12 sm:p-16">
         <div className="hidden sm:flex flex-col justify-between sm:col-span-5 h-[70vh] rounded-3xl">
           <Logo />
           <img
@@ -71,7 +71,7 @@ const SingUp = () => {
                 </p>
               </div>
 
-              <div className="mt-8 flex flex-row gap-4 justify-end">
+              <div className="mt-8 flex lg:flex-row sm:flex-col gap-4 justify-end ">
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -176,7 +176,7 @@ const SingUp = () => {
                   Vamos iniciar sua conta, Definar por favor um limite de gastos mensal
                 </p>
 
-                <div className="mt-8">
+                <div className="my-8">
                   <Controller
                     control={control}
                     name="monthlyBudget"
@@ -191,6 +191,11 @@ const SingUp = () => {
                     )}
                   />
                 </div>
+                <Alert
+                  variant="info"
+                  title="Ajuda!"
+                  description="O limite de gastos mensal pode ser o seu sálario!"
+                />
                 <RenderIf condition={!!error} className="my-4">
                   <Alert
                     variant="danger"
@@ -215,7 +220,7 @@ const SingUp = () => {
                   />
                 </RenderIf>
               </div>
-              <div className="flex justify-end pt-8 gap-4">
+              <div className="flex lg:flex-row sm:flex-col justify-end pt-8 gap-4">
                 <Button variant="ghost" onClick={() => setstepCounter(2)}>
                   Revisar meus dados
                 </Button>
