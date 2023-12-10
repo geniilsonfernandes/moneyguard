@@ -46,6 +46,7 @@ type InputProps = {
   error?: boolean;
   type?: 'text' | 'password';
   passwordCheck?: JSX.Element;
+  recoveryPasswordbutton?: () => void;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 type ErrorMessageProps = {
@@ -66,6 +67,8 @@ const Input = ({
   helperText,
   className,
   passwordCheck,
+  recoveryPasswordbutton,
+
   ...props
 }: InputProps) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -80,10 +83,13 @@ const Input = ({
         htmlFor={name}
         className={cn(
           TextColorVariants({ state: error ? 'error' : state }),
-          'font-medium text-base'
+          'font-medium text-base flex justify-between'
         )}
         aria-label={label}>
         {label}
+        {recoveryPasswordbutton && (
+          <button className="text-sm text-zinc-400 hover:text-zinc-600">esqueci minha senha</button>
+        )}
       </label>
       <div className="relative">
         <input
@@ -201,7 +207,7 @@ export const ValueInput = ({
         </span>
         <NumericFormat
           className={cn(
-            'text-zinc-750 text-7xl font-medium outline-none border-none ml-2 w-full',
+            'text-zinc-750 text-7xl font-medium outline-none border-none ml-2 w-full bg-transparent',
             TextColorVariants({ state: error ? 'error' : state })
           )}
           value={value}

@@ -1,11 +1,13 @@
 import ErrorPage from '@/components/ErrorPage';
 import ExpenseView from '@/components/ExpenseView';
 import Header from '@/components/Header';
-import NotFound from '@/components/NotFound';
 import Dashboard from '@/pages/Dashboard';
 import Expense from '@/pages/Expense';
 import SingIn from '@/pages/SingIn';
 import SingUp from '@/pages/SingUp';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { getUser, login } from '@/store/reducers/auth';
+import { useEffect } from 'react';
 
 import {
   Navigate,
@@ -16,7 +18,7 @@ import {
 } from 'react-router-dom';
 
 const WrapperLayout = ({ children }: { children: React.ReactNode }) => {
-  return <div className="bg-slate-100">{children}</div>;
+  return <div className="">{children}</div>;
 };
 
 const PublicLayout = () => {
@@ -59,8 +61,7 @@ export function PrivateRoutes(): {
           {
             path: '/expense-view/:id',
             element: <ExpenseView />,
-            errorElement: <ErrorPage />,
-            ErrorBoundary: () => <ErrorPage />
+            errorElement: <ErrorPage />
           }
         ]
       },
@@ -74,7 +75,7 @@ export function PrivateRoutes(): {
           { path: '/settings/2', element: <div>settings 2</div> }
         ]
       },
-      { path: '*', element: <NotFound /> }
+      { path: '*', element: <Navigate to="/" replace /> }
     ]
   };
 }
@@ -86,19 +87,26 @@ function PublicRoute(): {
   return {
     element: <PublicLayout />,
     children: [
-      { path: '/sign-in', element: <SingIn /> },
       { path: '/sign-up', element: <SingUp /> },
-      { path: '*', element: <Navigate to="/sign-in" replace /> }
+      { path: '/sign-in', element: <SingIn /> },
+      { path: '*', element: <Navigate to="/sign-up" replace /> }
     ]
   };
 }
 
 export function AppRouter() {
-  const { isSignedIn } = {
-    isSignedIn: false
-  };
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
-  const router = createBrowserRouter([isSignedIn ? PrivateRoutes() : PublicRoute()]);
+  useEffect(() => {
+    const user = getUser();
+
+    if (user) {
+      dispatch(login(user));
+    }
+  }, [dispatch]);
+
+  const router = createBrowserRouter([isAuthenticated ? PrivateRoutes() : PublicRoute()]);
 
   return <RouterProvider router={router} />;
 }

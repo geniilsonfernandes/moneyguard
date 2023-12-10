@@ -11,17 +11,18 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { getExpenses, initHydrateExpenses } from '@/store/reducers/getExpenses';
 import { cn } from '@/utils';
 import formatNumber from '@/utils/formatNumber';
-import { useSession } from '@clerk/clerk-react';
+
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const { data, loading, origin, hydrating, currentMonthExpenses } = useAppSelector(
+  const { data, loading, origin, hydrating, currentMonthExpenses, error } = useAppSelector(
     (state) => state.expenses
   );
   const { data: budgets } = useAppSelector((state) => state.budgets);
+  const user = useAppSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const { expense, income } = useCalculateExpense(currentMonthExpenses || []);
 
@@ -33,10 +34,6 @@ const Dashboard = () => {
     // dispatch(getExpenses({ month }));
     dispatch(initHydrateExpenses({ current_month: month }));
   };
-
-  const { session } = useSession();
-
-  const firstName = session?.user?.firstName;
 
   const openExpense = (id: string) => {
     navigate(`/expense-view/${id}`);
@@ -51,7 +48,7 @@ const Dashboard = () => {
       <Outlet />
       <SubHeader className="flex flex-col py-12">
         <span className="text-3xl text-zinc-500">Olá</span>
-        <h4 className="text-4xl text-zinc-950 font-bold">{firstName}</h4>
+        <h4 className="text-4xl text-zinc-950 font-bold">{user?.name}</h4>
       </SubHeader>
 
       <div className="container space-y-6 pb-6  -mt-6 ">
@@ -60,6 +57,7 @@ const Dashboard = () => {
           <Statistics title="Entradas este mês" value={income} />
           <Statistics title="Saldo" value={income - expense} />
         </div>
+        {error && <Alert variant="danger" title="Algo deu errado" description={error} />}
         <Alert
           variant="neutral"
           title="Estatisticas de despesas?"

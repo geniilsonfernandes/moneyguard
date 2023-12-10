@@ -1,9 +1,10 @@
 import useMediaQuery from '@/hooks/useMediaQuery';
 import useVisibility from '@/hooks/useVisibility';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { logoutUser } from '@/store/reducers/auth';
 import { Bell, LogOut, Menu, Search, Settings, User2, X } from 'lucide-react';
 import { HTMLAttributes, useRef } from 'react';
-
-import { useAuth, useSession } from '@clerk/clerk-react';
+import { useNavigate } from 'react-router-dom';
 
 type ButtonMenuProps = HTMLAttributes<HTMLButtonElement>;
 const ButtonMenu = (props: ButtonMenuProps) => {
@@ -33,12 +34,11 @@ const ButtonMenuList = ({ icon, title, ...props }: ButtonMenuListProps) => {
 };
 
 const User = () => {
-  const { session } = useSession();
-
-  const fullName = session?.user?.fullName;
-  const hasImage = session?.user?.hasImage;
-  const image = session?.user?.imageUrl;
-  const email = session?.user?.primaryEmailAddress?.emailAddress;
+  const { user } = useAppSelector((state) => state.auth);
+  const fullName = user?.name;
+  const hasImage = 'session?.user?.hasImage';
+  const image = 'session?.user?.imageUrl';
+  const email = user?.email;
 
   return (
     <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
@@ -57,10 +57,8 @@ const User = () => {
 
 type UserButtonProps = HTMLAttributes<HTMLButtonElement>;
 const UserButton = (props: UserButtonProps) => {
-  const { session } = useSession();
-
-  const hasImage = session?.user?.hasImage;
-  const image = session?.user?.imageUrl;
+  const hasImage = 'session?.user?.hasImage';
+  const image = 'session?.user?.imageUrl';
 
   return (
     <button
@@ -74,13 +72,19 @@ const UserButton = (props: UserButtonProps) => {
 };
 
 const Header = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const menuControl = useVisibility();
   const userControl = useVisibility();
   const isSmallScreen = useMediaQuery('sm');
   const menuRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
-  const { signOut } = useAuth();
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/sign-up');
+  };
 
   if (isSmallScreen) {
     return (
@@ -111,13 +115,7 @@ const Header = () => {
                   <User />
                   <div className="space-y-2 pt-4">
                     <ButtonMenuList icon={<Settings />} title="Configurações" />
-                    <ButtonMenuList
-                      icon={<LogOut />}
-                      title="Sair"
-                      onClick={() => {
-                        signOut();
-                      }}
-                    />
+                    <ButtonMenuList icon={<LogOut />} title="Sair" onClick={handleLogout} />
                   </div>
                 </div>
               </div>
@@ -168,13 +166,7 @@ const Header = () => {
                   <User />
                   <div className="space-y-2 pt-4">
                     <ButtonMenuList icon={<Settings />} title="Configurações" />
-                    <ButtonMenuList
-                      icon={<LogOut />}
-                      title="Sair"
-                      onClick={() => {
-                        signOut();
-                      }}
-                    />
+                    <ButtonMenuList icon={<LogOut />} title="Sair" onClick={handleLogout} />
                   </div>
                 </div>
               </div>

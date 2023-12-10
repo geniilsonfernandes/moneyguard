@@ -44,7 +44,10 @@ const createUserSchema = z
       })
       .refine((value) => /[0-9]/.test(value), {
         message: 'A senha deve conter pelo menos um número'
-      })
+      }),
+    monthlyBudget: z.number().refine((value) => value > 0, {
+      message: 'O limite deve ser maior que 0'
+    })
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'As senhas devem ser iguais',

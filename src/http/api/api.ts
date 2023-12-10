@@ -1,4 +1,6 @@
+import { getUser, removeUser } from '@/store/reducers/auth';
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { ICreateUser, IUserResponse, IloginPayload, IloginResponse } from './types';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_DEV_BASE_URL
@@ -6,6 +8,14 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    const {
+      auth: { token }
+    } = getUser();
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => {
@@ -18,33 +28,15 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
+    if (error.response?.status === 401) {
+      removeUser();
+      window.location.reload();
+      return;
+    }
+
     return Promise.reject(error);
   }
 );
-
-export interface ICreateUser {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface IApiBaseResponse {
-  message: string;
-}
-
-export interface IUserResponse extends IApiBaseResponse {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    created_at: string;
-    updated_at: string;
-  };
-  auth: {
-    token: string;
-    refresh_token: string;
-  };
-}
 
 class MoneyApi {
   private api: AxiosInstance;
@@ -52,13 +44,10 @@ class MoneyApi {
   constructor() {
     this.api = axios.create({
       baseURL: import.meta.env.VITE_DEV_BASE_URL
-      // outras configurações
     });
 
-    // Adiciona um interceptor de requisição para capturar a URL
     this.api.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
-        console.log('URL da requisição:', config.url); // Aqui está a URL da requisição
         return config;
       },
       (error) => {
@@ -66,10 +55,8 @@ class MoneyApi {
       }
     );
 
-    // Adiciona um interceptor de resposta para capturar a URL
     this.api.interceptors.response.use(
       (response: AxiosResponse) => {
-        console.log('URL da resposta:', response.config.url); // Aqui está a URL da resposta
         return response;
       },
       (error) => {
@@ -83,7 +70,10 @@ class MoneyApi {
     return response;
   }
 
-  // Outros métodos para outras requisições...
+  public async login(payload: IloginPayload) {
+    const response = await this.api.post<IloginResponse>('/auth/login', payload);
+    return response;
+  }
 }
 
 export const moneyApi = new MoneyApi();
