@@ -44,12 +44,8 @@ export const { fetchDataStart, fetchDataSuccess, fetchDataFailure, setBudgets } 
 
 export const getBudgets = () => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(fetchDataStart());
-  const hasBudgets = getState().budgets.data.length > 0;
+
   const { user } = getState().auth;
-  if (hasBudgets) {
-    dispatch(fetchDataSuccess(getState().budgets.data));
-    return;
-  }
 
   try {
     const {
@@ -80,7 +76,6 @@ export const createBudget =
         data: { budgets }
       } = await api.post<BudgetsResponse>(endpoints.budgets.create(), {
         ...payload,
-
         user_id: user?.id
       });
 

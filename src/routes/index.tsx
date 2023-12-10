@@ -7,6 +7,7 @@ import SingIn from '@/pages/SingIn';
 import SingUp from '@/pages/SingUp';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { getUser, login } from '@/store/reducers/auth';
+import { setBudgets } from '@/store/reducers/budgets';
 import { useEffect } from 'react';
 
 import {
@@ -103,6 +104,7 @@ export function AppRouter() {
 
     if (user) {
       dispatch(login(user));
+      dispatch(setBudgets(user.user.budget));
     }
   }, [dispatch]);
 

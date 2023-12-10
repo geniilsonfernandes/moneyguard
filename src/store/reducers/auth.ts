@@ -1,12 +1,9 @@
 import { moneyApi } from '@/http/api/api';
-import { ICreateUser, IUserResponse, IloginPayload } from '@/http/api/types';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { IAuth, ICreateUserPayload, IUser, IloginPayload } from '@/http/api/types';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { Dispatch } from 'redux';
-
-interface ICreateUserPayload extends ICreateUser {
-  monthlyBudget: number;
-}
+import { setBudgets } from './budgets';
 
 type Error = {
   message: string | null;
@@ -18,17 +15,8 @@ interface DataState {
   loading: boolean;
   error: Error;
   success: boolean | null;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    created_at: string;
-    updated_at: string;
-  } | null;
-  auth: {
-    token: string;
-    refresh_token: string;
-  } | null;
+  user: IUser | null;
+  auth: IAuth | null;
   isAuthenticated: boolean;
   userConfig: {
     monthlyBudget: number;
@@ -50,11 +38,8 @@ const initialState: DataState = {
 };
 
 type LoginPayload = {
-  user: IUserResponse['user'];
-  auth: IUserResponse['auth'];
-  userConfig: {
-    monthlyBudget: number;
-  };
+  user: IUser;
+  auth: IAuth;
 };
 
 const authSlice = createSlice({
@@ -81,8 +66,6 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.auth = action.payload.auth;
       state.user = action.payload.user;
-
-      state.userConfig = action.payload.userConfig;
     },
     logout(state) {
       state.isAuthenticated = false;
@@ -92,6 +75,8 @@ const authSlice = createSlice({
   }
 });
 
+export const { login, logout, fetchDataFailure, fetchDataStart, fetchDataSuccess } =
+  authSlice.actions;
 export const saveUser = ({ user, auth }: LoginPayload) => {
   localStorage.setItem('@moneyguard:user', JSON.stringify({ user, auth }));
   return true;
@@ -103,16 +88,11 @@ export const getUser = (): LoginPayload => {
 };
 
 export const removeUser = () => {
-  console.log('logoutUser');
   localStorage.removeItem('@moneyguard:user');
   return true;
 };
-export const { login, logout, fetchDataFailure, fetchDataStart, fetchDataSuccess } =
-  authSlice.actions;
 
 export const logoutUser = () => async (dispatch: Dispatch) => {
-  console.log('logoutUser');
-
   localStorage.removeItem('@moneyguard:user');
   dispatch(logout());
 };
@@ -121,21 +101,16 @@ export const loginUser = (payload: IloginPayload) => async (dispatch: Dispatch) 
   try {
     dispatch(fetchDataStart());
     const {
-      data: { user, token, refresh_token }
+      data: { user, auth }
     } = await moneyApi.login(payload);
 
     const userToSave = {
       user,
-      auth: {
-        token,
-        refresh_token
-      },
-      userConfig: {
-        monthlyBudget: 0
-      }
+      auth
     };
 
     saveUser(userToSave);
+    dispatch(setBudgets(user.budget));
     dispatch(login(userToSave));
     dispatch(fetchDataSuccess());
     return userToSave;
@@ -164,13 +139,11 @@ export const createUser = (payload: ICreateUserPayload) => async (dispatch: Disp
 
     const userToSave = {
       user,
-      auth,
-      userConfig: {
-        monthlyBudget: payload.monthlyBudget
-      }
+      auth
     };
 
     saveUser(userToSave);
+    dispatch(setBudgets(user.budget));
     dispatch(login(userToSave));
     dispatch(fetchDataSuccess());
     return user;

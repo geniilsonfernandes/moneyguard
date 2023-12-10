@@ -113,6 +113,7 @@ export const getExpenses =
 
       if (cacheData) {
         dispatch(fetchDataSuccess(cacheData));
+        dispatch(setCurrentMonthExpenses(cacheData));
         return;
       }
 
@@ -127,7 +128,6 @@ export const getExpenses =
 
       expenseCache.setCache(cacheKey, expenses);
 
-      console.log(expenseCache.getCache(cacheKey), expenses);
       dispatch(fetchDataSuccess(expenses));
       dispatch(setCurrentMonthExpenses(expenses));
     } catch (error) {

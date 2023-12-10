@@ -64,7 +64,10 @@ const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
 type UseCalculateExpenseReturn = CalculateExpenseReturn;
 
 const useCalculateExpense = (expenses: ExpenseDTO[]): UseCalculateExpenseReturn => {
+  console.log(expenses);
+
   const calcute = useMemo(() => calculateExpense(expenses), [expenses]);
+  console.log(calcute);
 
   return calcute;
 };

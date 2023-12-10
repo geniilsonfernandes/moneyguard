@@ -1,4 +1,4 @@
-import { ChevronDownCircle, ChevronRight, ChevronUpCircle } from 'lucide-react';
+import { ChevronDownCircle, ChevronUpCircle, PanelRight } from 'lucide-react';
 
 import ExpenseDTO from '@/http/api/DTO/ExpenseDTO';
 import calculateValue from '@/utils/calculateValue';
@@ -51,7 +51,7 @@ const ExpenseItem = ({ type, group = true, id, name, onClick, expense }: Expense
         <button
           onClick={handleToView}
           className="text-zinc-400  hover:bg-slate-200 h-[32px] w-[32px] flex-center rounded-lg">
-          <ChevronRight />
+          <PanelRight />
         </button>
       </div>
     </div>

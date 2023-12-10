@@ -1,6 +1,11 @@
 import { getUser, removeUser } from '@/store/reducers/auth';
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { ICreateUser, IUserResponse, IloginPayload, IloginResponse } from './types';
+import {
+  ICreateUserPayload,
+  IUserCreateResponse,
+  IUserloginResponse,
+  IloginPayload
+} from './types';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_DEV_BASE_URL
@@ -65,13 +70,13 @@ class MoneyApi {
     );
   }
 
-  public async createUser(payload: ICreateUser) {
-    const response = await this.api.post<IUserResponse>('/users', payload);
+  public async createUser(payload: ICreateUserPayload) {
+    const response = await this.api.post<IUserCreateResponse>('/users', payload);
     return response;
   }
 
   public async login(payload: IloginPayload) {
-    const response = await this.api.post<IloginResponse>('/auth/login', payload);
+    const response = await this.api.post<IUserloginResponse>('/auth/login', payload);
     return response;
   }
 }
