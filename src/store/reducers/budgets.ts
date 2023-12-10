@@ -4,7 +4,6 @@ import endpoints, { BudgetsResponse } from '@/http/api/endpoints';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 import { RootState } from '..';
-import { getUser } from './auth';
 
 interface DataState {
   data: BudgetDTO[];
@@ -45,9 +44,8 @@ export const { fetchDataStart, fetchDataSuccess, fetchDataFailure, setBudgets } 
 
 export const getBudgets = () => async (dispatch: Dispatch, getState: () => RootState) => {
   dispatch(fetchDataStart());
-  const user = getUser();
   const hasBudgets = getState().budgets.data.length > 0;
-
+  const { user } = getState().auth;
   if (hasBudgets) {
     dispatch(fetchDataSuccess(getState().budgets.data));
     return;
@@ -58,7 +56,7 @@ export const getBudgets = () => async (dispatch: Dispatch, getState: () => RootS
       data: { budgets }
     } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
       params: {
-        user_id: user?.user_id || ''
+        user_id: user?.id
       }
     });
     dispatch(fetchDataSuccess(budgets));
@@ -73,23 +71,24 @@ type createBudgetPayload = {
   amount: number;
 };
 
-export const createBudget = (payload: createBudgetPayload) => async (dispatch: Dispatch) => {
-  const user = getUser();
-  dispatch(fetchDataStart());
-  try {
-    const {
-      data: { budgets }
-    } = await api.post<BudgetsResponse>(endpoints.budgets.create(), {
-      ...payload,
+export const createBudget =
+  (payload: createBudgetPayload) => async (dispatch: Dispatch, getState: () => RootState) => {
+    const { user } = getState().auth;
+    dispatch(fetchDataStart());
+    try {
+      const {
+        data: { budgets }
+      } = await api.post<BudgetsResponse>(endpoints.budgets.create(), {
+        ...payload,
 
-      user_id: user?.user_id
-    });
+        user_id: user?.id
+      });
 
-    dispatch(fetchDataSuccess(budgets));
-    return budgets;
-  } catch (error) {
-    dispatch(fetchDataFailure('Erro ao criar o orçamento'));
-  }
-};
+      dispatch(fetchDataSuccess(budgets));
+      return budgets;
+    } catch (error) {
+      dispatch(fetchDataFailure('Erro ao criar o orçamento'));
+    }
+  };
 
 export default financialRecordsSlice.reducer;

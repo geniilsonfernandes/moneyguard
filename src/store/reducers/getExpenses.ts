@@ -82,10 +82,10 @@ export const {
 } = financialRecordsSlice.actions;
 
 type getExpensesProps = {
-  month?: string; //  12/2023
+  month?: string;
 };
 type getHidrateExpensesProps = {
-  current_month?: string; //  12/2023
+  current_month?: string;
 };
 
 export const getExpenses =

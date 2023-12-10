@@ -6,7 +6,6 @@ import { api } from '@/http/api/api';
 import endpoints from '@/http/api/endpoints';
 import { StorageError } from '@/utils/useStorage';
 import { RootState } from '..';
-import { getUser } from './auth';
 import { expenseCache } from '../cache';
 
 export type CreateExpensePayload = {
@@ -73,13 +72,13 @@ export const { fetchDataStart, fetchDataSuccess, fetchDataFailure } = createExpe
 export const updateExepense =
   ({ data, id }: upadateProps) =>
   async (dispatch: Dispatch, getState: () => RootState) => {
-    const { user_id } = getState().auth;
+    const { user } = getState().auth;
 
     dispatch(fetchDataStart());
     try {
       await api.post(endpoints.expenses.update(id), {
         ...data,
-        user_id: user_id
+        user_id: user?.id
       });
 
       expenseCache.invalidateAllCache();
@@ -101,14 +100,13 @@ export const updateExepense =
 
 export const createExpense =
   ({ payload }: { payload: CreateExpensePayload }) =>
-  async (dispatch: Dispatch) => {
-    const user = getUser();
-
+  async (dispatch: Dispatch, getState: () => RootState) => {
+    const { user } = getState().auth;
     dispatch(fetchDataStart());
     try {
       await api.post(endpoints.expenses.create(), {
         ...payload,
-        user_id: user?.user_id
+        user_id: user?.id
       });
 
       expenseCache.invalidateAllCache();
