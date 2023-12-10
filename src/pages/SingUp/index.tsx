@@ -30,13 +30,7 @@ const SingUp = () => {
     formState: { errors, isValid }
   } = useForm<userFields>({
     resolver: zodResolver(createUserSchema),
-    mode: 'onChange',
-    defaultValues: {
-      name: ' general user',
-      email: 'f@g.com',
-      password: '434#fffFFF',
-      confirmPassword: '434#fffFFF'
-    }
+    mode: 'onChange'
   });
 
   const onSubmit = async (data: userFields) => {

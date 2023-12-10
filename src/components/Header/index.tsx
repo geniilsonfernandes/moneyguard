@@ -36,16 +36,13 @@ const ButtonMenuList = ({ icon, title, ...props }: ButtonMenuListProps) => {
 const User = () => {
   const { user } = useAppSelector((state) => state.auth);
   const fullName = user?.name;
-  const hasImage = 'session?.user?.hasImage';
-  const image = 'session?.user?.imageUrl';
+
   const email = user?.email;
 
   return (
     <div className="flex items-center gap-4 border-b border-slate-100 pb-4">
       <div className="w-[48px] h-[48px] flex justify-center items-center border border-slate-200 rounded-lg">
-        {hasImage && <img src={image} className="min-w-[48px] h-[48px] object-cover rounded-lg" />}
-
-        {!hasImage && <User2 />}
+        <User2 />
       </div>
       <div className="flex flex-col">
         <h4 className="text-zinc-950 font-semibold">{fullName}</h4>
@@ -57,16 +54,11 @@ const User = () => {
 
 type UserButtonProps = HTMLAttributes<HTMLButtonElement>;
 const UserButton = (props: UserButtonProps) => {
-  const hasImage = 'session?.user?.hasImage';
-  const image = 'session?.user?.imageUrl';
-
   return (
     <button
       className="w-[48px] h-[48px] flex justify-center items-center border border-slate-200 rounded-lg"
       {...props}>
-      {hasImage && <img src={image} className="min-w-[48px] h-[48px] object-cover rounded-lg" />}
-
-      {!hasImage && <User2 />}
+      <User2 />
     </button>
   );
 };

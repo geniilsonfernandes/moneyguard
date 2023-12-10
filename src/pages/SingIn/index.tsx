@@ -25,11 +25,7 @@ const SingUp = () => {
     formState: { errors, isValid }
   } = useForm<userFields>({
     resolver: zodResolver(createUserSchema),
-    mode: 'onChange',
-    defaultValues: {
-      email: 'f@g.com',
-      password: '434#fffFFF'
-    }
+    mode: 'onChange'
   });
 
   const onSubmit = async (data: userFields) => {
@@ -98,7 +94,7 @@ const SingUp = () => {
               Ainda não tenho uma conta
             </Button>
             <Button disabled={!isValid} onClick={handleSubmit(onSubmit)} isLoading={loading}>
-              Criar minha conta
+              Entrar na minha conta
             </Button>
           </div>
         </div>
