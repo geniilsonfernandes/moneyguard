@@ -9,7 +9,7 @@ export interface ICreateUserPayload {
   name: string;
   email: string;
   password: string;
-  monthlyBudget: number;
+  monthly_budget: number;
 }
 
 //  login

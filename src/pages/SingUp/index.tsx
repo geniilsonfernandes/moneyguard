@@ -39,7 +39,7 @@ const SingUp = () => {
         email: data.email,
         name: data.name,
         password: data.password,
-        monthlyBudget: data.monthlyBudget
+        monthly_budget: data.monthlyBudget
       })
     );
   };
