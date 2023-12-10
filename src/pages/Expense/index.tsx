@@ -37,7 +37,7 @@ const texts = {
 };
 
 const Expense = () => {
-  const [step, setSteps] = useState<Steps>('BUDGET');
+  const [step, setSteps] = useState<Steps>('INFO');
   const { id } = useParams() as { id: string };
   const dispatch = useAppDispatch();
   const navigate = useNavigate();

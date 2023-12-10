@@ -4,6 +4,7 @@ import endpoints, { BudgetsResponse } from '@/http/api/endpoints';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 import { RootState } from '..';
+import { getUser } from './auth';
 
 interface DataState {
   data: BudgetDTO[];
@@ -46,13 +47,14 @@ export const getBudgets = () => async (dispatch: Dispatch, getState: () => RootS
   dispatch(fetchDataStart());
 
   const { user } = getState().auth;
+  const storageUser = getUser()
 
   try {
     const {
       data: { budgets }
     } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
       params: {
-        user_id: user?.id
+        user_id: user?.id || storageUser?.user.id
       }
     });
     dispatch(fetchDataSuccess(budgets));
@@ -72,11 +74,17 @@ export const createBudget =
     const { user } = getState().auth;
     dispatch(fetchDataStart());
     try {
-      const {
-        data: { budgets }
-      } = await api.post<BudgetsResponse>(endpoints.budgets.create(), {
+      await api.post<BudgetsResponse>(endpoints.budgets.create(), {
         ...payload,
         user_id: user?.id
+      });
+
+      const {
+        data: { budgets }
+      } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
+        params: {
+          user_id: user?.id
+        }
       });
 
       dispatch(fetchDataSuccess(budgets));

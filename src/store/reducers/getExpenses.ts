@@ -7,6 +7,7 @@ import { Dispatch } from 'redux';
 import { RootState } from '..';
 import { expenseCache } from '../cache';
 import BudgetDTO from '@/http/api/DTO/BudgetDTO';
+import { getUser } from './auth';
 
 type origins = 'dash' | 'update' | 'delete' | null;
 
@@ -97,8 +98,9 @@ export const getExpenses =
     async (dispatch: Dispatch, getState: () => RootState) => {
       dispatch(fetchDataStart());
       const { user } = getState().auth;
+      const storageUser = getUser()
 
-      const cacheKey = `${endpoints.expenses.get()}${month}${user?.id}`;
+      const cacheKey = `${endpoints.expenses.get()}${month}${user?.id || storageUser?.user.id}`;
 
       try {
         dispatch(setMonth(month));
@@ -107,7 +109,7 @@ export const getExpenses =
           data: { budgets }
         } = await api.get<BudgetsResponse>(endpoints.budgets.get(), {
           params: {
-            user_id: user?.id
+            user_id: user?.id || storageUser?.user.id
           }
         });
 
@@ -125,7 +127,7 @@ export const getExpenses =
           data: { expenses }
         } = await api.get<ExpensesResponse>(endpoints.expenses.get(), {
           params: {
-            user_id: user?.id,
+            user_id: user?.id || storageUser?.user.id,
             period: month
           }
         });
