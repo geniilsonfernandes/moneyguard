@@ -37,7 +37,7 @@ const texts = {
 };
 
 const Expense = () => {
-  const [step, setSteps] = useState<Steps>('INFO');
+  const [step, setSteps] = useState<Steps>('BUDGET');
   const { id } = useParams() as { id: string };
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -66,7 +66,6 @@ const Expense = () => {
 
   const onInvalid = (errors: FieldErrors<ExpenseFields>) => console.error(errors);
   const goBack = () => {
-    // validar se posso voltar
     navigate(`/`);
   };
 

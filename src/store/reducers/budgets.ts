@@ -12,7 +12,7 @@ interface DataState {
 }
 
 const initialState: DataState = {
-  data: [],
+  data: [] as BudgetDTO[],
   loading: false,
   error: null
 };

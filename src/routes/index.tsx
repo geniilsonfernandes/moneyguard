@@ -96,11 +96,15 @@ function PublicRoute(): {
 }
 
 export function AppRouter() {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const user = getUser();
+
+
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
+  const authenticate = !!user || isAuthenticated;
 
   useEffect(() => {
-    const user = getUser();
 
     if (user) {
       dispatch(login(user));
@@ -108,7 +112,7 @@ export function AppRouter() {
     }
   }, [dispatch]);
 
-  const router = createBrowserRouter([isAuthenticated ? PrivateRoutes() : PublicRoute()]);
+  const router = createBrowserRouter([authenticate ? PrivateRoutes() : PublicRoute()]);
 
   return <RouterProvider router={router} />;
 }

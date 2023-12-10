@@ -81,15 +81,15 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
           />
         )}
         {loading && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 pb-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3 ">
+            {[1, 2, 3,].map((i) => (
               <Skeleton key={i} className="h-20" />
             ))}
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 pb-8">
-          {budgets.length > 0 &&
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3 pb-8">
+          {budgets.length > 0 && loading === false &&
             budgets.map((buget) => (
               <Controller
                 control={control}

@@ -12,24 +12,28 @@ import { getExpenses, initHydrateExpenses } from '@/store/reducers/getExpenses';
 import { cn } from '@/utils';
 import formatNumber from '@/utils/formatNumber';
 
+import { ArrowUpRight, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
-import { ArrowUpRight, Wallet } from 'lucide-react';
 
 const Dashboard = () => {
   const dispatch = useAppDispatch();
-  const { data, loading, hydrating, currentMonthExpenses, error } = useAppSelector(
+  const { data, budgets, loading, hydrating, currentMonthExpenses, error } = useAppSelector(
     (state) => state.expenses
   );
-  const { data: budgets } = useAppSelector((state) => state.budgets);
   const user = useAppSelector((state) => state.auth.user);
   const navigate = useNavigate();
   const { expense, income } = useCalculateExpense(currentMonthExpenses || []);
 
   useEffect(() => {
-    dispatch(getExpenses());
+    if (data.length === 0 && loading === false) {
+      dispatch(getExpenses());
+      return;
+    }
   }, [dispatch]);
+
+
 
   const handleChangeMonth = (month: string) => {
     dispatch(initHydrateExpenses({ current_month: month }));

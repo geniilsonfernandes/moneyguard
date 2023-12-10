@@ -10,7 +10,7 @@ type CalculateExpenseReturn = {
   totalInMonth: number;
 };
 
-const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
+export const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
   if (expenses.length === 0) {
     return {
       income: 0,
@@ -64,10 +64,8 @@ const calculateExpense = (expenses: ExpenseDTO[]): CalculateExpenseReturn => {
 type UseCalculateExpenseReturn = CalculateExpenseReturn;
 
 const useCalculateExpense = (expenses: ExpenseDTO[]): UseCalculateExpenseReturn => {
-  console.log(expenses);
 
   const calcute = useMemo(() => calculateExpense(expenses), [expenses]);
-  console.log(calcute);
 
   return calcute;
 };

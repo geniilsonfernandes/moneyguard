@@ -45,8 +45,8 @@ const SingUp = () => {
   };
 
   return (
-    <div className="flexs  ">
-      <div className="h-full grid grid-cols-12 py-12 sm:p-16">
+    <div className='container'>
+      <div className="h-full grid grid-cols-12 py-12 sm:p-16 gap-4">
         <div className="hidden sm:flex flex-col justify-between sm:col-span-5 h-[70vh] rounded-3xl">
           <Logo />
           <img
@@ -71,7 +71,7 @@ const SingUp = () => {
                 </p>
               </div>
 
-              <div className="mt-8 flex lg:flex-row sm:flex-col gap-4 justify-end ">
+              <div className="mt-8 flex flex-col lg:flex-row sm:flex-col gap-4 justify-end ">
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -157,7 +157,7 @@ const SingUp = () => {
               />
             </div>
 
-            <div className="flex justify-end pt-8">
+            <div className="flex flex-col lg:flex-row justify-end pt-8">
               <Button variant="ghost" onClick={() => setstepCounter(1)}>
                 Voltar
               </Button>
@@ -220,7 +220,7 @@ const SingUp = () => {
                   />
                 </RenderIf>
               </div>
-              <div className="flex lg:flex-row sm:flex-col justify-end pt-8 gap-4">
+              <div className="flex flex-col lg:flex-row sm:flex-col justify-end pt-8 gap-4">
                 <Button variant="ghost" onClick={() => setstepCounter(2)}>
                   Revisar meus dados
                 </Button>

@@ -30,12 +30,13 @@ const SingUp = () => {
 
   const onSubmit = async (data: userFields) => {
     await dispatch(loginUser({ email: data.email, password: data.password }));
+
   };
 
   return (
-    <div className="flex  ">
-      <div className="h-full grid grid-cols-12 py-12 sm:p-16">
-        <div className="hidden sm:flex flex-col justify-between sm:col-span-5 h-full rounded-3xl">
+    <div className='container'>
+      <div className="h-full grid grid-cols-12 py-12 sm:p-16 gap-4">
+        <div className="hidden sm:flex flex-col justify-between sm:col-span-5 h-[70vh] rounded-3xl">
           <Logo />
           <img
             src={bannerLogin}
@@ -71,7 +72,7 @@ const SingUp = () => {
                   label="Senha"
                   name="password"
                   placeholder="**********"
-                  recoveryPasswordbutton={() => {}}
+                  recoveryPasswordbutton={() => { }}
                   type="password"
                   onChange={onChange}
                   value={value}
@@ -89,7 +90,7 @@ const SingUp = () => {
             />
           </RenderIf>
 
-          <div className="flex lg:flex-row sm:flex-col justify-end pt-8 gap-4">
+          <div className="flex flex-col lg:flex-row sm:flex-col justify-end pt-8 gap-4">
             <Button variant="ghost" onClick={() => navigate('/sign-up')}>
               Ainda não tenho uma conta
             </Button>
