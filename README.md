@@ -16,6 +16,9 @@
  <p align="center">
   Este aplicativo nasceu da necessidade de substituir o uso do Google Sheets por um sistema mais completo. Eu e minha esposa enfrentamos limitações ao utilizar o Google Sheets para gerenciar nossas finanças, o que nos motivou a criar o Money Guard. 
 </p>
+
+<a href=https://moneyguard.netlify.app/>app em produção</a>
+
   <h2 align="center" id="stacks-utilizadas">Stacks utilizadas</h2>
 <p align="center">
   <a href="https://skillicons.dev">
@@ -23,18 +26,15 @@
   </a>
 </p>
 
-
-
-
   <h2 id="instalação-e-execução-local" align="center"> Instalação e execução local </h2>
   
   <p>
   Para executar esta aplicação, é necessário ter o Docker. Além disso, é preciso executar a API em segundo plano, disponível neste 
      <a href="https://github.com/geniilsonfernandes/moneyguard-api">repositório da Money Guard API.</a>
 
-  <b>Siga as instruções no repositório acima para executar a API.</b>
+<b>Siga as instruções no repositório acima para executar a API.</b>
+
   </p>
-  
 
   <p>
 Após executar a API, siga os passos abaixo:
@@ -44,22 +44,23 @@ Após executar a API, siga os passos abaixo:
   ```
   npm i
 
-  npm run dev 
+npm run dev
 
-  ```
+```
 
- <p>
+<p>
 O aplicativo estará disponível em http://localhost:5173/. Siga as instruções na tela de onboard para configurar o aplicativo.
-  </p>
-  
-  
+</p>
+
+
 
 <h2 align="center">Contato e redes sociais</h2>
-  <ul>
-    <li>
-      <a href="https://www.linkedin.com/in/genilson-fernandes">Linkedin</a>
-    </li>
-    <li>
-      Email - geniilsonfernandes@gmail.com
-    </li>
-  </ul>
+<ul>
+  <li>
+    <a href="https://www.linkedin.com/in/genilson-fernandes">Linkedin</a>
+  </li>
+  <li>
+    Email - geniilsonfernandes@gmail.com
+  </li>
+</ul>
+```
