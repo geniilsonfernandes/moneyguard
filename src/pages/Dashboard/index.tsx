@@ -12,7 +12,7 @@ import { getExpenses, initHydrateExpenses } from '@/store/reducers/getExpenses';
 import { cn } from '@/utils';
 import formatNumber from '@/utils/formatNumber';
 
-import { ArrowUpRight, Wallet } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, BarChart, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Loading from './Loading';
@@ -62,7 +62,7 @@ const Dashboard = () => {
           <Statistics title="Saldo" value={income - expense} />
         </div>
         {error && <Alert variant="danger" title="Algo deu errado" description={error} />}
-        <div className="border p-4 rounded-lg bg-slate-950 text-zinc-50  flex flex-col sm:flex-row gap-4 justify-between">
+        <div className="border p-4 rounded-lg bg-slate-950 text-zinc-50  flex flex-col lg:flex-row gap-4 justify-between">
           <div>
             <h2 className="text-lg font-bold">Seu orçamento mensal</h2>
             <div className="mt-4 text-xl">
@@ -79,7 +79,7 @@ const Dashboard = () => {
           </div>
           <div className="flex items-end">
             <button className="border border-slate-800 p-4 px-6 rounded-lg text-zinc-50 flex gap-2">
-              Ver detalhes deste mês <ArrowUpRight />
+              Ver detalhes deste mês <BarChart />
             </button>
           </div>
         </div>
@@ -88,7 +88,7 @@ const Dashboard = () => {
           title="Estatisticas de despesas?"
           description="As estatísticas fornecem um resumo das suas despesas deste mês, levando em conta seus gastos recentes e os meses anteriores."
         />
-        <div className="border p-4 rounded-lg flex gap-6 flex-col sm:flex-row sm:justify-between">
+        <div className="border p-4 rounded-lg flex gap-6 flex-col lg:flex-row sm:justify-between">
           <div className="flex gap-6 items-center">
             <div>
               <h4 className="text-neutral-700 text-lg font-bold">Despesas este mês</h4>
@@ -96,20 +96,31 @@ const Dashboard = () => {
             </div>
             <div aria-label="divisor" className="bg-slate-400 w-px h-10" />
             <div>
-              <h4 className="text-neutral-700 text-lg font-bold">Orçamento disponível</h4>
+              <h4 className="text-neutral-700 text-lg font-bold">Orçamento mensal disponível</h4>
               <p className="text-neutral-600 text-sm">
-                {formatNumber(income + (user?.settings?.monthly_budget || 0))}
+                {formatNumber((income + (user?.settings?.monthly_budget || 0) - expense))}
               </p>
             </div>
           </div>
-          <Button
-            className="flex gap-4"
-            variant="fill"
-            onClick={() => {
-              navigate('/expense/new');
-            }}>
-            Nova entrada <Wallet />
-          </Button>
+          <div className='flex gap-4'>
+
+            <Button
+              className="flex gap-4"
+              variant="fill"
+              onClick={() => {
+                navigate('/expense/new?type=INCOME');
+              }}>
+              Nova receita <ArrowUpRight className='text-green-500' />
+            </Button>
+            <Button
+              className="flex gap-4"
+              variant="fill"
+              onClick={() => {
+                navigate('/expense/new?type=EXPENSE');
+              }}>
+              Nova despesa <ArrowDownLeft className='text-red-500' />
+            </Button>
+          </div>
         </div>
 
         <div

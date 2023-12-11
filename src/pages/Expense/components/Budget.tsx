@@ -113,23 +113,24 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
                 )}
               />
             ))}
-
-          <Button
-            variant="outline"
-            size="xl"
-            onClick={() => createBugetModal.onShow()}
-            disabled={bugetQuantityLimit <= 0}>
-            <div className="flex items-center text-base justify-between">
-              <div className="flex flex-col justify-start text-left">
-                {bugetQuantityLimit <= 0
-                  ? 'Limite de orçamentos atingido'
-                  : ` Criar Novo orçamento`}
-                <span className="text-zinc-400 text-xs">
-                  {bugetQuantityLimit} espaços disponíveis
-                </span>
+          {loading === false &&
+            <Button
+              variant="outline"
+              size="xl"
+              onClick={() => createBugetModal.onShow()}
+              disabled={bugetQuantityLimit <= 0}>
+              <div className="flex items-center text-base justify-between">
+                <div className="flex flex-col justify-start text-left">
+                  {bugetQuantityLimit <= 0
+                    ? 'Limite de orçamentos atingido'
+                    : ` Criar Novo orçamento`}
+                  <span className="text-zinc-400 text-xs">
+                    {bugetQuantityLimit} espaços disponíveis
+                  </span>
+                </div>
               </div>
-            </div>
-          </Button>
+            </Button>
+          }
         </div>
 
         <Alert

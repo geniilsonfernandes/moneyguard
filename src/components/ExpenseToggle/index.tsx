@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { cva } from 'class-variance-authority';
@@ -46,6 +46,11 @@ const ExpenseToggle = ({ onChange, value = 'INCOME' }: ExpenseToggleProps) => {
     setSelect(type);
     onChange?.(type);
   };
+
+
+  useEffect(() => {
+    setSelect(value);
+  }, [value]);
 
   return (
     <div className="p-1 bg-slate-100 rounded-md flex gap-2">

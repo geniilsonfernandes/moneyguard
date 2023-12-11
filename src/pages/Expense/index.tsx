@@ -24,6 +24,7 @@ import View from './components/View';
 import { Steps } from './components/shared';
 import { ExpenseFields, createSchema, defaultValues } from './shared/schema';
 import { steps } from './steps';
+import useQuery from '@/hooks/useQuery';
 
 const texts = {
   edit: {
@@ -39,6 +40,7 @@ const texts = {
 const Expense = () => {
   const [step, setSteps] = useState<Steps>('INFO');
   const { id } = useParams() as { id: string };
+  const query = useQuery();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { loading, error } = useAppSelector((state) => state.createExpense);
@@ -146,6 +148,15 @@ const Expense = () => {
       setSteps('FINISH');
     }
   };
+
+  useEffect(() => {
+    const type = query.get('type') as 'INCOME' | 'EXPENSE';
+    if (type) {
+      console.log(type);
+      
+      setValue('type', type);
+    }
+  }, [])
 
   useEffect(() => {
     const getExpense = async () => {
@@ -273,7 +284,7 @@ const Expense = () => {
               variant="info"
               title="Precisando de ajuda?"
               helpButton="Saber mais"
-              onHelpClick={() => {}}
+              onHelpClick={() => { }}
             />
           </div>
         </RenderIf>
