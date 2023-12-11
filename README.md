@@ -1,4 +1,4 @@
-<img src="ui_01.png">
+<img src="ui_02.png">
 
 <h2 align="center">Money Guard | Front end | Back end</h1>
 
