@@ -53,6 +53,14 @@ class MoneyApi {
 
     this.api.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
+        const {
+          auth: { token }
+        } = getUser();
+
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+
         return config;
       },
       (error) => {
@@ -65,6 +73,11 @@ class MoneyApi {
         return response;
       },
       (error) => {
+        if (error.response?.status === 401) {
+          removeUser();
+          window.location.reload();
+          return;
+        }
         return Promise.reject(error);
       }
     );
@@ -77,6 +90,11 @@ class MoneyApi {
 
   public async login(payload: IloginPayload) {
     const response = await this.api.post<IUserloginResponse>('/auth/login', payload);
+    return response;
+  }
+
+  public async deleteExpense(payload: { id: string }) {
+    const response = await this.api.delete(`/expenses/${payload.id}`);
     return response;
   }
 }

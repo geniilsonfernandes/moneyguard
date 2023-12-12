@@ -153,10 +153,10 @@ const Expense = () => {
     const type = query.get('type') as 'INCOME' | 'EXPENSE';
     if (type) {
       console.log(type);
-      
+
       setValue('type', type);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     const getExpense = async () => {
@@ -284,7 +284,7 @@ const Expense = () => {
               variant="info"
               title="Precisando de ajuda?"
               helpButton="Saber mais"
-              onHelpClick={() => { }}
+              onHelpClick={() => {}}
             />
           </div>
         </RenderIf>

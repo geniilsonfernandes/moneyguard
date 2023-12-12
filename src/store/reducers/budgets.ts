@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 import { RootState } from '..';
 import { getUser } from './auth';
+import { setExpensesBudgets } from './getExpenses';
 
 interface DataState {
   data: BudgetDTO[];
@@ -47,7 +48,7 @@ export const getBudgets = () => async (dispatch: Dispatch, getState: () => RootS
   dispatch(fetchDataStart());
 
   const { user } = getState().auth;
-  const storageUser = getUser()
+  const storageUser = getUser();
 
   try {
     const {
@@ -87,8 +88,11 @@ export const createBudget =
         }
       });
 
+      const findBudget = budgets.find((budget) => budget.name === payload.name);
+
+      dispatch(setExpensesBudgets(budgets));
       dispatch(fetchDataSuccess(budgets));
-      return budgets;
+      return findBudget;
     } catch (error) {
       dispatch(fetchDataFailure('Erro ao criar o orçamento'));
     }

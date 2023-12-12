@@ -11,7 +11,7 @@ import { createBudget, getBudgets } from '@/store/reducers/budgets';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Wallet } from 'lucide-react';
 import { useEffect } from 'react';
-import { Control, Controller, FieldErrors, useForm } from 'react-hook-form';
+import { Control, Controller, FieldErrors, useController, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ExpenseFields } from '../shared/schema';
 
@@ -45,10 +45,14 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
     mode: 'onChange'
   });
   const dispatch = useAppDispatch();
+  const budgetMainControl = useController({
+    control: control,
+    name: 'budget'
+  });
   const { data: budgets, error, loading } = useAppSelector((state) => state.budgets);
   const createBugetModal = useVisibility({});
 
-  const bugetQuantityLimit = 10 - budgets.length;
+  const bugetQuantityLimit = 99 - budgets.length;
 
   const onSubmit = async (data: budgetFields) => {
     if (budgets.some((buget) => buget.name === data.budget_name)) {
@@ -56,12 +60,17 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
       return;
     }
 
-    await dispatch(
+    const budget = await dispatch(
       createBudget({
         name: data.budget_name,
         amount: 1000
       })
     );
+
+    if (budget) {
+      budgetMainControl.field.onChange(budget);
+    }
+
     createBugetModal.onHidden();
     reset();
   };
@@ -82,14 +91,15 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
         )}
         {loading && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3 ">
-            {[1, 2, 3,].map((i) => (
+            {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-20" />
             ))}
           </div>
         )}
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 lg:grid-cols-3 pb-8">
-          {budgets.length > 0 && loading === false &&
+          {budgets.length > 0 &&
+            loading === false &&
             budgets.map((buget) => (
               <Controller
                 control={control}
@@ -113,7 +123,7 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
                 )}
               />
             ))}
-          {loading === false &&
+          {loading === false && (
             <Button
               variant="outline"
               size="xl"
@@ -130,7 +140,7 @@ const Budget = ({ control, errors: budgetErrors }: BudgetProps) => {
                 </div>
               </div>
             </Button>
-          }
+          )}
         </div>
 
         <Alert

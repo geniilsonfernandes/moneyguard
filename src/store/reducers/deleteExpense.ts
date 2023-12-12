@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
-import { financialRecordStorage } from '../storage';
 
+import { moneyApi } from '@/http/api/api';
 import { NotFoundError } from '@/utils/useStorage';
 
 type Error = {
@@ -59,13 +59,9 @@ export const deleteExpense =
   async (dispatch: Dispatch) => {
     dispatch(fetchDataStart());
     try {
-      financialRecordStorage.removeItem(id);
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(id);
-          dispatch(fetchDataSuccess());
-        }, 1000);
-      });
+      await moneyApi.deleteExpense({ id });
+
+      dispatch(fetchDataSuccess());
       return true;
     } catch (error) {
       if (error instanceof NotFoundError) {
@@ -78,6 +74,13 @@ export const deleteExpense =
         );
         return;
       }
+
+      dispatch(
+        fetchDataFailure({
+          message: 'Erro ao deletar orçamento',
+          status: true
+        })
+      );
       throw error;
     }
   };

@@ -33,8 +33,6 @@ const Dashboard = () => {
     }
   }, [dispatch]);
 
-
-
   const handleChangeMonth = (month: string) => {
     dispatch(initHydrateExpenses({ current_month: month }));
   };
@@ -98,19 +96,18 @@ const Dashboard = () => {
             <div>
               <h4 className="text-neutral-700 text-lg font-bold">Orçamento mensal disponível</h4>
               <p className="text-neutral-600 text-sm">
-                {formatNumber((income + (user?.settings?.monthly_budget || 0) - expense))}
+                {formatNumber(income + (user?.settings?.monthly_budget || 0) - expense)}
               </p>
             </div>
           </div>
-          <div className='flex gap-4'>
-
+          <div className="flex gap-4">
             <Button
               className="flex gap-4"
               variant="fill"
               onClick={() => {
                 navigate('/expense/new?type=INCOME');
               }}>
-              Nova receita <ArrowUpRight className='text-green-500' />
+              Nova receita <ArrowUpRight className="text-green-500" />
             </Button>
             <Button
               className="flex gap-4"
@@ -118,7 +115,7 @@ const Dashboard = () => {
               onClick={() => {
                 navigate('/expense/new?type=EXPENSE');
               }}>
-              Nova despesa <ArrowDownLeft className='text-red-500' />
+              Nova despesa <ArrowDownLeft className="text-red-500" />
             </Button>
           </div>
         </div>

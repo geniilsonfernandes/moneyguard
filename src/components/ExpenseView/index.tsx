@@ -79,14 +79,25 @@ const ExpenseView = () => {
     dispatch(clearDeleteExpense());
     navigate(`/`);
   };
-  const handleDelete = () => {
-    dispatch(deleteExpense({ id }));
-    dispatch(initHydrateExpenses());
+  const handleDelete = async () => {
+    const deleteExpenseValidation = await dispatch(deleteExpense({ id }));
+
+    if (deleteExpenseValidation) {
+      dispatch(initHydrateExpenses({ invalidateAllCache: true }));
+      goBack();
+    }
   };
 
   useEffect(() => {
+    if (id === '') {
+      return;
+    }
     dispatch(getExpenseById({ id }));
   }, [dispatch, id]);
+
+  if (data === null) {
+    navigate('/');
+  }
 
   return (
     <div className="fade-in bg-black/10 h-[101vh] w-full fixed left-0 top-0 z-10 flex justify-between">
@@ -163,6 +174,7 @@ const ExpenseView = () => {
                   </div>
                 </div>
               </div>
+
               <div className="flex justify-between gap-4">
                 <Button variant="fill" width="full" onClick={handleToEdit}>
                   Editar Entrada
