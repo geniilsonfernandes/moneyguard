@@ -45,7 +45,7 @@ const SingUp = () => {
   };
 
   return (
-    <div className='container'>
+    <div className="container">
       <div className="h-full grid grid-cols-12 py-12 sm:p-16 gap-4">
         <div className="hidden sm:flex flex-col justify-between sm:col-span-5 h-[70vh] rounded-3xl">
           <Logo />

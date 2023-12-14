@@ -1,8 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 
-import { moneyApi } from '@/http/api/api';
+import { api, moneyApi } from '@/http/api/api';
 import { NotFoundError } from '@/utils/useStorage';
+import endpoints from '@/http/api/endpoints';
 
 type Error = {
   message: string | null;
@@ -59,7 +60,7 @@ export const deleteExpense =
   async (dispatch: Dispatch) => {
     dispatch(fetchDataStart());
     try {
-      await moneyApi.deleteExpense({ id });
+      await api.delete(endpoints.expenses.delete(id));
 
       dispatch(fetchDataSuccess());
       return true;
