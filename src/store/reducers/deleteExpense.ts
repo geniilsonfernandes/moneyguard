@@ -1,9 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { Dispatch } from 'redux';
 
-import { api, moneyApi } from '@/http/api/api';
-import { NotFoundError } from '@/utils/useStorage';
+import { api } from '@/http/api/api';
 import endpoints from '@/http/api/endpoints';
+import { NotFoundError } from '@/utils/useStorage';
 
 type Error = {
   message: string | null;
